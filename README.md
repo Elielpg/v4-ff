@@ -1,11 +1,13 @@
 # Ben 10 · Clareira LIVE
 
-[Baixar a atualização V39 em ZIP](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V39_TERMUX.zip)
+[Baixar a atualização V40 em ZIP](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V40_TERMUX.zip)
 
-TAP TAP com corações, missões coletivas de curtidas/comentários/compartilhamentos/seguidores, celebrações e novas camadas 3D nos poderes. Mantém voz gratuita do aparelho, várias chaves Gemini, ranking, ícones, painel do chat e Omnitrix original.
+Correções na seleção/teste da chave Gemini, modelo automático e avisos de falha. TAP TAP gera esferas verdes do Omnitrix e desbloqueia os aliens por curtidas, com o total restante na tela e progresso salvo.
 
-[Instruções da V39: instalar, atualizar e configurar as metas](DOWNLOAD_V39.md)
+Mantém voz gratuita do aparelho, missões coletivas, poderes 3D, ranking, ícones, painel do chat e relógio original.
 
-[Prévia da V39](BEN10_V39_PREVIA.png) · [Checksum](BEN10_LIVE_V39_TERMUX.zip.sha256)
+[Instruções da V40: atualizar, testar a chave e configurar o DNA](DOWNLOAD_V40.md)
 
-Versões anteriores: [V38](DOWNLOAD_V38.md) · [V37](DOWNLOAD_V37.md) · [V36](DOWNLOAD_V36.md) · [V35](DOWNLOAD_V35.md) · [V34](DOWNLOAD_V34.md).
+[Prévia da V40](BEN10_V40_PREVIA.png) · [Checksum](BEN10_LIVE_V40_TERMUX.zip.sha256)
+
+Versões anteriores: [V39](DOWNLOAD_V39.md) · [V38](DOWNLOAD_V38.md) · [V37](DOWNLOAD_V37.md) · [V36](DOWNLOAD_V36.md) · [V35](DOWNLOAD_V35.md) · [V34](DOWNLOAD_V34.md).
