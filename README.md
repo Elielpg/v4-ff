@@ -1,15 +1,15 @@
 # Ben 10 · Clareira LIVE
 
-[Baixar reparo pequeno da instalação local V42](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_REPARO_IA_V42_1.zip)
+[Correção V42.2 e comandos para continuar a instalação](DOWNLOAD_V42_2.md)
 
-Corrige o bloqueio `NO_PUBKEY` de fontes extras durante a instalação da IA. Usa só ferramentas ausentes e o repositório principal oficial da edição do Termux, com assinaturas verificadas. Preserva fontes extras e dados. Também retira o aviso de `.env` ausente quando não é necessário.
+O instalador agora reconhece `termux.sources` (Deb822), preserva `Signed-By` e a fonte principal da edição instalada. Não seleciona um endereço padrão de outra edição quando não reconhece a configuração. Fontes extras ficam fora dos comandos; assinaturas continuam verificadas.
 
-[Aplicar o reparo e continuar a instalação](DOWNLOAD_V42_1.md)
+[Pacote completo V42.2](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V42_2_TERMUX.zip) · [Reparo pequeno](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_REPARO_IA_V42_2.zip)
 
-[Pacote completo V42.1 em ZIP](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V42_1_TERMUX.zip)
+Para o aparelho que já confirmou `apt-get update` com seu `termux.sources`, o guia inclui a instalação direta das quatro ferramentas ausentes, sem exigir outro ZIP.
 
-Mantém conversa local com llama.cpp/Qwen e voz neural Piper, sem chave após instalar os modelos. O perfil inicial é para Realme GT3 ARM64 com 16 GB. A instalação inicial baixa vários GB; o TikTok ainda precisa de internet. Qualidade e velocidade precisam ser medidas no aparelho.
+Mantém conversa local com llama.cpp/Qwen e voz neural Piper, sem chave depois de instalar os modelos. O perfil inicial é para Realme GT3 ARM64 com 16 GB. A instalação inicial baixa vários GB; TikTok ainda precisa de internet. Qualidade e velocidade precisam ser medidas no telefone.
 
-189 testes aprovados com APT e serviços de IA simulados. Sem instalação em Android físico ou inferência de pesos reais nesta validação. [Recursos e instruções da V42](DOWNLOAD_V42.md).
+193 testes aprovados. A fonte principal foi validada pelo usuário no aparelho; os testes automatizados de APT são simulados. Sem inferência neural real nesta validação cloud.
 
-Versões anteriores: [V42](DOWNLOAD_V42.md) · [V41.1](DOWNLOAD_V41_1.md) · [V41](DOWNLOAD_V41.md) · [V40](DOWNLOAD_V40.md).
+Histórico: [V42.1](DOWNLOAD_V42_1.md) · [V42](DOWNLOAD_V42.md) · [V41.1](DOWNLOAD_V41_1.md) · [V41](DOWNLOAD_V41.md).

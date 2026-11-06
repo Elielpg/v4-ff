@@ -1,5 +1,7 @@
 # V42.1 · Reparo do instalador da IA local
 
+> Para instalações com `termux.sources` (Deb822), use a [correção V42.2](DOWNLOAD_V42_2.md). O reparo V42.1 não reconhecia esse formato.
+
 [Baixar reparo pequeno para V42 já instalada](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_REPARO_IA_V42_1.zip)
 
 O erro `NO_PUBKEY 5A897D96E57CF20C` no repositório extra `termux-glibc` impediu a instalação das ferramentas. O jogo já foi atualizado, mas os modelos locais ainda não foram instalados. Por isso o comando de iniciar mostra “Instale primeiro”. A ausência de `.env` não causou a falha e não exige criar esse arquivo para o modo local.
