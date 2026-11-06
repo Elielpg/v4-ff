@@ -1,17 +1,15 @@
 # Ben 10 · Clareira LIVE
 
-[Baixar a atualização V41 em ZIP](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V41_TERMUX.zip)
+[Baixar a correção V41.1 em ZIP](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V41_1_TERMUX.zip)
 
-Visitantes ganham avatar aleatório, nome/foto e câmera de chegada. Ben caminha até novos seguidores para cumprimentá-los. Presentes priorizam mensagens e agradecimentos na fila; o chat continua atendido.
+Corrige a leitura das características da voz antes das frases: o áudio recebe apenas a fala. A conversa mantém **Ben criança do clássico**, brincalhão, confiante e impulsivo, inclusive transformado, com a mesma voz IA em todas as formas.
 
-TAP TAP leva esferas 3D do chão ao Omnitrix original. Dia/tarde/noite, poderes emitidos pelas mãos e uma barra inferior com quatro botões. Ranking, ícones, painel de comandos, metas coletivas e recarga preservados.
+[Como atualizar e testar a correção](DOWNLOAD_V41_1.md) · [Checksum](BEN10_LIVE_V41_1_TERMUX.zip.sha256)
 
-Somente voz de IA: Gemini TTS ou ElevenLabs, sem voz do aparelho. Exige acesso e cota de áudio no provedor; o texto permanece em legenda em caso de falha.
+Mantém visitantes com avatares, nome/foto, câmera de chegada, cumprimento aos seguidores, prioridade de presentes, energia 3D no Omnitrix, dia/tarde/noite e controles organizados. [Recursos e prévia da V41](DOWNLOAD_V41.md).
 
-[Como atualizar e configurar a V41](DOWNLOAD_V41.md)
+Somente voz de IA: Gemini TTS ou ElevenLabs, sem voz do aparelho. O acesso e a cota de áudio dependem do provedor.
 
-[Prévia V41 · demonstração local](BEN10_V41_PREVIA.png) · [Checksum](BEN10_LIVE_V41_TERMUX.zip.sha256)
+177 testes aprovados e integração no Chromium com provedores simulados. Sem validação com chave Google real, LIVE real ou Android físico.
 
-174 testes aprovados e integração no Chromium com provedores simulados. Sem validação com chave Google real, LIVE real ou Android físico.
-
-Versões anteriores: [V40](DOWNLOAD_V40.md) · [V39](DOWNLOAD_V39.md) · [V38](DOWNLOAD_V38.md) · [V37](DOWNLOAD_V37.md) · [V36](DOWNLOAD_V36.md) · [V35](DOWNLOAD_V35.md) · [V34](DOWNLOAD_V34.md).
+Versões anteriores: [V41](DOWNLOAD_V41.md) · [V40](DOWNLOAD_V40.md) · [V39](DOWNLOAD_V39.md) · [V38](DOWNLOAD_V38.md) · [V37](DOWNLOAD_V37.md) · [V36](DOWNLOAD_V36.md) · [V35](DOWNLOAD_V35.md) · [V34](DOWNLOAD_V34.md).
