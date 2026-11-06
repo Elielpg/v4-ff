@@ -1,15 +1,15 @@
 # Ben 10 · Clareira LIVE
 
-[Baixar a correção V41.1 em ZIP](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V41_1_TERMUX.zip)
+[Baixar V42 em ZIP · suporte a conversa e voz locais](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V42_TERMUX.zip)
 
-Corrige a leitura das características da voz antes das frases: o áudio recebe apenas a fala. A conversa mantém **Ben criança do clássico**, brincalhão, confiante e impulsivo, inclusive transformado, com a mesma voz IA em todas as formas.
+Conversa com llama.cpp/Qwen e voz neural Piper no Termux, sem chave de API depois da instalação dos modelos. Perfil inicial para Realme GT3 ARM64 com 16 GB. Ben mantém a personalidade do clássico e o áudio recebe apenas a frase.
 
-[Como atualizar e testar a correção](DOWNLOAD_V41_1.md) · [Checksum](BEN10_LIVE_V41_1_TERMUX.zip.sha256)
+[Como instalar, iniciar e testar](DOWNLOAD_V42.md) · [Checksum](BEN10_LIVE_V42_TERMUX.zip.sha256)
 
-Mantém visitantes com avatares, nome/foto, câmera de chegada, cumprimento aos seguidores, prioridade de presentes, energia 3D no Omnitrix, dia/tarde/noite e controles organizados. [Recursos e prévia da V41](DOWNLOAD_V41.md).
+O ZIP inclui a integração e o instalador. A primeira instalação baixa vários GB no celular; depois, conversa e voz funcionam sem internet. A LIVE do TikTok ainda precisa de conexão. Qualidade e velocidade podem ser inferiores aos serviços online e precisam ser medidas no aparelho. Não é a dublagem original.
 
-Somente voz de IA: Gemini TTS ou ElevenLabs, sem voz do aparelho. O acesso e a cota de áudio dependem do provedor.
+Mantém visitantes, presentes, TAP TAP, relógio, poderes, cenário e controles. [Recursos visuais da V41](DOWNLOAD_V41.md).
 
-177 testes aprovados e integração no Chromium com provedores simulados. Sem validação com chave Google real, LIVE real ou Android físico.
+182 testes aprovados com LLM/Piper simulados e compilação do llama.cpp em Linux x86_64. Sem inferência dos pesos reais, Android físico ou LIVE real nesta validação. O instalador confere repositórios e hashes dos modelos no aparelho.
 
-Versões anteriores: [V41](DOWNLOAD_V41.md) · [V40](DOWNLOAD_V40.md) · [V39](DOWNLOAD_V39.md) · [V38](DOWNLOAD_V38.md) · [V37](DOWNLOAD_V37.md) · [V36](DOWNLOAD_V36.md) · [V35](DOWNLOAD_V35.md) · [V34](DOWNLOAD_V34.md).
+Versões anteriores: [V41.1](DOWNLOAD_V41_1.md) · [V41](DOWNLOAD_V41.md) · [V40](DOWNLOAD_V40.md) · [V39](DOWNLOAD_V39.md) · [V38](DOWNLOAD_V38.md) · [V37](DOWNLOAD_V37.md) · [V36](DOWNLOAD_V36.md) · [V35](DOWNLOAD_V35.md) · [V34](DOWNLOAD_V34.md).
