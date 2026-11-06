@@ -1,15 +1,13 @@
 # Ben 10 · Clareira LIVE
 
-[Correção V42.2 e comandos para continuar a instalação](DOWNLOAD_V42_2.md)
+[Correção V42.3 do download do modelo](DOWNLOAD_V42_3.md)
 
-O instalador agora reconhece `termux.sources` (Deb822), preserva `Signed-By` e a fonte principal da edição instalada. Não seleciona um endereço padrão de outra edição quando não reconhece a configuração. Fontes extras ficam fora dos comandos; assinaturas continuam verificadas.
+O perfil GT3 usa o catálogo público `unsloth/Qwen3-4B-Instruct-2507-GGUF`, confirmado no aparelho sem chave. Remove o endereço anterior que interrompia a consulta com 401. O guia oferece a correção curta na instalação existente.
 
-[Pacote completo V42.2](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V42_2_TERMUX.zip) · [Reparo pequeno](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_REPARO_IA_V42_2.zip)
+[Pacote completo V42.3](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V42_3_TERMUX.zip) · [Reparo pequeno](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_REPARO_IA_V42_3.zip)
 
-Para o aparelho que já confirmou `apt-get update` com seu `termux.sources`, o guia inclui a instalação direta das quatro ferramentas ausentes, sem exigir outro ZIP.
+Mantém conversa local llama.cpp/Qwen 4B, voz neural Piper, personalidade do Ben clássico e a correção de `termux.sources`. A instalação inicial ainda baixa vários GB. Depois, conversa/voz rodam locais; TikTok continua precisando de internet. Não é a dublagem original, e a qualidade/velocidade precisam ser medidas no aparelho.
 
-Mantém conversa local com llama.cpp/Qwen e voz neural Piper, sem chave depois de instalar os modelos. O perfil inicial é para Realme GT3 ARM64 com 16 GB. A instalação inicial baixa vários GB; TikTok ainda precisa de internet. Qualidade e velocidade precisam ser medidas no telefone.
+194 testes aprovados com catálogos/arquivos simulados. O usuário confirmou o catálogo e o nome do GGUF; não houve download completo ou inferência neural real nesta validação cloud.
 
-193 testes aprovados. A fonte principal foi validada pelo usuário no aparelho; os testes automatizados de APT são simulados. Sem inferência neural real nesta validação cloud.
-
-Histórico: [V42.1](DOWNLOAD_V42_1.md) · [V42](DOWNLOAD_V42.md) · [V41.1](DOWNLOAD_V41_1.md) · [V41](DOWNLOAD_V41.md).
+Histórico: [V42.2](DOWNLOAD_V42_2.md) · [V42.1](DOWNLOAD_V42_1.md) · [V42](DOWNLOAD_V42.md) · [V41.1](DOWNLOAD_V41_1.md).
