@@ -1,9 +1,9 @@
 # Ben 10 · Clareira LIVE
 
-[V43.3 · Reparo de reprodução da voz clonada](DOWNLOAD_V43_3.md)
+[V43.4 · Reparo de entrega da voz clonada](DOWNLOAD_V43_4.md)
 
-[Baixar reparo de áudio](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_REPARO_AUDIO_V43_3.zip?v=43.3.0) · [ZIP completo V43.3](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V43_3_TERMUX.zip?v=43.3.0)
+[Baixar reparo de voz](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_REPARO_AUDIO_V43_4.zip?v=43.4.0) · [ZIP completo V43.4](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V43_4_TERMUX.zip?v=43.4.0)
 
-Ativa o áudio ao entrar, reproduz respostas pelo WebAudio e permite ouvir o preview já salvo sem nova geração. Preserva modelos, referência, chaves e progresso. Veja o guia para comandos e limites de velocidade.
+Corrige perda de WAV durante geração demorada. O jogo acompanha a tarefa, recupera o áudio pronto e confirma a mensagem depois da reprodução. Inclui teste salvo durante geração e diagnóstico de voz no painel. Veja comandos e limites no guia.
 
-Histórico: [V43.2 SIGILL](DOWNLOAD_V43_2.md) · [V43.1 com áudio incluído](DOWNLOAD_V43_1.md) · [V43](DOWNLOAD_V43.md) · [V42.4](DOWNLOAD_V42_4.md).
+Histórico: [V43.3 reprodução](DOWNLOAD_V43_3.md) · [V43.2 SIGILL](DOWNLOAD_V43_2.md) · [V43.1 com áudio](DOWNLOAD_V43_1.md) · [V43](DOWNLOAD_V43.md).
