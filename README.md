@@ -1,13 +1,11 @@
 # Ben 10 · Clareira LIVE
 
-[V43 · Baixar e instalar](DOWNLOAD_V43.md)
+[V43.1 · Áudio do Ben incluído e preparo automático](DOWNLOAD_V43_1.md)
 
-Corrige mensagens consumidas sem fala quando a voz falha. A resposta aguarda nova tentativa; saudações completas têm respostas rápidas e perguntas continuam na IA. Comentários diferentes da mesma pessoa não são mais descartados por chegarem em sequência.
+O MP3 enviado já está convertido em WAV mono 24 kHz e incluído no projeto, com hash conferido. O comando `bash local-ai.sh clone setup` instala o necessário, aplica essa referência e faz síntese real antes de selecionar a voz. Se falhar, restaura a seleção e a referência anteriores. Mantém a IA de conversa já instalada.
 
-[Reparo pequeno para V42/V43](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_REPARO_V43.zip) · [ZIP completo V43](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V43_TERMUX.zip)
+[Reparo com áudio](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_REPARO_V43_1.zip?v=43.1.0) · [ZIP completo V43.1](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LIVE_V43_1_TERMUX.zip?v=43.1.0)
 
-Inclui integração opcional de clonagem com Qwen3-TTS 0.6B e motor nativo C++/GGML. **Não contém uma voz clonada pronta do Ben:** precisa de amostra limpa WAV e preview. O motor compilou em Linux; semelhança e velocidade no GT3 ainda precisam de validação. A voz atual é mantida até a seleção explícita do clone.
+206 testes aprovados, incluindo 18 testes Python. Navegador validado com modelos simulados. Os conversores reais foram testados com tensores pequenos; sem execução dos pesos reais do Qwen3-TTS nesta nuvem, pois Hugging Face não está permitido na política aplicada. O teste real e a avaliação de qualidade/velocidade ficam no celular. Não se promete cópia idêntica da dublagem.
 
-205 testes aprovados, incluindo 14 testes Python; recuperação da voz validada no navegador com LLM/WAV simulados. Sem inferência de pesos de clonagem, Android físico ou LIVE real nesta atualização.
-
-Histórico: [V42.4](DOWNLOAD_V42_4.md) · [V42.3](DOWNLOAD_V42_3.md) · [V42.2](DOWNLOAD_V42_2.md) · [V42.1](DOWNLOAD_V42_1.md) · [V42](DOWNLOAD_V42.md).
+Histórico: [V43](DOWNLOAD_V43.md) · [V42.4](DOWNLOAD_V42_4.md) · [V42.3](DOWNLOAD_V42_3.md) · [V42](DOWNLOAD_V42.md).
