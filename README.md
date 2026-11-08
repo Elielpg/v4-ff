@@ -11,3 +11,12 @@ Respostas diretas para perguntas verificadas e contas simples, contexto inicial 
 O ZIP V43.8 contém somente uma atualização de código para V43.7/V43.8. Não baixa novamente os modelos e guarda backup dos arquivos substituídos.
 
 Histórico: [V43.7 · Falas, curtidas e música](DOWNLOAD_V43_7.md) · [V43.6](DOWNLOAD_V43_6.md) · [V43.5](DOWNLOAD_V43_5.md).
+
+
+## Relatório técnico
+
+[Baixar relatório técnico em PDF — 11 páginas](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/RELATORIO_TECNICO_BEN10_V43_8.pdf?v=43.8.0) · [Versão editável](RELATORIO_TECNICO_BEN10_V43_8.md)
+
+Arquitetura, estrutura do código, problemas da IA local e da voz, testes e melhorias pendentes. Inclui o novo bug LOCAL-010, parada inesperada no Termux durante a LIVE, ainda sem causa confirmada.
+
+O projeto completo V43.8 foi preparado e passou em 235 testes, além de build e verificação do servidor extraído. Sua publicação permanece pendente. Os links anteriores desta página continuam apontando para a atualização incremental já publicada.

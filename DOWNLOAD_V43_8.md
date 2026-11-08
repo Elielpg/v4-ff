@@ -46,3 +46,12 @@ O instalador confere a integridade e a sintaxe dos arquivos e guarda backup em `
 O Chromium validou conta sem chamar o modelo, números por extenso no pedido de voz, resposta geral com modelo simulado, cache entre duas pessoas sem trocar seus nomes e confirmação somente após a reprodução. O áudio desse teste é um tom sintético; não avalia a voz do personagem.
 
 O instalador foi aplicado em uma cópia de teste V43.7, conferindo os 16 arquivos por SHA-256 e preservação de configuração, progresso e seleção de voz. O backup foi conferido. Repetição, versão incompatível, conteúdo corrompido e destino com link simbólico também foram verificados.
+
+
+## Relatório técnico
+
+[Baixar relatório técnico em PDF — 11 páginas](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/RELATORIO_TECNICO_BEN10_V43_8.pdf?v=43.8.0) · [Versão editável](RELATORIO_TECNICO_BEN10_V43_8.md)
+
+Arquitetura, estrutura do código, problemas da IA local e da voz, testes e melhorias pendentes. Inclui o novo bug LOCAL-010, parada inesperada no Termux durante a LIVE, ainda sem causa confirmada.
+
+O projeto completo V43.8 foi preparado e passou em 235 testes, além de build e verificação do servidor extraído. Sua publicação permanece pendente. Os links anteriores desta página continuam apontando para a atualização incremental já publicada.
