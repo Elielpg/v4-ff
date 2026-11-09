@@ -1,3 +1,5 @@
+> Guia histórico. Para vídeos novos, seguir [GUIA_EDICAO_BEN10.md](GUIA_EDICAO_BEN10.md), que registra a retirada do @ e o padrão de captura nativa e edição atual.
+
 # Guia de edição · @Linel.exe
 
 Registro das preferências do usuário e das decisões editoriais para reutilização nas próximas montagens deste projeto.

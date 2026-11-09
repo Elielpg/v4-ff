@@ -1,0 +1,48 @@
+{
+  "video": {
+    "duration": "26.133333",
+    "width": 1080,
+    "height": 1920,
+    "fps": "30/1",
+    "codec": "h264",
+    "frames": "784",
+    "pixelFormat": "yuv420p",
+    "colorRange": "tv",
+    "colorSpace": "bt709",
+    "faststart": true,
+    "bytes": 16905983,
+    "sha256": "2dab64d291dc6c6d0e4c2bc4fa77d9c6a0c8634ee41f4893138e3478e18b0418"
+  },
+  "nativeSource": {
+    "framesChecked": 784,
+    "eachImageSize": [
+      1080,
+      1920
+    ],
+    "plannedTakes": 20,
+    "observedFormsInRetake": [
+      "base",
+      "blaze",
+      "rock",
+      "volt"
+    ],
+    "source": "Original Babylon.js camp and models, new DEMO takes. Opening retained from the same native production, not from 540p invitations.",
+    "retainedOpeningFrames": 92,
+    "pageErrors": [],
+    "note": "Offline production capture, not an Android FPS benchmark."
+  },
+  "audio": {
+    "codec": "aac",
+    "sampleRate": "48000",
+    "channels": 2,
+    "duration": "26.130000",
+    "integratedLUFS": "-14.29",
+    "truePeakDBTP": "-1.88",
+    "rangeLU": "2.40",
+    "voice": "Kokoro pm_alex, standard pt-br voice",
+    "music": "Original 128 BPM instrumental and synthesized sound effects"
+  },
+  "fullDecode": "passed, no errors",
+  "oldHandleInTitlesOrDeliveryText": false,
+  "tiktokReference": "Not viewed: network access blocked; draft update was not confirmed."
+}

@@ -1,5 +1,7 @@
 # Ben 10 · Clareira LIVE
 
+[Vídeo Ben 10 03 — HD nativo, sem @](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/VIDEO_BEN10_HD_03.mp4) · [Pacote com capa, legenda e pesquisa](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/VIDEO_BEN10_HD_03_COMPLETO.zip) · [Guia de edição atual](GUIA_EDICAO_BEN10.md)
+
 [Convite 02 de @Linel.exe — MP4](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LINEL_CONVITE_02.mp4) · [Pacote com capa, legenda, roteiro e guia de edição](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_LINEL_CONVITE_02_COMPLETO.zip) · [Padrão editorial salvo](GUIA_EDICAO_LINEL_EXE.md)
 
 [Vídeo-convite de @Linel.exe — MP4](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/CONVITE_LINEL_EXE_BEN10.mp4) · [Pacote com capa, legenda e créditos](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/CONVITE_LINEL_EXE_COMPLETO.zip)
