@@ -1,0 +1,66 @@
+{
+  "version": "44.2.0",
+  "tests": {
+    "passed": 277,
+    "failed": 0,
+    "skipped": 0,
+    "command": "npm test",
+    "durationMs": 52010.205808
+  },
+  "lint": true,
+  "build": true,
+  "realNeutralVoice": "neutral-piper.json",
+  "phoneGT3Tested": false,
+  "prolongedRealLiveTested": false,
+  "textModelChanged": false,
+  "defaultVoice": "Piper pt-BR, no cloning reference",
+  "cloningFilesRemoved": false,
+  "intermediateResults": [
+    "Normalização de XLR8 foi isolada no novo Piper para preservar nomes/legendas nos demais provedores; teste antigo passou novamente.",
+    "A fixture visual foi corrigida para distinguir agradecimento de TAP TAP e interlúdio; a rodada final é registrada separadamente."
+  ],
+  "limits": "A qualidade de timbre e pronúncia exige escuta humana no GT3. Não houve tentativa de imitar ator nem treinamento de voz.",
+  "browserPass": true,
+  "ambientInterruptedForViewer": true,
+  "interruptionToViewerAudioMs": 649,
+  "browserTimingLimits": "Synthetic one-second tone, Chromium/Linux; not real Piper or GT3 latency.",
+  "previewLayouts": {
+    "portrait412": true,
+    "portrait320": true,
+    "landscape1280": true,
+    "headerDoesNotOverlap": true
+  },
+  "extractedUpdateInstallationAndRollback": true,
+  "checksPendingOnPhone": [
+    "Clareza/timbre/R e L na voz ouvida no GT3",
+    "LIVE prolongada e causa original do encerramento"
+  ],
+  "existingPiperSelectionRespected": true,
+  "packageVerification": {
+    "version": "44.2.0",
+    "base": "44.1.0",
+    "kind": "code-update",
+    "limits": "Temporary Linux installation; no real voice/clone execution or phone LIVE.",
+    "neutralVoicePreparedWithoutCloning": true,
+    "realGiftPhotoServed": true,
+    "updatedServerHealth": true,
+    "updatedAssetsServed": true,
+    "directArithmeticAnswer": true,
+    "progressAfterStartup": 321,
+    "applied": true,
+    "allPayloadHashesVerified": true,
+    "preservedModelsKeysVoiceAndProgress": true,
+    "rollback": true,
+    "payloadFiles": 259,
+    "backupManifest": true,
+    "quotedPaths": true,
+    "publicArchiveContainsAudioOrCloneEngine": false
+  },
+  "archive": {
+    "name": "BEN10_ATUALIZACAO_V44_2.zip",
+    "bytes": 8124984,
+    "sha256": "3debb8e8c5010f113f517e4780cb6040548d59dc9f4f22d32634477e4ad38732",
+    "payloadFiles": 259,
+    "containsVoiceAudioOrCloneEngine": false
+  }
+}
