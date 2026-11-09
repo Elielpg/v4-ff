@@ -1,0 +1,74 @@
+{
+  "version": "44.1.0",
+  "tests": {
+    "passed": 268,
+    "failed": 0,
+    "skipped": 0,
+    "command": "npm test",
+    "durationMs": 39869.50315
+  },
+  "lint": true,
+  "build": true,
+  "phoneGT3Tested": false,
+  "physicalLongLiveTested": false,
+  "voiceModelChanged": false,
+  "referenceChanged": false,
+  "browser": "browser.json",
+  "extractedUpdate": "package-test.json",
+  "intermediateFailures": [
+    "Corrida entre anúncio de pronto e confirmação da configuração da voz; corrigida e retestada.",
+    "SIGTERM duplicado no iniciador e supervisor interrompia a limpeza e deixava portas ocupadas; encerramento hierárquico corrigido e testado.",
+    "O teste visual detectou que desligar adaptação congelava a resolução degradada; o controle agora restaura a resolução base e tem teste de regressão."
+  ],
+  "LOCAL010": "Causa original no GT3 ainda não confirmada; recuperação do supervisor e paradas controladas verificadas com fixtures.",
+  "userReport": "A execução para no Termux e a página trava em seguida.",
+  "browserPass": true,
+  "browserStress": {
+    "giftShows": 80,
+    "goalShows": 80,
+    "limits": "Tempo simulado, contagens de recursos no Chromium/Linux; não equivale a horas de LIVE no GT3."
+  },
+  "graphics": {
+    "fxaaCompiled": true,
+    "renderWidth": 457,
+    "renderHeight": 1016,
+    "cssWidth": 412,
+    "cssHeight": 915,
+    "dpr": 3,
+    "bufferScale": 0.9,
+    "contextLossRecovered": true
+  },
+  "previewLayouts": {
+    "portrait412": true,
+    "portrait320": true,
+    "landscape1280": true,
+    "details": "preview-check.json"
+  },
+  "extractedUpdateInstallationAndRollback": true,
+  "packageVerification": {
+    "version": "44.1.0",
+    "base": "44.0.0",
+    "kind": "code-update",
+    "limits": "Temporary Linux installation; no real voice/clone execution or phone LIVE.",
+    "realGiftPhotoServed": true,
+    "updatedServerHealth": true,
+    "updatedAssetsServed": true,
+    "directArithmeticAnswer": true,
+    "progressAfterStartup": 321,
+    "applied": true,
+    "allPayloadHashesVerified": true,
+    "preservedModelsKeysVoiceAndProgress": true,
+    "rollback": true,
+    "payloadFiles": 221,
+    "backupManifest": true,
+    "quotedPaths": true,
+    "publicArchiveContainsAudioOrCloneEngine": false
+  },
+  "archive": {
+    "name": "BEN10_ATUALIZACAO_V44_1.zip",
+    "bytes": 5391656,
+    "sha256": "fb7cad04a467254a2ce2d11998133c377fcc6cc999bc032c774044f4d5f620f9",
+    "payloadFiles": 221,
+    "containsVoiceAudioOrCloneEngine": false
+  }
+}
