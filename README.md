@@ -1,5 +1,7 @@
 # Ben 10 · Clareira LIVE
 
+[Vídeo-convite de @Linel.exe — MP4](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/CONVITE_LINEL_EXE_BEN10.mp4) · [Pacote com capa, legenda e créditos](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/CONVITE_LINEL_EXE_COMPLETO.zip)
+
 [V44.2 · Download e instalação](DOWNLOAD_V44_2.md)
 
 [Baixar atualização V44.2 — ZIP](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_ATUALIZACAO_V44_2.zip?v=44.2.0)
