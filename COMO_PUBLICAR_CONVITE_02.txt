@@ -1,0 +1,7 @@
+CONVITE 02 · @Linel.exe
+
+Extraia o ZIP e selecione BEN10_LINEL_CONVITE_02.mp4 no TikTok. O vídeo já tem narração, música e efeitos. Use a capa, se desejar. Copie a descrição de LEGENDA_CONVITE_02.txt, preservando o link dos créditos.
+
+LEGENDAS_CONVITE_02.srt é opcional para importar no editor. Os títulos e comandos já aparecem na imagem.
+
+GUIA_EDICAO_LINEL_EXE.md guarda as preferências e decisões para as próximas montagens. A referência externa ficou bloqueada; sua análise está pendente.
