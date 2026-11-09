@@ -1,0 +1,56 @@
+{
+  "version": "44.0.0",
+  "baseline": {
+    "passed": 235,
+    "failed": 0
+  },
+  "final": {
+    "passed": 255,
+    "failed": 0,
+    "skipped": 0,
+    "command": "npm test",
+    "durationMs": 46515.511888
+  },
+  "lint": true,
+  "build": true,
+  "browser": "browser.json",
+  "cpu": "cpu-benchmark.json",
+  "realTextModel": "text-benchmark.json",
+  "originalPiperVoice": "voice-piper.json",
+  "testsUseVoiceFixtures": true,
+  "physicalGT3Tested": false,
+  "prolongedRealLiveTested": false,
+  "currentVoiceEngineChanged": false,
+  "LOCAL010": {
+    "cascadeFailure": "fixed in controlled process-failure tests",
+    "originalPhoneCause": "unconfirmed",
+    "userObservation": "Retorno ao prompt sem mensagem; Termux permaneceu aberto."
+  },
+  "intermediateRegressions": "Primeira rodada teve timeout sob concorrência com renderização e um bloqueio de transformação por pausa de combo; corrigidos e repetidos com sucesso antes da suíte final.",
+  "extractedUpdateInstallationAndRollback": "package-test.json",
+  "packageVerification": {
+    "version": "44.0.0",
+    "base": "43.7.0",
+    "kind": "code-update",
+    "limits": "Temporary Linux installation; no real voice/clone execution or phone LIVE.",
+    "updatedServerHealth": true,
+    "updatedAssetsServed": true,
+    "directArithmeticAnswer": true,
+    "progressAfterStartup": 321,
+    "applied": true,
+    "allPayloadHashesVerified": true,
+    "preservedModelsKeysVoiceAndProgress": true,
+    "rollback": true,
+    "payloadFiles": 155,
+    "backupManifest": true,
+    "quotedPaths": true,
+    "publicArchiveContainsAudioOrCloneEngine": false
+  },
+  "archive": {
+    "name": "BEN10_ATUALIZACAO_V44.zip",
+    "bytes": 2900415,
+    "sha256": "83fd6477088dfdcd3b97b16f0b3b5ca6f93ab01f4d5cbdddfd55cdab8b1a3c40",
+    "containsAudioOrCloneEngine": false,
+    "payloadFiles": 156
+  }
+}
