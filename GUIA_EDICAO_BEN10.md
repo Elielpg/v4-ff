@@ -1,11 +1,11 @@
 # Guia de edição · Ben 10 LIVE
 
-Padrão atual para as próximas produções deste projeto, atualizado após o pedido de melhorar imagem, formato, fala, música, efeitos, aliens, cenas e cortes.
+Padrão atual para as próximas produções deste projeto. Atualizado em 11/11/2026 com a primeira implementação do visual 2D no jogo e no vídeo V45.
 
 ## Identidade e destino
 
 - Vídeos novos **sem @**, marca ou hashtag do perfil anterior. O usuário pretende começar outro perfil; só inserir um novo identificador quando ele informar.
-- Preservar Ben, o acampamento e os personagens do game. Não trocar o motor ou os modelos como consequência de uma edição de vídeo.
+- O usuário autorizou o novo visual no jogo e nos vídeos. Na V45, usar Ben, Chama, XLR8 e Diamante em desenhos 2D no acampamento 3D original. As outras formas mantêm os modelos 3D; não recriar o projeto ou trocar o motor.
 - Verde Omnitrix como identidade; fogo em laranja, velocidade em ciano e cristal em verde-água ajudam a distinguir os poderes.
 - Voz de apresentação clara, com texto próprio e personalidade divertida. Não voltar à clonagem abandonada pelo usuário.
 
@@ -46,3 +46,10 @@ São propostas editoriais; o desempenho só pode ser comparado com dados reais d
 ## Referência ainda pendente
 
 https://vt.tiktok.com/ZSpU4qhBA/ ficou bloqueado neste ambiente, e a alteração de rede tentada não foi aplicada. O perfil não foi analisado. Não tratar as escolhas deste guia como observações da referência. Quando o material estiver acessível, registrar os tempos de abertura, planos, efeitos, trilha e encerramento antes de adaptar o padrão.
+
+## Visual 2D V45
+
+- O vídeo V45 usa novas capturas do jogo com os quatro desenhos, não só uma imagem conceitual.
+- As poses são bidimensionais e voltadas para a câmera. Dar espaço ao personagem inteiro; evitar closes extremos, pois a fonte de cada pose tem cerca de 444 pixels por lado.
+- Não anunciar animação 3D nova, todos os aliens em 2D, voz clonada ou melhora de FPS no celular sem evidências.
+- A cena de pergunta é uma demonstração editorial; não apresentá-la como comentário real de uma pessoa.

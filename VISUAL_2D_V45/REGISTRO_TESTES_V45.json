@@ -1,0 +1,98 @@
+{
+  "version": "45.0.0",
+  "baseline": {
+    "version": "44.2.0",
+    "tests": 277,
+    "passed": 277
+  },
+  "finalSuite": {
+    "tests": 281,
+    "pass": 281,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "lint": "passed",
+  "build": "passed",
+  "browser": {
+    "ok": true,
+    "checks": [
+      "Base loads and one style selector is installed",
+      "base draws in the camp and hides only the original actor",
+      "blaze draws in the camp and hides only the original actor",
+      "volt draws in the camp and hides only the original actor",
+      "rock draws in the camp and hides only the original actor",
+      "3D mode restores original mesh visibility",
+      "Unsupported drawing form retains the original 3D character",
+      "TAP TAP energy follows the drawn wrist, not a hidden 3D bone",
+      "24 style switches do not add meshes, materials or GPU textures",
+      "Rapid form changes keep the latest request",
+      "Missing art falls back to 3D and can be retried without reloading the game"
+    ],
+    "lifecycle": {
+      "before": {
+        "meshes": 244,
+        "textures": 23,
+        "materials": 79
+      },
+      "after": {
+        "meshes": 244,
+        "textures": 23,
+        "materials": 79
+      },
+      "cache": 4,
+      "hidden": 26
+    },
+    "errors": [],
+    "engine": "Chromium SwiftShader in cloud; not Realme GT3 performance measurements"
+  },
+  "application": {
+    "ok": true,
+    "checks": [
+      "Real server serves V45, style setting and original Omnitrix HUD",
+      "Server and client release agree",
+      "Sitting retains authored 3D animation; standing returns to 2D",
+      "3D preference persists through full page reload"
+    ],
+    "errors": [],
+    "health": {
+      "build": "45.0.0",
+      "arena": true
+    },
+    "seat": {
+      "seated": {
+        "plane": false,
+        "original": true,
+        "watch": null
+      },
+      "standing": true
+    },
+    "scope": "Real local HTTP server and actual UI, offline demo; no model synthesis or real TikTok LIVE"
+  },
+  "packageUpdateAndRollback": {
+    "ok": true,
+    "payloadFiles": 19,
+    "installedVersion": "45.0.0",
+    "restoredVersion": "44.2.0",
+    "allHashesVerified": true,
+    "buildAfterApply": true,
+    "buildAfterRollback": true,
+    "privateFixturesPreserved": true,
+    "scope": "Full 19-file visual payload applied over a temporary V44.2 installation; no real keys or audience data"
+  },
+  "services": {
+    "filesCompared": 70,
+    "changed": [],
+    "scope": [
+      "server/",
+      "scripts/local-ai/"
+    ]
+  },
+  "limits": [
+    "Testes na nuvem, sem medição de FPS ou temperatura no Realme GT3.",
+    "Nenhuma conexão TikTok real foi aberta; ações de gameplay usam demonstração offline.",
+    "A IA e a síntese de voz não foram avaliadas nesta atualização visual.",
+    "LOCAL-010 não reproduzido no Android nesta entrega.",
+    "Desenhos disponíveis para quatro personagens; outras formas e pose sentada mantêm os modelos originais."
+  ]
+}

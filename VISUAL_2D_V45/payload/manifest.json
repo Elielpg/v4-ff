@@ -1,0 +1,86 @@
+{
+  "version": "45.0.0",
+  "kind": "drawing-update",
+  "requires": [
+    "44.2.0",
+    "45.0.0"
+  ],
+  "files": [
+    {
+      "name": "package.json",
+      "sha256": "e169e4de2e2218d55528675f80f95ff8d5307c10edd6091c7618e63893cfd9a8"
+    },
+    {
+      "name": "package-lock.json",
+      "sha256": "a5cbadac51f515b2cdac382857f6a3a4d8e3a0f541518ce8c2906e92ba20db85"
+    },
+    {
+      "name": "public/release.js",
+      "sha256": "3588436b6d0366cefd2eb3f367cb9c4e29a2446e17cd3b4c086eb5c5c27667a1"
+    },
+    {
+      "name": "public/index.html",
+      "sha256": "ea7b0713bf1837f40f2d355ff73c0e55f2cda1c527da5007874fb609201fc1be"
+    },
+    {
+      "name": "public/world.js",
+      "sha256": "0d3146f9c79a7a62137f8815733a674b2ceb8407c750d2ede8334772f6978654"
+    },
+    {
+      "name": "public/omni-absorption.js",
+      "sha256": "1d8841c77070f45dee3f8faae7274e7a4fa8c16d42fe208affd2e446dbea455d"
+    },
+    {
+      "name": "public/character-2d.js",
+      "sha256": "da860444758b5148a9a2c5c5b69e0418404a3b37d82d5b5f66b60b7e378aefa2"
+    },
+    {
+      "name": "public/character-2d-plan.js",
+      "sha256": "f48a1c492f45214d2190ae3d8ebf6aa2de78b5a69477672df98ec06f8bfe02bb"
+    },
+    {
+      "name": "public/character-2d-catalog.js",
+      "sha256": "d4891f3f0b640639a8e795b6f08caf40867153e361f2dcd8bf14f4246cacd097"
+    },
+    {
+      "name": "public/characters-2d/manifest.json",
+      "sha256": "277950ca8b228f25990ee1bc7ab625af72e107d0594687d2c35b7d88a7fc9ddc"
+    },
+    {
+      "name": "public/characters-2d/base.png",
+      "sha256": "a00be06af6fb9423a7c4fb127e20d536ac9afb4cc22c52dd72148cc015cb3bc8"
+    },
+    {
+      "name": "public/characters-2d/blaze.png",
+      "sha256": "9236a6e1cf6610dd46f21ac01fac5a4516d359a851eb562d698a7552a41f3573"
+    },
+    {
+      "name": "public/characters-2d/volt.png",
+      "sha256": "820fcfde0e171322e78269a97d691603607c10f6400a30fc858857a73e98002c"
+    },
+    {
+      "name": "public/characters-2d/rock.png",
+      "sha256": "96b7712b0d72ccee153d5b95fe939e556e79e1927c2170c39cf012821cf7577c"
+    },
+    {
+      "name": "scripts/visual2d-update.js",
+      "sha256": "7bb7bebbca328efb2ab255c7d4213c60687b6658bd5050fe6008f4bc62d22c5e"
+    },
+    {
+      "name": "scripts/evolution-update.js",
+      "sha256": "c274332f72e6e71c88a6a1c977deec5acd80caf07b2c65ff93cd379f37574bb6"
+    },
+    {
+      "name": "scripts/phone-update.js",
+      "sha256": "ffc4d160eccbd8f169bc30023329bed92daf5c3792ce02611d3e1bb51a1125c9"
+    },
+    {
+      "name": "tests/character-2d.test.js",
+      "sha256": "44d88571a7bb37b4af28ac903b23e19b8f549e4a8d7facdd44dc1ab5ed8fe5c0"
+    },
+    {
+      "name": "tests/visual2d-update.test.js",
+      "sha256": "ac0263b9fc292c307646c6ab0c4f843c438cd2e302aafc951de35c904ed091e1"
+    }
+  ]
+}

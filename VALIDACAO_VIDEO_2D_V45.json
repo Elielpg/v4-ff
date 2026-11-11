@@ -1,0 +1,59 @@
+{
+  "video": {
+    "duration": "26.133333",
+    "width": 1080,
+    "height": 1920,
+    "fps": "30/1",
+    "codec": "h264",
+    "frames": "784",
+    "pixelFormat": "yuv420p",
+    "colorRange": "tv",
+    "colorSpace": "bt709",
+    "faststart": true,
+    "bytes": 14462425,
+    "sha256": "48ef4cfe30367c923a5407eaea31f3d1c8da9e1eef1297d073a3c3b9096f48da"
+  },
+  "nativeSource": {
+    "framesChecked": 784,
+    "eachImageSize": [
+      1080,
+      1920
+    ],
+    "plannedTakes": 20,
+    "observedFormsInRetake": [
+      "base",
+      "blaze",
+      "rock",
+      "volt"
+    ],
+    "source": "New native Babylon.js V45 DEMO takes with four 2D drawing actors in the original camp.",
+    "retainedOpeningFrames": 0,
+    "allDrawingFrames": true,
+    "observedPoses": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      7
+    ],
+    "pageErrors": [],
+    "note": "Offline production capture, not an Android FPS benchmark."
+  },
+  "audio": {
+    "codec": "aac",
+    "sampleRate": "48000",
+    "channels": 2,
+    "duration": "26.130000",
+    "integratedLUFS": "-14.29",
+    "truePeakDBTP": "-1.88",
+    "rangeLU": "2.40",
+    "voice": "Kokoro pm_alex, standard pt-br voice",
+    "music": "Original 128 BPM instrumental and synthesized sound effects"
+  },
+  "fullDecode": "passed, no errors",
+  "captionOverlapCheck": "passed",
+  "oldHandleInTitlesOrDeliveryText": false,
+  "tiktokReference": "Not viewed: network access blocked; draft update was not confirmed."
+}
