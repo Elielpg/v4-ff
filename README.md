@@ -1,8 +1,10 @@
 # Ben 10 · Clareira LIVE
 
-**V46 — Heróis contra Vilões:** [Baixar ZIP](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_HEROIS_VILOES_V46.zip) · [Instalar e iniciar](DOWNLOAD_V46.md) · [Arquitetura e pendências](RELATORIO_V46.md) · [Testes](REGISTRO_TESTES_V46.json)
+**V47 — Animação LIVE 2D:** [Baixar ZIP — 41 MB](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_ANIMACAO_2D_V47.zip) · [Instalar e iniciar](DOWNLOAD_V47.md) · [Arquitetura e pendências](RELATORIO_V47.md) · [315 testes](REGISTRO_TESTES_V47.json)
 
-Cenário e personagens 2D, times do chat, inimigos personalizados por foto, níveis, prévias dos DNAs, dança e som de seguidor. Atualização incremental para a V45 já instalada. [Vídeo novo da V46: Herói ou Vilão — MP4, capa e legenda](VIDEO_BEN10_V46.md).
+324 quadros adicionais para andar, correr, pular, lutar e dançar; efeitos desenhados, quatro poderes por forma e dança ligada ao relógio do áudio local. GreenTube/outro app usa tap/BPM manual. Atualização incremental para V45/V46, preservando IA, voz, times, progresso, ranking e Omnitrix. O encerramento do Termux (LOCAL-010) ainda precisa de diagnóstico no aparelho; os testes desta entrega foram em Linux.
+
+V46: [Heróis contra Vilões](DOWNLOAD_V46.md) · [Vídeo: Herói ou Vilão — MP4, capa e legenda](VIDEO_BEN10_V46.md).
 
 V45: [visual 2D e vídeo](DOWNLOAD_VISUAL_2D_V45.md). Os arquivos abaixo são históricos.
 

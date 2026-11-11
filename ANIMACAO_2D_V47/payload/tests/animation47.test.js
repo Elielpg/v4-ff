@@ -1,0 +1,24 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';
+import {DanceClock,spectrumEnergy,danceEligible} from '../public/dance-clock.js';
+import {DrawingAnimator} from '../public/animation-2d.js';
+import {parseArenaCommand} from '../public/arena-commands.js';
+import {FORM_IDS,POWER_LOADOUTS} from '../public/transformations.js';
+import {ArenaSession} from '../server/arena-session.js';
+
+test('batida conserva fase e passos em 20, 30 e 60 FPS, de 90 a 150 BPM',()=>{
+ for(const fps of [20,30,60])for(const bpm of [90,120,150]){const c=new DanceClock(),period=60000/bpm,dt=1000/fps;for(let i=0;i<Math.ceil(12000/dt);i++){const t=i*dt,phase=t%period;c.analyze(phase<dt*.9?.8:.01,t);}assert(Math.abs(c.bpm-bpm)<bpm*.055,`${fps}fps ${bpm}bpm: ${c.bpm}`);assert(c.confidence>.6);assert(c.sample(12000).beat>12);}
+});
+test('graves são separados de voz/agudos e ruído constante não cria batidas sucessivas',()=>{
+ const bins=new Uint8Array(1024),options={sampleRate:48000,fftSize:2048};bins[60]=255;assert.equal(spectrumEnergy(bins,options),0);bins[4]=255;assert(spectrumEnergy(bins,options)>.2);const c=new DanceClock();for(let i=0;i<100;i++)c.analyze(.25,i*33);assert(c.beats<=1);
+});
+test('posição do áudio permite pausa, salto e compensação sem depender de FPS',()=>{
+ const c=new DanceClock();c.setBpm(120,0);assert.equal(c.sample(2250).phase,.5);const a=c.sample(2250),b=c.sample(2250);assert.deepEqual(a,b);c.setOffset(100);assert(Math.abs(c.sample(2250).phase-.3)<.001);c.analyze(.8,4000);c.analyze(0,4100);c.analyze(.8,4500);c.analyze(0,1000);assert(c.lastNow===1000);assert(Number.isFinite(c.sample(1000).phase));
+});
+test('tap tempo ignora toque duplicado, calcula mediana e preserva a marcação',()=>{const c=new DanceClock();for(const t of [1000,1500,1510,2000,2510,3000])c.tap(t);assert(Math.abs(c.bpm-120)<2);assert(c.sample(3000).pulse>.99);});
+test('poder expirado deixa a dança voltar; fala, salto e transformação têm prioridade',()=>{assert(danceEligible({now:5000,power:{at:1000,duration:2000}}));assert(!danceEligible({now:2000,power:{at:1000,duration:2000}}));assert(!danceEligible({motion:'jump'}));assert(!danceEligible({talking:true}));assert(!danceEligible({watch:'transforming'}));});
+test('caminhada e corrida usam distância real e quadros distintos, sem correr parado',()=>{const a=new DrawingAnimator(),walk=new Set(),run=new Set();for(let i=0;i<16;i++)walk.add(a.sample({now:i*60,position:[i*.1,0,0],motion:{status:'active',mode:'walk'}}).frame);assert.equal(walk.size,4);const still=a.sample({now:5000,position:[1.5,0,0],motion:{status:'active',mode:'walk'}}).frame;assert.equal(a.sample({now:9000,position:[1.5,0,0],motion:{status:'active',mode:'walk'}}).frame,still);for(let i=0;i<32;i++)run.add(a.sample({now:9000+i*30,position:[1.5+i*.1,0,0],motion:{status:'active',mode:'run'}}).frame);assert.deepEqual([...run].sort(),[4,5,6,7]);});
+test('salto tem preparação, subida, suspensão e aterrissagem; sentar permanece em quadros 2D',()=>{const a=new DrawingAnimator(),motion={status:'active',mode:'jump',at:1000,duration:1000};assert.deepEqual([1050,1200,1500,1950].map(t=>a.sample({now:t,serverNow:t,motion}).frame),[8,9,10,11]);assert.equal(a.sample({now:2000,serverNow:2000,motion:null}).frame,11);assert.equal(a.sample({now:2400,seated:true}).frame,20);assert.equal(a.sample({now:2700,seated:true}).frame,21);assert.equal(a.sample({now:2750,seated:true,animation:'talk'}).frame,22);assert.equal(a.sample({now:2800,seated:false}).frame,23);});
+test('dança usa quadros próprios e resposta de golpe não vira uma pose de corrida',()=>{const a=new DrawingAnimator(),c=new DanceClock(),dance=new Set();c.setBpm(120);for(let t=0;t<2000;t+=125)dance.add(a.sample({now:t,dance:{...c.sample(t),active:true}}).frame);assert.equal(dance.size,4);assert([...dance].every(f=>f>=16&&f<=19));assert.equal(a.sample({now:2100,serverNow:2100,battle:{type:'enemy-hit',at:2000}}).frame,15);});
+test('onze especiais são selecionáveis pelo chat e respeitam energia e recarga',()=>{assert.deepEqual(parseArenaCommand('especial'),{kind:'power',variant:3});assert.deepEqual(parseArenaCommand('poder 4'),{kind:'power',variant:3});for(const form of FORM_IDS){const s=new ArenaSession({now:1000});s.form=form;s.watch.phase=form==='base'?'ready':'active';s.watch.switchAt=0;const special=POWER_LOADOUTS[form][3];assert.equal(parseArenaCommand(special.name).variant,3);const power=s.requestPower(form,1000,3);assert.equal(power.ability,special.id);assert.equal(power.variant,3);assert(s.abilities.energy<100);assert.throws(()=>s.requestPower(form,1001,3),/recarregando/);}});
+
+test('Bola de Canhão rola como bola 2D, sem reaproveitar o ciclo de corrida',()=>{assert.deepEqual(parseArenaCommand('rolar'),{kind:'move',mode:'roll'});const a=new DrawingAnimator();const frame=a.sample({now:100,motion:{mode:'roll',status:'active'}});assert.equal(frame.state,'roll');assert.equal(frame.frame,null);});

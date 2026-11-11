@@ -1,0 +1,3214 @@
+{
+  "version": "47.0.0",
+  "recordedAtUtc": "2026-11-11T23:54:00.598637+00:00",
+  "environment": {
+    "os": "Linux",
+    "node": "v24.22.1",
+    "browser": "Chromium headless com SwiftShader",
+    "device": "Sem acesso ao Realme GT3",
+    "realTikTokLive": false,
+    "neuralModelsExecuted": false
+  },
+  "baseline": {
+    "version": "46.0.0",
+    "testsPassed": 302,
+    "backupBeforeChanges": true
+  },
+  "suite": {
+    "tests": 315,
+    "passed": 315,
+    "failed": 0,
+    "durationMs": 62510.070917,
+    "lint": "passed",
+    "build": "passed"
+  },
+  "assets": {
+    "mainCharacterDrawings": 264,
+    "enemyDrawings": 24,
+    "visitorDanceDrawings": 12,
+    "effectDrawings": 24,
+    "totalNewDrawings": 324,
+    "mainForms": 11,
+    "framesPerMainForm": 24
+  },
+  "browserWithActualAudio": {
+    "ok": true,
+    "first": {
+      "paper": true,
+      "motionFrames": 24,
+      "visible3D": [],
+      "drawing": true
+    },
+    "dance": {
+      "bpm": 120.61244318372175,
+      "beats": 15,
+      "confidence": 1,
+      "worklet": true,
+      "clockMode": "local",
+      "currentTime": 7.05099,
+      "phase": 0.054449470975857395,
+      "frame": 17,
+      "state": "dance",
+      "phaseErrorMs": 23.76526451207095
+    },
+    "battle": {
+      "enemies": 1,
+      "motionLoaded": true,
+      "materials": 3,
+      "exitLimit": 1,
+      "gift2D": true,
+      "visitors": 2,
+      "danceAtlas": true
+    },
+    "errors": [],
+    "scope": "Linux Chromium with actual local audio playback and AudioWorklet; no Realme GT3 or live TikTok"
+  },
+  "visualMatrix": {
+    "allFormsMovement": {
+      "ok": true,
+      "forms": [
+        {
+          "form": "base",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": {
+            "walk": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "run": [
+              6,
+              7,
+              4,
+              5
+            ],
+            "jump": [
+              8,
+              9,
+              10,
+              11
+            ],
+            "sit": {
+              "frame": 20,
+              "paper": true,
+              "visible": true
+            },
+            "dance": [
+              17,
+              16,
+              18,
+              19
+            ]
+          },
+          "resources": {
+            "meshes": 176,
+            "materials": 44,
+            "textures": 7,
+            "motionCache": 1,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "blaze",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": {
+            "walk": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "run": [
+              6,
+              7,
+              4,
+              5
+            ],
+            "jump": [
+              8,
+              9,
+              10,
+              11
+            ],
+            "sit": {
+              "frame": 20,
+              "paper": true,
+              "visible": true
+            },
+            "dance": [
+              17,
+              16,
+              18,
+              19
+            ]
+          },
+          "resources": {
+            "meshes": 107,
+            "materials": 49,
+            "textures": 7,
+            "motionCache": 2,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "volt",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 5
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 7
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 4
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": {
+            "walk": [
+              3,
+              0,
+              1,
+              2
+            ],
+            "run": [
+              6,
+              7,
+              4,
+              5
+            ],
+            "jump": [
+              8,
+              9,
+              10,
+              11
+            ],
+            "sit": {
+              "frame": 20,
+              "paper": true,
+              "visible": true
+            },
+            "dance": [
+              17,
+              16,
+              18,
+              19
+            ]
+          },
+          "resources": {
+            "meshes": 103,
+            "materials": 50,
+            "textures": 7,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "rock",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": {
+            "walk": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "run": [
+              6,
+              7,
+              4,
+              5
+            ],
+            "jump": [
+              8,
+              9,
+              10,
+              11
+            ],
+            "sit": {
+              "frame": 20,
+              "paper": true,
+              "visible": true
+            },
+            "dance": [
+              17,
+              16,
+              18,
+              19
+            ]
+          },
+          "resources": {
+            "meshes": 107,
+            "materials": 51,
+            "textures": 7,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "shade",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": {
+            "walk": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "run": [
+              6,
+              7,
+              4,
+              5
+            ],
+            "jump": [
+              8,
+              9,
+              10,
+              11
+            ],
+            "sit": {
+              "frame": 20,
+              "paper": true,
+              "visible": true
+            },
+            "dance": [
+              17,
+              16,
+              18,
+              19
+            ]
+          },
+          "resources": {
+            "meshes": 103,
+            "materials": 52,
+            "textures": 7,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "tide",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": {
+            "walk": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "run": [
+              6,
+              7,
+              4,
+              5
+            ],
+            "jump": [
+              8,
+              9,
+              10,
+              11
+            ],
+            "sit": {
+              "frame": 20,
+              "paper": true,
+              "visible": true
+            },
+            "dance": [
+              17,
+              16,
+              18,
+              19
+            ]
+          },
+          "resources": {
+            "meshes": 104,
+            "materials": 53,
+            "textures": 7,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "nova",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": {
+            "walk": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "run": [
+              6,
+              7,
+              4,
+              5
+            ],
+            "jump": [
+              8,
+              9,
+              10,
+              11
+            ],
+            "sit": {
+              "frame": 20,
+              "paper": true,
+              "visible": true
+            },
+            "dance": [
+              17,
+              16,
+              18,
+              19
+            ]
+          },
+          "resources": {
+            "meshes": 222,
+            "materials": 58,
+            "textures": 8,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "beast",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": {
+            "walk": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "run": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "jump": [
+              8,
+              9,
+              10,
+              11
+            ],
+            "sit": {
+              "frame": 20,
+              "paper": true,
+              "visible": true
+            },
+            "dance": [
+              17,
+              16,
+              18,
+              19
+            ]
+          },
+          "resources": {
+            "meshes": 104,
+            "materials": 59,
+            "textures": 7,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "fourarms",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": {
+            "walk": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "run": [
+              6,
+              7,
+              4,
+              5
+            ],
+            "jump": [
+              8,
+              9,
+              10,
+              11
+            ],
+            "sit": {
+              "frame": 20,
+              "paper": true,
+              "visible": true
+            },
+            "dance": [
+              17,
+              16,
+              18,
+              19
+            ]
+          },
+          "resources": {
+            "meshes": 194,
+            "materials": 64,
+            "textures": 8,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "cannon",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": {
+            "walk": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "run": [
+              6,
+              7,
+              4,
+              5
+            ],
+            "jump": [
+              8,
+              9,
+              10,
+              11
+            ],
+            "sit": {
+              "frame": 20,
+              "paper": true,
+              "visible": true
+            },
+            "dance": [
+              17,
+              16,
+              18,
+              19
+            ]
+          },
+          "resources": {
+            "meshes": 94,
+            "materials": 66,
+            "textures": 7,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "wildvine",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": {
+            "walk": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "run": [
+              6,
+              7,
+              4,
+              5
+            ],
+            "jump": [
+              8,
+              9,
+              10,
+              11
+            ],
+            "sit": {
+              "frame": 20,
+              "paper": true,
+              "visible": true
+            },
+            "dance": [
+              17,
+              16,
+              18,
+              19
+            ]
+          },
+          "resources": {
+            "meshes": 168,
+            "materials": 69,
+            "textures": 8,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        }
+      ],
+      "resources": {
+        "before": {
+          "meshes": 168,
+          "materials": 69,
+          "textures": 8,
+          "motionCache": 3,
+          "visible3D": [],
+          "particles": 0
+        },
+        "after": {
+          "meshes": 168,
+          "materials": 69,
+          "textures": 8,
+          "motionCache": 3,
+          "visible3D": [],
+          "particles": 0
+        }
+      },
+      "errors": [],
+      "scope": "Isolated Babylon.js V47 component integration with deterministic clocks and actual drawing assets; no device FPS benchmark."
+    },
+    "allPowersAfterFinalEffectsChanges": {
+      "ok": true,
+      "forms": [
+        {
+          "form": "base",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": null,
+          "resources": {
+            "meshes": 176,
+            "materials": 44,
+            "textures": 7,
+            "motionCache": 1,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "blaze",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": null,
+          "resources": {
+            "meshes": 107,
+            "materials": 49,
+            "textures": 7,
+            "motionCache": 2,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "volt",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 5
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 7
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 4
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": null,
+          "resources": {
+            "meshes": 103,
+            "materials": 50,
+            "textures": 7,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "rock",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": null,
+          "resources": {
+            "meshes": 107,
+            "materials": 51,
+            "textures": 7,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "shade",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": null,
+          "resources": {
+            "meshes": 103,
+            "materials": 52,
+            "textures": 7,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "tide",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": null,
+          "resources": {
+            "meshes": 104,
+            "materials": 53,
+            "textures": 7,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "nova",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": null,
+          "resources": {
+            "meshes": 222,
+            "materials": 58,
+            "textures": 8,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "beast",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": null,
+          "resources": {
+            "meshes": 104,
+            "materials": 59,
+            "textures": 7,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "fourarms",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": null,
+          "resources": {
+            "meshes": 194,
+            "materials": 64,
+            "textures": 8,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "cannon",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": null,
+          "resources": {
+            "meshes": 94,
+            "materials": 66,
+            "textures": 7,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        },
+        {
+          "form": "wildvine",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": null,
+          "resources": {
+            "meshes": 168,
+            "materials": 69,
+            "textures": 8,
+            "motionCache": 3,
+            "visible3D": [],
+            "particles": 0
+          }
+        }
+      ],
+      "resources": {
+        "before": {
+          "meshes": 168,
+          "materials": 69,
+          "textures": 8,
+          "motionCache": 3,
+          "visible3D": [],
+          "particles": 0
+        },
+        "after": {
+          "meshes": 168,
+          "materials": 69,
+          "textures": 8,
+          "motionCache": 3,
+          "visible3D": [],
+          "particles": 0
+        }
+      },
+      "errors": [],
+      "scope": "Isolated Babylon.js V47 component integration with deterministic clocks and actual drawing assets; no device FPS benchmark."
+    },
+    "finalCannonRollRegression": {
+      "ok": true,
+      "forms": [
+        {
+          "form": "cannon",
+          "powers": [
+            {
+              "variant": 0,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 0,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 0,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 1,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 1,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 1,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 2,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 2,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 2,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            },
+            {
+              "variant": 3,
+              "phase": "anticipation",
+              "paper": true,
+              "motion": 13
+            },
+            {
+              "variant": 3,
+              "phase": "cast",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "impact",
+              "paper": true,
+              "motion": 14
+            },
+            {
+              "variant": 3,
+              "phase": "recovery",
+              "paper": true,
+              "motion": 15
+            }
+          ],
+          "motion": {
+            "walk": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "run": [
+              6,
+              7,
+              4,
+              5
+            ],
+            "jump": [
+              8,
+              9,
+              10,
+              11
+            ],
+            "sit": {
+              "frame": 20,
+              "paper": true,
+              "visible": true
+            },
+            "dance": [
+              17,
+              16,
+              18,
+              19
+            ],
+            "roll": {
+              "pose": 7,
+              "motionFrame": null,
+              "active": true,
+              "rotation": 280.55159999996425
+            }
+          },
+          "resources": {
+            "meshes": 94,
+            "materials": 46,
+            "textures": 7,
+            "motionCache": 2,
+            "visible3D": [],
+            "particles": 0
+          }
+        }
+      ],
+      "resources": {
+        "before": {
+          "meshes": 94,
+          "materials": 46,
+          "textures": 7,
+          "motionCache": 2,
+          "visible3D": [],
+          "particles": 0
+        },
+        "after": {
+          "meshes": 94,
+          "materials": 46,
+          "textures": 7,
+          "motionCache": 2,
+          "visible3D": [],
+          "particles": 0
+        }
+      },
+      "errors": [],
+      "scope": "Isolated Babylon.js V47 component integration with deterministic clocks and actual drawing assets; no device FPS benchmark."
+    }
+  },
+  "installer": {
+    "ok": true,
+    "results": [
+      {
+        "from": "45.0.0",
+        "to": "47.0.0",
+        "files": 88,
+        "allHashesVerified": true,
+        "buildAfterApply": true,
+        "buildAfterRollback": true,
+        "privateDataAndModelFixturePreserved": true,
+        "liveStopAndRestart": false,
+        "foreignProcessPreserved": false
+      },
+      {
+        "from": "46.0.0",
+        "to": "47.0.0",
+        "files": 88,
+        "allHashesVerified": true,
+        "buildAfterApply": true,
+        "buildAfterRollback": true,
+        "privateDataAndModelFixturePreserved": true,
+        "liveStopAndRestart": true,
+        "foreignProcessPreserved": true
+      }
+    ],
+    "tamperedPackageRefusedBeforeStopping": true,
+    "symlinkRefusedBeforeStopping": true,
+    "scope": "Real V46/V47 HTTP servers and session launchers in Linux, plus V45 offline migration; no phone or neural model execution."
+  },
+  "voiceAndLocalAiUnchanged": [
+    {
+      "file": "public/browser-voice.js",
+      "sha256": "ba229fdcd12a6d50487bd009447af9282c27f26a7f00fc4f154feba6ee4a6b8c"
+    },
+    {
+      "file": "public/local-voice-jobs.js",
+      "sha256": "c5e369d875d718c68e820443ef5ce1e88e5fa90687951e6b346b888e732815c3"
+    },
+    {
+      "file": "public/voice-text.js",
+      "sha256": "57566cc658e7bfd567c3dea76a6b80ba730c3dacf25296e8c5c52bc59b10741b"
+    },
+    {
+      "file": "scripts/local-ai/clone_config.py",
+      "sha256": "807176d860d04498c5031b38f729f6114487d0462ae74f1037779bd416f224e5"
+    },
+    {
+      "file": "scripts/local-ai/clone_models.py",
+      "sha256": "2ceea8ac902ff61a0b0e53a410cbea70387e87f8b0028a14b1efa9269bc284f0"
+    },
+    {
+      "file": "scripts/local-ai/clone_native.py",
+      "sha256": "2639fe6ecf97ea65bbc7a74b6c3066c4d7baf168fa5863703da5efef9580affe"
+    },
+    {
+      "file": "scripts/local-ai/clone_setup.py",
+      "sha256": "dd10d7dc62a566eb6c5372ff28d4cd8ce5d5dbff4616038e50e8df2f786c39a7"
+    },
+    {
+      "file": "scripts/local-ai/clone_voice.py",
+      "sha256": "f94119d97f2f6ef9a9ba1c3c5a385fc223c809f9372143769124c3bedfa8f72b"
+    },
+    {
+      "file": "scripts/local-ai/device-metrics.js",
+      "sha256": "fc707b33bae23cb35537b7ea07ebb2e483443c52f2ab54f375c56c66d1f1d738"
+    },
+    {
+      "file": "scripts/local-ai/download_models.py",
+      "sha256": "a5bc7335bbfccfbbfc0cd8d6e036547d1538b1828ca1120b658cec7b76aa1a29"
+    },
+    {
+      "file": "scripts/local-ai/fast_setup.py",
+      "sha256": "6f9ea26d4124ee580f2336e41fa3c8e8bbfabdc60aed85ab6d43f8ab03d510aa"
+    },
+    {
+      "file": "scripts/local-ai/openvoice_voice.py",
+      "sha256": "adbd24110c6921ebe67f0271fbcaef0020848ffeff1482247ced14d1e9624c58"
+    },
+    {
+      "file": "scripts/local-ai/plain-voice-plan.js",
+      "sha256": "a65343e8825ea255e682ade43d57d6d9c7fdbe2ee1b855a925f887805f6a8aa3"
+    },
+    {
+      "file": "scripts/local-ai/plain_voice.py",
+      "sha256": "3655c97a97d647bda820312ada10160e3844eab7f0df608d2eebc1189a9a86bb"
+    },
+    {
+      "file": "scripts/local-ai/prepare_plain_voice.py",
+      "sha256": "c7b48b84dbd9d36a1ab6c5152d3a12b956702f5129d6b7a9872d6620bf172e54"
+    },
+    {
+      "file": "scripts/local-ai/process-supervisor.js",
+      "sha256": "a85f22c3727cd2c3879d73e5f007dfa41e588549e1252306835298ae118ef17d"
+    },
+    {
+      "file": "scripts/local-ai/project-processes.js",
+      "sha256": "dbf0b856ae4b814ef1f3616801c435d57570ef28338de6920d845f2526976b1e"
+    },
+    {
+      "file": "scripts/local-ai/restart.js",
+      "sha256": "0fb8a424fbe9a7736574e74b8dc220c6a636d665fab6e360826a655861ed9942"
+    },
+    {
+      "file": "scripts/local-ai/run.js",
+      "sha256": "90d2d3301d1a4132ac61e2e7df828c411d0a40d88456dbf3dcaa0397263d52bd"
+    },
+    {
+      "file": "scripts/local-ai/runtime-log.js",
+      "sha256": "9b6262eca8245552e731dcc57c08fcc35c5348f069ed53073590c802aa7a003c"
+    },
+    {
+      "file": "scripts/local-ai/session-guardian.js",
+      "sha256": "fb692f0947cae760caf433c4babe4985a2a5ee2a791b6d643facf656f71e3fc6"
+    },
+    {
+      "file": "scripts/local-ai/tts_server.py",
+      "sha256": "6a7618e98201c17a1d3b56636ab8556badebf192735bdb4d07a6570664e32dde"
+    },
+    {
+      "file": "scripts/local-ai/vendor/openvoice/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "scripts/local-ai/vendor/openvoice/attentions.py",
+      "sha256": "6a392057838e6051afc8beed43c2d1279d75de8c8b600552e7232ad930b356c3"
+    },
+    {
+      "file": "scripts/local-ai/vendor/openvoice/commons.py",
+      "sha256": "046943d265635c3d9c99195562e703564a26300981a7db5b87d4cd3fd180ae0d"
+    },
+    {
+      "file": "scripts/local-ai/vendor/openvoice/models.py",
+      "sha256": "54f9e8284a0e9a89c75cb3163d2694cf34d90a5d05cfbcbf12ccd4f0b1ba2dc8"
+    },
+    {
+      "file": "scripts/local-ai/vendor/openvoice/modules.py",
+      "sha256": "b2376049141934eb63bb4d905920c486a286bec65f0735b78ba52b2fb54564d0"
+    },
+    {
+      "file": "scripts/local-ai/vendor/openvoice/transforms.py",
+      "sha256": "e6798989a0d75cbec45e7e24e3697e1c4886b3664c6a80a452645ef1d2a93f9c"
+    },
+    {
+      "file": "scripts/local-ai/voice_jobs.py",
+      "sha256": "a9881186199b5f1679689a1cd698c2e9097ba8bff2d910fdd3eb84fb5e483c19"
+    },
+    {
+      "file": "server/ai-voice.js",
+      "sha256": "0c6728c284311452103827632b0b78e8cc522e83a580bbc928646ebad045e09f"
+    },
+    {
+      "file": "server/conversation.js",
+      "sha256": "7d12c9ae76af148b3b8e8db9192963c4ab3eb080b7403f4a0480789f8983c786"
+    },
+    {
+      "file": "server/local-ai.js",
+      "sha256": "cfe896436f22702e00c50ea46057687ba1cde9f104548b57c7b1849ece0c3724"
+    },
+    {
+      "file": "server/voice.js",
+      "sha256": "deb4b7b521014ea0b0fe25740b1a5ca96ddab69433800177a71a16d4cbea9790"
+    }
+  ],
+  "limits": [
+    "Não mede FPS, temperatura, RAM ou latência dos modelos no GT3.",
+    "O áudio do ensaio era sintético, a 120 BPM; não comprova sincronização de todas as músicas.",
+    "GreenTube/outro app usa tap/BPM manual.",
+    "LOCAL-010 ainda não reproduzido/resolvido no Android."
+  ],
+  "reproduce": [
+    "npm test",
+    "npm run lint",
+    "npm run build"
+  ]
+}
