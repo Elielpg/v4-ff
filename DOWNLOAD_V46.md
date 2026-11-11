@@ -32,7 +32,7 @@ Abra **http://127.0.0.1:3000/?v=46.0.0**. Nas próximas sessões, basta `cd ~/be
 
 A suíte passou em 302 testes; há verificações no navegador, teste de carga do backend e instalação/reversão. Não foi feito benchmark no celular nem conectada uma LIVE real neste ambiente. LOCAL-010 segue pendente de reprodução no Android. As sete formas adicionadas usam três poses reutilizadas; sentar mantém o modelo 3D original. Música de outro aplicativo não tem captura automática de batidas.
 
-O vídeo novo será feito depois das próximas instruções do usuário.
+[Vídeo novo da V46: Herói ou Vilão — MP4, capa e legenda](VIDEO_BEN10_V46.md).
 
 ## Se o instalador anterior parou com “O servidor ainda responde”
 

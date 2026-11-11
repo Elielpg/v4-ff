@@ -1,0 +1,54 @@
+{
+  "version": "46.0.0",
+  "video": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationSeconds": 29.333333,
+    "frames": 880,
+    "codec": "H264",
+    "pixelFormat": "yuv420p",
+    "colorSpace": "bt709",
+    "faststart": true,
+    "bytes": 17353129,
+    "sha256": "08440f588186d812d34d5875b0deb765964bd3ef8fa274cc25ad0f90b0f39e19"
+  },
+  "source": {
+    "newNativeFrames": 880,
+    "takes": 20,
+    "forms": [
+      "base",
+      "blaze",
+      "fourarms",
+      "rock",
+      "volt",
+      "wildvine"
+    ],
+    "allDrawingCharacters": true,
+    "allDrawingScenery": true,
+    "watchTransformationObserved": true,
+    "villainTypes": [
+      "drone",
+      "mage",
+      "titan"
+    ],
+    "eliteObserved": true,
+    "danceFrames": 135,
+    "pageErrors": [],
+    "scope": "New cinematic DEMO captures from V46 modules and assets in Linux Chromium. No live viewers, phone benchmark or live TikTok connection."
+  },
+  "audio": {
+    "voice": "Kokoro pm_alex standard pt-br; no cloning",
+    "music": "Original synthesized E minor instrumental, 128 BPM",
+    "sampleRate": 48000,
+    "channels": 2,
+    "integratedLUFS": -14.99,
+    "truePeakDBTP": -1.98
+  },
+  "checks": {
+    "fullDecode": "passed",
+    "allFramesNative1080": "passed",
+    "subtitleOverlap": "passed",
+    "oldHandlePresent": false
+  }
+}

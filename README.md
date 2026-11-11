@@ -2,7 +2,7 @@
 
 **V46 — Heróis contra Vilões:** [Baixar ZIP](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_HEROIS_VILOES_V46.zip) · [Instalar e iniciar](DOWNLOAD_V46.md) · [Arquitetura e pendências](RELATORIO_V46.md) · [Testes](REGISTRO_TESTES_V46.json)
 
-Cenário e personagens 2D, times do chat, inimigos personalizados por foto, níveis, prévias dos DNAs, dança e som de seguidor. Atualização incremental para a V45 já instalada. O vídeo dessa versão aguarda as próximas instruções do usuário.
+Cenário e personagens 2D, times do chat, inimigos personalizados por foto, níveis, prévias dos DNAs, dança e som de seguidor. Atualização incremental para a V45 já instalada. [Vídeo novo da V46: Herói ou Vilão — MP4, capa e legenda](VIDEO_BEN10_V46.md).
 
 V45: [visual 2D e vídeo](DOWNLOAD_VISUAL_2D_V45.md). Os arquivos abaixo são históricos.
 
