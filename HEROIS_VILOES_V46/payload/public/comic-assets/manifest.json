@@ -1,0 +1,54 @@
+{
+  "assets": {
+    "camp.png": {
+      "sha256": "40c20c0a2b168947ea5819103f19d307b164d5144860b27d4f3862131c876a36",
+      "size": [
+        1024,
+        1536
+      ]
+    },
+    "villains.png": {
+      "sha256": "0bd1aca035bf85614da9e54d7f0af86301f836ae7e9515b5f418a07047e9c4c5",
+      "size": [
+        1774,
+        887
+      ]
+    },
+    "aliens-a.png": {
+      "sha256": "de4d18103d14a85db455bbe47122338f995abb63e81835f44f7ede9a6d5a73a3",
+      "size": [
+        1247,
+        1261
+      ]
+    },
+    "aliens-b.png": {
+      "sha256": "64068ac6f3e7070757aca69174b6439b4020adb1be17369a505052ce90d2b722",
+      "size": [
+        1254,
+        1254
+      ]
+    },
+    "audience.png": {
+      "sha256": "2c06f6966db83a248d1a9d6cffdf73fc107e917bf94d9cd86550bf7e7923e804",
+      "size": [
+        1536,
+        1024
+      ]
+    }
+  },
+  "extraActors": [
+    "beast",
+    "fourarms",
+    "tide",
+    "shade",
+    "wildvine",
+    "cannon",
+    "nova"
+  ],
+  "villains": [
+    "drone",
+    "mutant",
+    "mage",
+    "titan"
+  ]
+}

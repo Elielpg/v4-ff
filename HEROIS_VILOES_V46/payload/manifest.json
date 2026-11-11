@@ -1,0 +1,186 @@
+{
+  "version": "46.0.0",
+  "kind": "campaign-update",
+  "requires": [
+    "45.0.0",
+    "46.0.0"
+  ],
+  "files": [
+    {
+      "name": "package-lock.json",
+      "sha256": "4103a07af034a52ab5b7eb0afaa48507e9eb6f40493717b3666195d1478d10a2"
+    },
+    {
+      "name": "package.json",
+      "sha256": "6343035ef59a09cffa653c30e9e290cf8ae37ba97e53224e447d2b2a0d2b4d50"
+    },
+    {
+      "name": "public/arena-app.js",
+      "sha256": "b1e946f09153f9eb8304415377d35dbb334a995aa8276ce4800b3b90a44b9884"
+    },
+    {
+      "name": "public/atlas-sprite.js",
+      "sha256": "b4ff156a381d6065fed6346af14b97568faa1d65df997e3cc5fa011f8cf25033"
+    },
+    {
+      "name": "public/audience-drawing-catalog.js",
+      "sha256": "dd7a5f16ff6684a396c421d6dbffb258d7f03016de918aee040ad3e63542a7fa"
+    },
+    {
+      "name": "public/audience-drawing.js",
+      "sha256": "d575ba2e15a1f616e97d14aa6487bd051ac212239e920946483cb17695feb2ba"
+    },
+    {
+      "name": "public/battle-hud.js",
+      "sha256": "78be04e9d6838d1ba151db171d09dae4eff19e6f1e1e47b47bb560a77af97908"
+    },
+    {
+      "name": "public/battle-rules.js",
+      "sha256": "fdc22966752c1dfb1c89257e2bf9009b0f06a6db038aa06870a5202324a558df"
+    },
+    {
+      "name": "public/battle-view.js",
+      "sha256": "bb9a0e285caf7a7da88a45d771afd56325180f26615551ef42dd7cd95aeaff59"
+    },
+    {
+      "name": "public/battle.css",
+      "sha256": "4dbdcc724b97decbab52469b104d5e094c2350dfb021e150a069e1418f2bad8d"
+    },
+    {
+      "name": "public/ben-behavior.js",
+      "sha256": "1250b735c4004eccfd5502c02a4be490c53eef4563702f0d91a30f005501b589"
+    },
+    {
+      "name": "public/character-2d-plan.js",
+      "sha256": "82b563141aaf96c4d3e94249fb840e92548f1302fe8967572eb8fb0bfc6cb7b6"
+    },
+    {
+      "name": "public/character-2d.js",
+      "sha256": "3c8ef28c93372cc023411e3ca3a33ea997baeb71c3828b76f89c71f896115863"
+    },
+    {
+      "name": "public/cinematic-audio.js",
+      "sha256": "1bcd3f8fff2e9b68b4790945eda6f5099cc22b0fbbc096b7c7494ffee393f6fe"
+    },
+    {
+      "name": "public/comic-assets/aliens-a.png",
+      "sha256": "de4d18103d14a85db455bbe47122338f995abb63e81835f44f7ede9a6d5a73a3"
+    },
+    {
+      "name": "public/comic-assets/aliens-b.png",
+      "sha256": "64068ac6f3e7070757aca69174b6439b4020adb1be17369a505052ce90d2b722"
+    },
+    {
+      "name": "public/comic-assets/audience.png",
+      "sha256": "2c06f6966db83a248d1a9d6cffdf73fc107e917bf94d9cd86550bf7e7923e804"
+    },
+    {
+      "name": "public/comic-assets/camp.png",
+      "sha256": "40c20c0a2b168947ea5819103f19d307b164d5144860b27d4f3862131c876a36"
+    },
+    {
+      "name": "public/comic-assets/manifest.json",
+      "sha256": "654588e70db6824c486e859dc38f3eb6904496b7a5a41289938a321c0b6f0c1e"
+    },
+    {
+      "name": "public/comic-assets/villains.png",
+      "sha256": "0bd1aca035bf85614da9e54d7f0af86301f836ae7e9515b5f418a07047e9c4c5"
+    },
+    {
+      "name": "public/comic-stage.js",
+      "sha256": "97a1a68d77e3e58c9b951f4de196522ca016105a7ece7dbc8bd561c8ee6cc449"
+    },
+    {
+      "name": "public/dance-clock.js",
+      "sha256": "1bcb439806b012264da997c3118c2484a8b74bab1f1d372a0adcb1e1ac2c9695"
+    },
+    {
+      "name": "public/extra-drawing-catalog.js",
+      "sha256": "3299825a89a3d9e2cd40c792b8c16884302be150b931c6bb284766e8a2df2c26"
+    },
+    {
+      "name": "public/index.html",
+      "sha256": "f0e1a9ef2817ec0b858a761df7c032580a794a7819a541a72e3ce1008a5ecab1"
+    },
+    {
+      "name": "public/live-audience-view.js",
+      "sha256": "02b4539e527b07be1315488655d66f965d9acae2c04a89d08f1871f4f04dc7d9"
+    },
+    {
+      "name": "public/live-engagement.js",
+      "sha256": "1c90dbd6087b01c1cc7ce247be83d3eac528c663929d7ab3a713424fac53fdfb"
+    },
+    {
+      "name": "public/live-media.js",
+      "sha256": "56d44aa39d2897be8589c7ac564de7255cfda589b4a9f9ffab68cf3b07700422"
+    },
+    {
+      "name": "public/release.js",
+      "sha256": "7dbbcfd1f4c9921f564310d6251c4630b5d85e8fd96acf847e9f20e88223797d"
+    },
+    {
+      "name": "public/world.js",
+      "sha256": "c0f73cc54f1f6b41054b6f09c63559a824802648f63333a601e393932878b9d9"
+    },
+    {
+      "name": "scripts/campaign-update.js",
+      "sha256": "b3a5f331d87f1c5e4dcd1e6778d21393302704e21cf37b41b67b920e803136ba"
+    },
+    {
+      "name": "scripts/phone-update.js",
+      "sha256": "ffc4d160eccbd8f169bc30023329bed92daf5c3792ce02611d3e1bb51a1125c9"
+    },
+    {
+      "name": "server/ai-session.js",
+      "sha256": "457283167e5d6cdb1e60e8a03b0c3d0f1d19310f87bfa10c82a803a18db74b88"
+    },
+    {
+      "name": "server/battle-dialogue.js",
+      "sha256": "a388aa9df93b6835cc5bdabcce9a17d99870cc6ff54957a4d250484ec771f8a1"
+    },
+    {
+      "name": "server/classic.js",
+      "sha256": "656e6897c5f478f7df232dc1c7e69c7c00b5867aaed1c321b8bd5fe6914dec05"
+    },
+    {
+      "name": "server/index.js",
+      "sha256": "f5b3d82b877adbc458a97ba4cf852d200e3c91484f2c65bb6716072b5d2a95fd"
+    },
+    {
+      "name": "server/live-audience.js",
+      "sha256": "d62dbfbfa51d14aa45bfda27343a413df7753713723863662bb8fd804c72ab9f"
+    },
+    {
+      "name": "server/live-battle.js",
+      "sha256": "2eaf04d381b65300ec94489b52d36150246ad98625de601adde36b9e4dbb748e"
+    },
+    {
+      "name": "server/live-host.js",
+      "sha256": "d8a1ea21a1db388a45c4193a9ffa5a02dff40da987e4ac8c9115acd6f0685ca1"
+    },
+    {
+      "name": "tests/battle-dialogue.test.js",
+      "sha256": "a0a82a0777f5bbb1df7ac16c78a9149d3bf114ecb7b47a5183d36659d3d65970"
+    },
+    {
+      "name": "tests/battle-presentation.test.js",
+      "sha256": "f31feee1ec58cf261978e44443d79e102f7f71072d4add918aa03b3dcbd56cec"
+    },
+    {
+      "name": "tests/campaign-update.test.js",
+      "sha256": "dcffda61150edd3d4b4964b6cf3d2a0fca4c5b1e5494dfa13ee14e1be37d155b"
+    },
+    {
+      "name": "tests/comic-assets.test.js",
+      "sha256": "128bae99bc755f3620fd78799fd9338c0197b8652551cc49a753d64f0c107c12"
+    },
+    {
+      "name": "tests/dance-clock.test.js",
+      "sha256": "364e98edd55b76c1e33b9ad571c09d40ae4fedb14dc85b8a3dbd2dad042481dc"
+    },
+    {
+      "name": "tests/live-battle.test.js",
+      "sha256": "be84b308cc76aa83f316e6f07763ff6b98a9d2112b4619b31251fa29e3bd4634"
+    }
+  ]
+}

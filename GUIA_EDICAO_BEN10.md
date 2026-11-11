@@ -53,3 +53,7 @@ https://vt.tiktok.com/ZSpU4qhBA/ ficou bloqueado neste ambiente, e a alteração
 - As poses são bidimensionais e voltadas para a câmera. Dar espaço ao personagem inteiro; evitar closes extremos, pois a fonte de cada pose tem cerca de 444 pixels por lado.
 - Não anunciar animação 3D nova, todos os aliens em 2D, voz clonada ou melhora de FPS no celular sem evidências.
 - A cena de pergunta é uma demonstração editorial; não apresentá-la como comentário real de uma pessoa.
+
+## Próxima produção: V46
+
+O jogo passou a ter cenário desenhado, onze personagens em 2D, times HERÓI/VILÃO, ondas com autoria por foto, níveis e prévias de DNA. Música local pode guiar dança; outro app usa BPM manual. O usuário pediu para definir a edição do vídeo somente depois desta atualização. Aguardar essa orientação; não presumir roteiro ou publicar um novo vídeo. Preservar o novo visual e não inserir o @ antigo.

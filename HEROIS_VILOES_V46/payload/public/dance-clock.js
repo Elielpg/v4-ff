@@ -1,0 +1,8 @@
+export function spectrumEnergy(data){if(!data?.length)return 0;const end=Math.min(40,data.length);let sum=0;for(let i=1;i<end;i++)sum+=(data[i]/255)**2;return Math.sqrt(sum/Math.max(1,end-1));}
+export class DanceClock{
+ constructor({bpm=96}={}){this.bpm=bpm;this.epoch=0;this.lastBeat=-Infinity;this.average=.02;this.previous=0;this.taps=[];this.detected=false;this.beats=0;}
+ setBpm(value,now=0){if(!Number.isFinite(value)||value<40||value>240)throw Error('Use um ritmo entre 40 e 240 BPM.');this.bpm=value;this.epoch=now;this.detected=false;}
+ tap(now){this.detected=false;this.taps=this.taps.filter(t=>now-t<6000);if(this.taps.length&&now-this.taps.at(-1)>2500)this.taps=[];this.taps.push(now);if(this.taps.length>6)this.taps.shift();if(this.taps.length>=2){const dt=(this.taps.at(-1)-this.taps[0])/(this.taps.length-1);if(dt>=250&&dt<=1500)this.bpm=Math.min(240,Math.max(40,60000/dt));}this.epoch=now;this.lastBeat=now;return this.bpm;}
+ analyze(energy,now){energy=Math.max(0,Math.min(1,Number(energy)||0));this.average=this.average*.94+energy*.06;const flux=energy-this.previous;this.previous=energy;if(energy>.035&&energy>this.average*1.35&&flux>.008&&now-this.lastBeat>240){const interval=now-this.lastBeat;if(this.detected&&interval>=250&&interval<=1500)this.bpm=this.bpm*.8+60000/interval*.2;this.lastBeat=now;this.epoch=now;this.detected=true;this.beats++;return true;}return false;}
+ sample(now,{reducedMotion=false}={}){const period=60000/this.bpm,t=Math.max(0,now-this.epoch),phase=(t%period)/period,pulse=Math.pow(1-phase,3),step=this.detected&&now-this.lastBeat<period*2?this.beats:Math.floor(t/period);return {phase,pulse,pose:[2,4,2,5][step%4],bounce:reducedMotion?0:pulse*.11,lean:reducedMotion?0:Math.sin(t/period*Math.PI)*.065};}
+}

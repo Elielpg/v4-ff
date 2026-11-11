@@ -1,0 +1,94 @@
+{
+  "version": "46.0.0",
+  "baseline": {
+    "version": "45.0.0",
+    "tests": 281,
+    "pass": 281
+  },
+  "suite": {
+    "tests": 296,
+    "pass": 296,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "lint": "passed",
+  "build": "passed",
+  "targetedAfterLayoutAdjustments": "passed; six test files",
+  "browser": {
+    "ok": true,
+    "checks": [
+      "Cenário desenhado carregado; geometria original oculta e versão correta",
+      "HERÓI e VILÃO reconhecidos; curtidas adversárias geram inimigos e não liberam DNA",
+      "Inimigos 2D mostram nome e foto do dono com fallback de iniciais",
+      "Onda limitada a 12 entidades; demais curtidas ficam em créditos numéricos",
+      "Galeria aberta reutiliza os mesmos canvases durante atualizações de curtidas",
+      "Galeria com dez DNAs; prévia bloqueada mostra arte sem transformar ou liberar",
+      "Sete formas adicionais desenhadas carregam dentro do jogo",
+      "24 trocas do cenário reutilizam as mesmas malhas, materiais e texturas",
+      "Dança por BPM externo ativa movimentos do personagem",
+      "Música local usa áudio real e analisador de batidas, sem serviço remoto",
+      "Som personalizado de seguidor foi decodificado, salvo no navegador e reproduzido"
+    ],
+    "errors": [],
+    "extraForms": [
+      "beast",
+      "fourarms",
+      "tide",
+      "shade",
+      "wildvine",
+      "cannon",
+      "nova"
+    ],
+    "resources": {
+      "before": {
+        "meshes": 361,
+        "textures": 26,
+        "materials": 103
+      },
+      "after": {
+        "meshes": 361,
+        "textures": 26,
+        "materials": 103
+      },
+      "mode": "drawing"
+    },
+    "scope": "Servidor real, Chromium com renderização por software e áudio de teste local. Sem LIVE real nem benchmark no Realme GT3."
+  },
+  "package": {
+    "ok": true,
+    "payloadFiles": 44,
+    "installedVersion": "46.0.0",
+    "restoredVersion": "45.0.0",
+    "allHashesVerified": true,
+    "buildAfterApply": true,
+    "buildAfterRollback": true,
+    "privateFixturesPreserved": true,
+    "scope": "Full 44-file visual payload applied over a temporary V45 installation; no real keys or audience data"
+  },
+  "load": {
+    "scope": "Simulação do backend na nuvem; não mede FPS, IA, voz nem desempenho do Realme GT3",
+    "node": "v24.22.1",
+    "events": 10000,
+    "creditedLikes": 1000000,
+    "simulatedSeconds": 250,
+    "maxActive": 12,
+    "players": 100,
+    "pending": 999628,
+    "seenIds": 2048,
+    "elapsedMs": 276,
+    "heapDeltaBytes": 427672
+  },
+  "unchangedVoiceAndRuntime": {
+    "filesCompared": 41,
+    "changed": []
+  },
+  "limits": [
+    "Sem conexão TikTok real neste teste. Fotos e áudio do navegador usam dados de teste.",
+    "Sem benchmark de FPS, temperatura ou modelos neurais no Realme GT3.",
+    "LOCAL-010 ainda exige reprodução no Android.",
+    "Sete aliens usam três poses; sentar mantém o modelo 3D original.",
+    "Música de outro app usa BPM/tap tempo manual.",
+    "Vídeo novo aguardando instruções do usuário."
+  ]
+}
