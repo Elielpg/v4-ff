@@ -124,7 +124,7 @@
     },
     {
       "name": "scripts/campaign-update.js",
-      "sha256": "b3a5f331d87f1c5e4dcd1e6778d21393302704e21cf37b41b67b920e803136ba"
+      "sha256": "6db631b591e530f83ac0abca24652ea5ee3e97ac0c70e8f6018d18c5bd640678"
     },
     {
       "name": "scripts/phone-update.js",
@@ -181,6 +181,18 @@
     {
       "name": "tests/live-battle.test.js",
       "sha256": "be84b308cc76aa83f316e6f07763ff6b98a9d2112b4619b31251fa29e3bd4634"
+    },
+    {
+      "name": "scripts/update-stop.js",
+      "sha256": "2fe26ffbde4da9da850d43b6e5907a70ffc88341df4b2e789c4ae5a106ccb8c5"
+    },
+    {
+      "name": "scripts/local-ai/project-processes.js",
+      "sha256": "dbf0b856ae4b814ef1f3616801c435d57570ef28338de6920d845f2526976b1e"
+    },
+    {
+      "name": "tests/update-stop.test.js",
+      "sha256": "de2f5c7dfcc51a4342a868d20f197068ab51f5f1dce437c0f8a1a1d4c3dd290a"
     }
   ]
 }

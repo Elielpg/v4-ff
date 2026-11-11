@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "originalArchiveUsed": true,
+  "repairArchiveUsed": true,
+  "corruptedStagingRefusedWithoutStoppingGame": true,
+  "patchFiles": 4,
+  "payloadFiles": 47,
+  "liveServerStopped": true,
+  "outerLauncherStopped": true,
+  "unrelatedProcessPreserved": true,
+  "updatedGameStarted": true,
+  "rollbackStoppedLiveServer": true,
+  "allHashesVerified": true,
+  "privateConfigurationAndModelFixturesPreserved": true,
+  "buildAfterApply": true,
+  "buildAfterRollback": true,
+  "scope": "Linux cloud; real V45 and V46 HTTP game servers plus their session launcher, original ZIP staging including spaces; no Android hardware or neural inference."
+}

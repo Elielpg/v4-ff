@@ -1,6 +1,6 @@
 # Clareira LIVE V46 — Heróis contra Vilões
 
-[**Baixar atualização V46 — ZIP (9,7 MB)**](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_HEROIS_VILOES_V46.zip)
+[**Baixar atualização V46 — instalador R1 — ZIP (9,7 MB)**](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_HEROIS_VILOES_V46_R1.zip)
 
 Requer a **V45.0.0 instalada**. Mantém IA/voz, configurações, progresso e integrações. Não é um instalador completo e não baixa modelos neurais.
 
@@ -9,9 +9,9 @@ Requer a **V45.0.0 instalada**. Mantém IA/voz, configurações, progresso e int
 Com o ZIP em Downloads:
 
 ```bash
-cd ~/ben10-v34/game
-python3 -m zipfile -e ~/storage/downloads/BEN10_HEROIS_VILOES_V46.zip "$TMPDIR/ben10-v46"
-bash "$TMPDIR/ben10-v46/BEN10_HEROIS_VILOES_V46/ATUALIZAR_V46.sh" "$PWD"
+cd ~/ben10-v34/game &&
+python3 -m zipfile -e ~/storage/downloads/BEN10_HEROIS_VILOES_V46_R1.zip "$TMPDIR/ben10-v46" &&
+bash "$TMPDIR/ben10-v46/BEN10_HEROIS_VILOES_V46/ATUALIZAR_V46.sh" "$PWD" &&
 bash restart.sh
 ```
 
@@ -30,6 +30,19 @@ Abra **http://127.0.0.1:3000/?v=46.0.0**. Nas próximas sessões, basta `cd ~/be
 
 [Guia completo e reversão](LEIA_PRIMEIRO_V46.md) · [Relatório de arquitetura e pendências](RELATORIO_V46.md) · [Registro de testes](REGISTRO_TESTES_V46.json) · [Prévia em DEMO](BEN10_V46_PREVIA.png)
 
-A suíte passou em 296 testes; há verificações no navegador, teste de carga do backend e instalação/reversão. Não foi feito benchmark no celular nem conectada uma LIVE real neste ambiente. LOCAL-010 segue pendente de reprodução no Android. As sete formas adicionadas usam três poses reutilizadas; sentar mantém o modelo 3D original. Música de outro aplicativo não tem captura automática de batidas.
+A suíte passou em 302 testes; há verificações no navegador, teste de carga do backend e instalação/reversão. Não foi feito benchmark no celular nem conectada uma LIVE real neste ambiente. LOCAL-010 segue pendente de reprodução no Android. As sete formas adicionadas usam três poses reutilizadas; sentar mantém o modelo 3D original. Música de outro aplicativo não tem captura automática de batidas.
 
 O vídeo novo será feito depois das próximas instruções do usuário.
+
+## Se o instalador anterior parou com “O servidor ainda responde”
+
+[Baixar apenas o reparo do instalador — ZIP pequeno](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_REPARO_INSTALADOR_V46.zip). Usa o pacote V46 já extraído no Termux e mantém os modelos locais.
+
+```bash
+cd ~/ben10-v34/game &&
+python3 -m zipfile -e ~/storage/downloads/BEN10_REPARO_INSTALADOR_V46.zip "$TMPDIR/ben10-v46-reparo" &&
+bash "$TMPDIR/ben10-v46-reparo/BEN10_REPARO_INSTALADOR_V46/REPARAR_E_ATUALIZAR_V46.sh" "$PWD" &&
+bash restart.sh
+```
+
+Se a pasta temporária não existir mais, use o ZIP R1 acima. Se o Android não permitir confirmar o processo, pressione Ctrl+C na aba original do jogo e repita. Não é necessário reinstalar IA/voz. [Causa, evidências e limites do reparo](RELATORIO_REPARO_INSTALADOR_V46.md).

@@ -1,19 +1,21 @@
-# Ben 10 · Clareira LIVE V46 — Heróis contra Vilões
+# Ben 10 · Clareira LIVE V46 — instalador R1
 
 Atualização para a **V45.0.0 já instalada**. Mantém o Babylon.js, o progresso de DNA e as integrações existentes. Não é uma instalação completa e não baixa modelos de IA.
 
 ## Atualizar e iniciar no Termux
 
-Baixe `BEN10_HEROIS_VILOES_V46.zip` para Downloads. Cole:
+Baixe `BEN10_HEROIS_VILOES_V46_R1.zip` para Downloads. Cole:
 
 ```bash
-cd ~/ben10-v34/game
-python3 -m zipfile -e ~/storage/downloads/BEN10_HEROIS_VILOES_V46.zip "$TMPDIR/ben10-v46"
-bash "$TMPDIR/ben10-v46/BEN10_HEROIS_VILOES_V46/ATUALIZAR_V46.sh" "$PWD"
+cd ~/ben10-v34/game &&
+python3 -m zipfile -e ~/storage/downloads/BEN10_HEROIS_VILOES_V46_R1.zip "$TMPDIR/ben10-v46" &&
+bash "$TMPDIR/ben10-v46/BEN10_HEROIS_VILOES_V46/ATUALIZAR_V46.sh" "$PWD" &&
 bash restart.sh
 ```
 
 Abra **http://127.0.0.1:3000/?v=46.0.0** e confira V46 no topo. Se seu jogo fica em outra pasta, ajuste a primeira linha. Em outras sessões, basta `cd ~/ben10-v34/game && bash restart.sh`. Mantenha a sessão aberta durante a live.
+
+O instalador R1 corrige a identificação e a espera pelo encerramento dos processos. Se o Android impedir confirmar o processo, pressione Ctrl+C na aba original do jogo e repita. Veja [o relatório do reparo](RELATORIO_REPARO_INSTALADOR_V46.md).
 
 A atualização verifica hashes antes de copiar e guarda backup em `data/backups/before-v46-...`. Não altera `.env`, dados privados, modelos neurais, motor de voz ou a voz escolhida. A geração de falas continua usando a IA e a voz configuradas na sua instalação.
 

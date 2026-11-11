@@ -1,0 +1,18 @@
+✔ V46 migra código da V45, guarda backup e reverte sem sobrescrever progresso, times ou chaves (504.371207ms)
+✔ reinício substitui servidor e voz antigos, preserva processos externos e não duplica sessão saudável (4057.191999ms)
+✔ porta ocupada por programa externo é preservada e bloqueia o reinício local (5132.703697ms)
+✔ Android: negar exe não impede reconhecer UID, pasta e comando exatos (29.209597ms)
+✔ sem listar proc: PID conhecido encontra o inicializador e não sinaliza o filho duas vezes (556.410638ms)
+✔ aguarda fechamento acima de dois segundos, ignorando confirmação antiga sem efeito (2800.97866ms)
+✔ servidor de outra instalação não recebe sinal, mesmo com a mesma aplicação (45.888236ms)
+✔ resposta de saúde sozinha não autoriza encerrar PID de outro comando (86.144311ms)
+✔ leitura de .env considera somente as configurações locais necessárias à parada (12.318944ms)
+✔ V44.2: recupera processo Piper com binds do projeto mesmo após mudança de diretório no proot (683.758498ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9384.768571

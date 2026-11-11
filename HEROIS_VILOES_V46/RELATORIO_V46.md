@@ -17,7 +17,7 @@ A implementação evolui a V45.0.0 existente. Houve auditoria de integração e 
 | HUD e DNAs | `battle-hud.js`, `battle.css` | Times, vida, energia, XP, rodadas, fila, top dos times e prévias bloqueadas |
 | Fala | `server/battle-dialogue.js`, `ai-session.js`, `live-host.js`, `classic.js` | Respostas rápidas para regras e contadores, contexto verificado para o modelo e falas de equipe |
 | Música e efeitos | `dance-clock.js`, `live-media.js`, `cinematic-audio.js` | Batidas locais, BPM manual, dança e áudio de novo seguidor |
-| Atualização | `scripts/campaign-update.js` | Lista restrita de arquivos, validação de hashes, backup e reversão |
+| Atualização | `scripts/campaign-update.js`, `scripts/update-stop.js`, `scripts/local-ai/project-processes.js` | Lista restrita, hashes, identificação e parada dos próprios processos, backup e reversão |
 
 O modelo de linguagem não executa comandos do sistema. Papéis e ações são definidos por parsers e regras de jogo. O modelo recebe somente dados de contexto e gera texto para a conversa. A IA de gameplay permanece independente da geração de voz.
 
@@ -63,3 +63,7 @@ A simulação do backend processou 10.000 pacotes equivalentes a 1.000.000 de cu
 - O som personalizado é local ao navegador; limpar os dados do Chrome o remove.
 
 Não há vídeo novo nesta entrega. A edição será feita depois das instruções do usuário.
+
+## Instalador R1
+
+Corrige o reconhecimento de processos e a espera durante a atualização interrompida. Os motores neurais não mudam; o utilitário compartilhado de identificação de processos foi ajustado. Veja [o relatório e os limites do reparo](RELATORIO_REPARO_INSTALADOR_V46.md).

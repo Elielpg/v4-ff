@@ -6,8 +6,8 @@
     "pass": 281
   },
   "suite": {
-    "tests": 296,
-    "pass": 296,
+    "tests": 302,
+    "pass": 302,
     "fail": 0,
     "cancelled": 0,
     "skipped": 0
@@ -57,14 +57,14 @@
   },
   "package": {
     "ok": true,
-    "payloadFiles": 44,
+    "payloadFiles": 47,
     "installedVersion": "46.0.0",
     "restoredVersion": "45.0.0",
     "allHashesVerified": true,
     "buildAfterApply": true,
     "buildAfterRollback": true,
     "privateFixturesPreserved": true,
-    "scope": "Full 44-file visual payload applied over a temporary V45 installation; no real keys or audience data"
+    "scope": "Full 47-file visual payload applied over a temporary V45 installation; no real keys or audience data"
   },
   "load": {
     "scope": "Simulação do backend na nuvem; não mede FPS, IA, voz nem desempenho do Realme GT3",
@@ -81,7 +81,8 @@
   },
   "unchangedVoiceAndRuntime": {
     "filesCompared": 41,
-    "changed": []
+    "changed": [],
+    "scope": "Original V46 comparison only. R1 changes the shared process identification utility; voice engines, weights and voice configuration stay unchanged."
   },
   "limits": [
     "Sem conexão TikTok real neste teste. Fotos e áudio do navegador usam dados de teste.",
@@ -90,5 +91,37 @@
     "Sete aliens usam três poses; sentar mantém o modelo 3D original.",
     "Música de outro app usa BPM/tap tempo manual.",
     "Vídeo novo aguardando instruções do usuário."
-  ]
+  ],
+  "installerRevision": "R1",
+  "installerRepair": {
+    "date": "2026-11-11",
+    "targeted": {
+      "tests": 10,
+      "pass": 10,
+      "fail": 0
+    },
+    "newRegressionTests": 6,
+    "integration": {
+      "ok": true,
+      "originalArchiveUsed": true,
+      "repairArchiveUsed": true,
+      "corruptedStagingRefusedWithoutStoppingGame": true,
+      "patchFiles": 4,
+      "payloadFiles": 47,
+      "liveServerStopped": true,
+      "outerLauncherStopped": true,
+      "unrelatedProcessPreserved": true,
+      "updatedGameStarted": true,
+      "rollbackStoppedLiveServer": true,
+      "allHashesVerified": true,
+      "privateConfigurationAndModelFixturesPreserved": true,
+      "buildAfterApply": true,
+      "buildAfterRollback": true,
+      "scope": "Linux cloud; real V45 and V46 HTTP game servers plus their session launcher, original ZIP staging including spaces; no Android hardware or neural inference."
+    },
+    "limits": [
+      "Android restrictions simulated; no Realme GT3 access",
+      "No neural inference or real TikTok LIVE during installer repair"
+    ]
+  }
 }
