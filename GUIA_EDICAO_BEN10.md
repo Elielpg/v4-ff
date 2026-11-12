@@ -1,11 +1,11 @@
 # Guia de edição · Ben 10 LIVE
 
-Padrão atual para as próximas produções deste projeto. Atualizado em 11/11/2026 com a primeira implementação do visual 2D no jogo e no vídeo V45.
+Padrão atual para as próximas produções deste projeto. Atualizado em 11/11/2026 com a V47 e o meme de dança e luta.
 
 ## Identidade e destino
 
 - Vídeos novos **sem @**, marca ou hashtag do perfil anterior. O usuário pretende começar outro perfil; só inserir um novo identificador quando ele informar.
-- O usuário autorizou o novo visual no jogo e nos vídeos. Na V45, usar Ben, Chama, XLR8 e Diamante em desenhos 2D no acampamento 3D original. As outras formas mantêm os modelos 3D; não recriar o projeto ou trocar o motor.
+- O usuário autorizou o novo visual no jogo e nos vídeos. A V47 tem cenário, onze personagens, inimigos e efeitos desenhados em 2D. Usar esses recursos atuais; não recriar o projeto ou trocar o motor. A seção da V45 abaixo é histórica.
 - Verde Omnitrix como identidade; fogo em laranja, velocidade em ciano e cristal em verde-água ajudam a distinguir os poderes.
 - Voz de apresentação clara, com texto próprio e personalidade divertida. Não voltar à clonagem abandonada pelo usuário.
 
@@ -54,6 +54,17 @@ https://vt.tiktok.com/ZSpU4qhBA/ ficou bloqueado neste ambiente, e a alteração
 - Não anunciar animação 3D nova, todos os aliens em 2D, voz clonada ou melhora de FPS no celular sem evidências.
 - A cena de pergunta é uma demonstração editorial; não apresentá-la como comentário real de uma pessoa.
 
-## Próxima produção: V46
+## Histórico: V46
 
-O jogo passou a ter cenário desenhado, onze personagens em 2D, times HERÓI/VILÃO, ondas com autoria por foto, níveis e prévias de DNA. Música local pode guiar dança; outro app usa BPM manual. O usuário pediu para definir a edição do vídeo somente depois desta atualização. Aguardar essa orientação; não presumir roteiro ou publicar um novo vídeo. Preservar o novo visual e não inserir o @ antigo.
+O jogo passou a ter cenário desenhado, onze personagens em 2D, times HERÓI/VILÃO, ondas com autoria por foto, níveis e prévias de DNA. A pedido do usuário, foi produzido o vídeo “Herói ou Vilão”, com novas funções e música. Preservar o novo visual e não inserir o @ antigo.
+
+## Memes de música: V47
+
+- Pedido atual: usar a música enviada pelo usuário com Ben dançando e lutando. O roteiro é “Era batalha. Virou baile.”, com Ben, Quatro Braços, XLR8 e o vilão do jogo.
+- Fazer a graça aparecer na ação: intenção de salvar o mundo, interrupção pela música, golpes no compasso e o vilão aderindo à dança.
+- Usar a faixa como protagonista. Esta edição não leva narração sobre a música. Não inventar letras quando a transcrição automática não for confiável.
+- Marcar os cortes e os impactos na batida medida, mantendo o tempo e o tom originais do áudio. Nesta faixa, a grade usada foi 90 BPM, ou 20 quadros por batida a 30 fps.
+- Capturar também o canvas de efeitos da V47; gravar só o canvas Babylon deixa os poderes e as notas musicais de fora.
+- Conferir os dois lutadores dentro do enquadramento. As formas maiores precisam de câmera mais aberta. Os títulos ficam afastados das cabeças e dos pés.
+- Preservar os movimentos reais do jogo. Balanços adicionais de edição podem servir à piada, sem anunciá-los como uma função nova do jogo.
+- Fechar com uma pergunta ligada à piada, sem prometer alcance ou inventar público real.

@@ -4,6 +4,8 @@
 
 324 quadros adicionais para andar, correr, pular, lutar e dançar; efeitos desenhados, quatro poderes por forma e dança ligada ao relógio do áudio local. GreenTube/outro app usa tap/BPM manual. Atualização incremental para V45/V46, preservando IA, voz, times, progresso, ranking e Omnitrix. O encerramento do Termux (LOCAL-010) ainda precisa de diagnóstico no aparelho; os testes desta entrega foram em Linux.
 
+[Meme novo: **Era batalha. Virou baile.** — Ben dançando e lutando com a música enviada](MEME_BEN10_V47.md)
+
 V46: [Heróis contra Vilões](DOWNLOAD_V46.md) · [Vídeo: Herói ou Vilão — MP4, capa e legenda](VIDEO_BEN10_V46.md).
 
 V45: [visual 2D e vídeo](DOWNLOAD_VISUAL_2D_V45.md). Os arquivos abaixo são históricos.

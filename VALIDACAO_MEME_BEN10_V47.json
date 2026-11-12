@@ -1,0 +1,64 @@
+{
+  "version": "47.0.0",
+  "video": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationSeconds": 26.666667,
+    "frames": 800,
+    "takes": 11,
+    "codec": "H264",
+    "pixelFormat": "yuv420p",
+    "colorSpace": "bt709",
+    "faststart": true,
+    "bytes": 14651799,
+    "sha256": "c914b74635f7ef3fc10a700fd087e686869f82d31d8572ca7035cb3665eb8381"
+  },
+  "source": {
+    "newNativeFrames": 800,
+    "forms": [
+      "base",
+      "fourarms",
+      "volt"
+    ],
+    "drawingCharacters": true,
+    "drawingScenery": true,
+    "danceMotionFrames": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "baseFightMotionFrames": [
+      12,
+      13,
+      14,
+      15
+    ],
+    "watchTransformationObserved": true,
+    "villainPartyObserved": true,
+    "pageErrors": [],
+    "scope": "Cinematic capture using V47 modules and drawing assets; not a recording of real TikTok viewers."
+  },
+  "audio": {
+    "source": "MP3 supplied by the user",
+    "sourceStartSeconds": 2.88,
+    "speedUnchanged": true,
+    "pitchUnchanged": true,
+    "voiceOver": false,
+    "beatGridBPM": 90,
+    "framesPerBeat": 20,
+    "sampleRate": 48000,
+    "channels": 2,
+    "integratedLUFS": -14.11,
+    "truePeakDBTP": -3.6,
+    "correlationToSourceIncludingAddedSfx": 0.99737,
+    "sfxEvents": 17
+  },
+  "checks": {
+    "fullDecode": "passed",
+    "allFramesNative1080": "passed",
+    "audioFromUploadedFile": "passed",
+    "oldHandlePresent": false
+  }
+}
