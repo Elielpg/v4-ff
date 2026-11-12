@@ -2,6 +2,8 @@
 
 Padrão atual para as próximas produções deste projeto. Atualizado em 11/11/2026 com a V47 e o meme de dança e luta.
 
+Atualização de 12/11/2026: a V48 acrescenta modo PHONK, luzes e câmera na batida, foco em entradas, dupla por rosa e troca automática entre os dez aliens livres. O usuário pediu mais dança e menos falas espontâneas. Usar essas regras nas próximas peças, mantendo o cenário e os desenhos existentes. O captador Android é opcional e depende da saída de áudio do aparelho; não prometer reconhecimento universal de qualquer app/Bluetooth. Nenhum novo vídeo foi solicitado junto desta atualização do jogo.
+
 ## Identidade e destino
 
 - Vídeos novos **sem @**, marca ou hashtag do perfil anterior. O usuário pretende começar outro perfil; só inserir um novo identificador quando ele informar.

@@ -1,0 +1,5 @@
+import br.ben10.rhythm.BeatMeter;import br.ben10.rhythm.SpectrumMeter;
+public class BeatMeterTest{
+ static double tone(int hz){BeatMeter b=new BeatMeter(48000);double sum=0;int n=0;for(int i=0;i<48000;i++){double e=b.push(.5*Math.sin(2*Math.PI*hz*i/48000));if(e>=0&&i>12000){sum+=e;n++;}}return sum/n;}
+ public static void main(String[] args){double bass=tone(70),high=tone(4000);if(!(bass>high*50&&bass>.1))throw new AssertionError("Filtro grave incorreto");BeatMeter b=new BeatMeter(48000);for(int i=0;i<96000;i++){double e=b.push(0);if(e>0)throw new AssertionError("Silêncio virou sinal");}byte[] spectrum=new byte[1024];spectrum[2]=64;double[] low=SpectrumMeter.measure(spectrum,48000);if(low[0]<.1)throw new AssertionError("FFT grave ausente");spectrum[2]=0;spectrum[200]=64;double[] highBand=SpectrumMeter.measure(spectrum,48000);if(highBand[0]!=0||highBand[1]<=0)throw new AssertionError("FFT separação incorreta");if(SpectrumMeter.measure(new byte[1024],48000)[0]!=0)throw new AssertionError("FFT silêncio");System.out.println("PASS: FFT, graves, rejeição de agudos e silêncio; teste JVM, sem captura Android.");}
+}

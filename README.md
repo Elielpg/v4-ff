@@ -1,5 +1,13 @@
 # Ben 10 · Clareira LIVE
 
+**V48 — PHONK LIVE:** [Baixar ZIP — 41 MB](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_PHONK_V48.zip) · [Instalar e iniciar](DOWNLOAD_V48.md) · [Captador Android](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BATIDA_OMNITRIX_V48.apk) · [Relatório](RELATORIO_V48.md) · [331 testes](REGISTRO_TESTES_V48.json)
+
+Luzes e câmera na batida, destaque de visitantes, dupla por rosa, dez formas livres e troca automática de aliens. Menos falas espontâneas, com perguntas e chamadas ao Ben na conversa. Atualização para V45/V46/V47, preservando IA, voz e progresso.
+
+O captador opcional tenta analisar a energia da saída do Android sem iniciar outra captura de tela. A disponibilidade em fone/Bluetooth depende do aparelho. A opção avançada de compartilhamento fica desligada e pode disputar uma LIVE que já compartilha a tela; consulte o guia. APK, filtros e transporte verificados em Linux; captura física no GT3 e LOCAL-010 continuam pendentes.
+
+Versão anterior:
+
 **V47 — Animação LIVE 2D:** [Baixar ZIP — 41 MB](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_ANIMACAO_2D_V47.zip) · [Instalar e iniciar](DOWNLOAD_V47.md) · [Arquitetura e pendências](RELATORIO_V47.md) · [315 testes](REGISTRO_TESTES_V47.json)
 
 324 quadros adicionais para andar, correr, pular, lutar e dançar; efeitos desenhados, quatro poderes por forma e dança ligada ao relógio do áudio local. GreenTube/outro app usa tap/BPM manual. Atualização incremental para V45/V46, preservando IA, voz, times, progresso, ranking e Omnitrix. O encerramento do Termux (LOCAL-010) ainda precisa de diagnóstico no aparelho; os testes desta entrega foram em Linux.

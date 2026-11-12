@@ -1,0 +1,440 @@
+{
+  "version": "48.0.0",
+  "kind": "phonk-update",
+  "requires": [
+    "45.0.0",
+    "46.0.0",
+    "47.0.0",
+    "48.0.0"
+  ],
+  "files": [
+    {
+      "name": "package-lock.json",
+      "sha256": "a7769c6e35f2fa5d8f7b16661eb78613ab8a73138cd1cf984b30d6b214ba4848"
+    },
+    {
+      "name": "package.json",
+      "sha256": "ff3d45394d353c616a5d9c0206f862c518fc9eb4846177452571daed6d251736"
+    },
+    {
+      "name": "public/ability-catalog.js",
+      "sha256": "989aad5c3d3817226a916d93e8345f2fea514c0d77d0204400f69a7a3f68acb7"
+    },
+    {
+      "name": "public/alien-unlock-ui.js",
+      "sha256": "e8fa10cc30ecb56e56f3e50e9faee0e41b8aee2fa3f0cda8df33da8b1f268474"
+    },
+    {
+      "name": "public/animation-2d.js",
+      "sha256": "ab7271ba17bffbd2add32ff2deb8c70357d0db672f1f97a9a4e4b4fdf234aef8"
+    },
+    {
+      "name": "public/arena-app.js",
+      "sha256": "6413445d1e7f2f574dc2159e0f0aaca3245dc1f93cf1956d8f90c075475f9fac"
+    },
+    {
+      "name": "public/arena-commands.js",
+      "sha256": "f72e43e6f3d579a789397ddf19122a04a939bc3d7f7f994de6828ac395464ef0"
+    },
+    {
+      "name": "public/arena.css",
+      "sha256": "f2939e43deafd1e485c4ac44059ee6daeeba5f43f59882495b10d67ddc763bd1"
+    },
+    {
+      "name": "public/atlas-sprite.js",
+      "sha256": "2d8b9dffbf7406f351c31dedf9df4c388763994614f8de7b621c66f8e0b3abf8"
+    },
+    {
+      "name": "public/audience-dance-catalog.js",
+      "sha256": "38f7da450942d44e723a1aed63a891744c29d51318e9ef50164fdc25d4bbb938"
+    },
+    {
+      "name": "public/audience-drawing-catalog.js",
+      "sha256": "dd7a5f16ff6684a396c421d6dbffb258d7f03016de918aee040ad3e63542a7fa"
+    },
+    {
+      "name": "public/audience-drawing.js",
+      "sha256": "38d4022d7d303bd34b5da55c1a1f3ea99f6fdfe07ff17797d16ca325b317b835"
+    },
+    {
+      "name": "public/bass-meter.js",
+      "sha256": "bd3886d81fd74b695e8ecc2f5e8af3f25bee37fad85c23f042c0d32f2e51382a"
+    },
+    {
+      "name": "public/battle-animation-view.js",
+      "sha256": "687a17c5013b59ca4e82d7a0933295ea8c9bca0e830b31534b9517c0258ef25b"
+    },
+    {
+      "name": "public/battle-hud.js",
+      "sha256": "78be04e9d6838d1ba151db171d09dae4eff19e6f1e1e47b47bb560a77af97908"
+    },
+    {
+      "name": "public/battle-rules.js",
+      "sha256": "fdc22966752c1dfb1c89257e2bf9009b0f06a6db038aa06870a5202324a558df"
+    },
+    {
+      "name": "public/battle-view.js",
+      "sha256": "5736e95856eb6f71a8d1b4302a64d8c0fbfe1e99f45e8b6686df735c123472b4"
+    },
+    {
+      "name": "public/battle.css",
+      "sha256": "4dbdcc724b97decbab52469b104d5e094c2350dfb021e150a069e1418f2bad8d"
+    },
+    {
+      "name": "public/beat-worklet.js",
+      "sha256": "f1899636069bed453a95d8ceea1f9b503299067a3980264fe032f296c2522fe6"
+    },
+    {
+      "name": "public/ben-behavior.js",
+      "sha256": "1250b735c4004eccfd5502c02a4be490c53eef4563702f0d91a30f005501b589"
+    },
+    {
+      "name": "public/camp-look.js",
+      "sha256": "8d0e8038f4ed3b65e43aed258ac4b8e18b97b7a9a488916dcfc129de207edf29"
+    },
+    {
+      "name": "public/character-2d-plan.js",
+      "sha256": "82b563141aaf96c4d3e94249fb840e92548f1302fe8967572eb8fb0bfc6cb7b6"
+    },
+    {
+      "name": "public/character-2d.js",
+      "sha256": "3c8ef28c93372cc023411e3ca3a33ea997baeb71c3828b76f89c71f896115863"
+    },
+    {
+      "name": "public/cinematic-audio.js",
+      "sha256": "1bcd3f8fff2e9b68b4790945eda6f5099cc22b0fbbc096b7c7494ffee393f6fe"
+    },
+    {
+      "name": "public/comic-assets/aliens-a.png",
+      "sha256": "de4d18103d14a85db455bbe47122338f995abb63e81835f44f7ede9a6d5a73a3"
+    },
+    {
+      "name": "public/comic-assets/aliens-b.png",
+      "sha256": "64068ac6f3e7070757aca69174b6439b4020adb1be17369a505052ce90d2b722"
+    },
+    {
+      "name": "public/comic-assets/audience.png",
+      "sha256": "2c06f6966db83a248d1a9d6cffdf73fc107e917bf94d9cd86550bf7e7923e804"
+    },
+    {
+      "name": "public/comic-assets/camp.png",
+      "sha256": "40c20c0a2b168947ea5819103f19d307b164d5144860b27d4f3862131c876a36"
+    },
+    {
+      "name": "public/comic-assets/manifest.json",
+      "sha256": "654588e70db6824c486e859dc38f3eb6904496b7a5a41289938a321c0b6f0c1e"
+    },
+    {
+      "name": "public/comic-assets/villains.png",
+      "sha256": "0bd1aca035bf85614da9e54d7f0af86301f836ae7e9515b5f418a07047e9c4c5"
+    },
+    {
+      "name": "public/comic-effects.js",
+      "sha256": "cf29c5623b45e648245318b0c553529988d07594994fec047ab6bf44a4f0bc96"
+    },
+    {
+      "name": "public/comic-power.js",
+      "sha256": "68c71fb5dbc9c49c26db3a552a8a75e17177ac90f84d824ae8257323593e3b42"
+    },
+    {
+      "name": "public/comic-stage.js",
+      "sha256": "68680297ed029e7f718d7ebcbdb6dd15d2e03c5d93b0b2c901965e3807229c01"
+    },
+    {
+      "name": "public/dance-clock.js",
+      "sha256": "ce045585f48e12a4e454e194346a3e348aa9cef56970115acd624e418bb86158"
+    },
+    {
+      "name": "public/downloads/BATIDA_OMNITRIX_V48.apk",
+      "sha256": "0408dcba5390a4cb6b7a7ef39df49e963c787ec92199aa06586196cc2836e1fc"
+    },
+    {
+      "name": "public/drawing-animation-view.js",
+      "sha256": "96c3302b408a7df10df1204c8cc046eac2ee51e19fc02f75dacde1ab75f139ab"
+    },
+    {
+      "name": "public/enemy-motion-catalog.js",
+      "sha256": "143fe1b98bc230166fb07fe9a1349ec00612243225f553ccc2184b7be4242862"
+    },
+    {
+      "name": "public/extra-drawing-catalog.js",
+      "sha256": "3299825a89a3d9e2cd40c792b8c16884302be150b931c6bb284766e8a2df2c26"
+    },
+    {
+      "name": "public/gift-spectacle.js",
+      "sha256": "0171c2263e19a5444197f055f1e24b17ca9d2fb0be1dbdcc215767acde6ba5f6"
+    },
+    {
+      "name": "public/index.html",
+      "sha256": "6c07b469569ce57cf3a7b4591fe1fd6c3c76c9982b25d1c2c2cdcc46c053697e"
+    },
+    {
+      "name": "public/live-audience-view.js",
+      "sha256": "65e417683f0c93a3d9827cc4eac4c86bb457853a473e7250b52b91f4d38bb24c"
+    },
+    {
+      "name": "public/live-engagement.js",
+      "sha256": "1c90dbd6087b01c1cc7ce247be83d3eac528c663929d7ab3a713424fac53fdfb"
+    },
+    {
+      "name": "public/live-media.js",
+      "sha256": "1fa8eab352e688c4135f3332fe18b504f481fdaae463b7481c86cffd7f802ce4"
+    },
+    {
+      "name": "public/locomotion-visuals.js",
+      "sha256": "8d379fa7ef42d0247cc11937ed945bfe1d92083cbef52fefb7640d58b83956be"
+    },
+    {
+      "name": "public/motion-atlas/audience-dance.png",
+      "sha256": "4504841131ea6f6afff6073d6f690938b7e235d49b53d38df030e1c3fbd34d83"
+    },
+    {
+      "name": "public/motion-atlas/base.png",
+      "sha256": "8da457ee1e7b8c2af0c8cc2761dcda1f7e9fdcd72fcc0b5015fd4325c2a72cb7"
+    },
+    {
+      "name": "public/motion-atlas/beast.png",
+      "sha256": "8673347d2a618edfecab3eb27769b3b36145275ca5a82ea829627abecc7613fc"
+    },
+    {
+      "name": "public/motion-atlas/blaze.png",
+      "sha256": "20ef89aaa777d47791904059ce774b8a608b382bd61225d479203a474bffe0f6"
+    },
+    {
+      "name": "public/motion-atlas/cannon.png",
+      "sha256": "6101c76e84f3b931cf37a47afa14eb550605b4b6ac2157acbf1e808ddb2c413d"
+    },
+    {
+      "name": "public/motion-atlas/effects.png",
+      "sha256": "a523f7da587b3ef20f4767b9a4a9b4985e5caa57a1fca89c6e06f842a6883d14"
+    },
+    {
+      "name": "public/motion-atlas/enemies.png",
+      "sha256": "f6c76ed3315b478bd1578e68f1846c054e6f37a628d0b9e7d055a4c464f4f511"
+    },
+    {
+      "name": "public/motion-atlas/fourarms.png",
+      "sha256": "0a57c21de9d9d9cbb57a5bede590a4c62fceb98d610b77931c9fcb55b702944e"
+    },
+    {
+      "name": "public/motion-atlas/nova.png",
+      "sha256": "e0406507f58dc24b67bc0c2c31aee3d09e8263bc7471a57f57f6fc144abb941d"
+    },
+    {
+      "name": "public/motion-atlas/rock.png",
+      "sha256": "6a4e6ff2cb5d2b8b40eefff46c191c7192157181254cb7a03929427ca9f4a490"
+    },
+    {
+      "name": "public/motion-atlas/shade.png",
+      "sha256": "98d00f0238b313bc493062c6e64db5791bc1c7f2ffdc533b3d19d1ea019fe05b"
+    },
+    {
+      "name": "public/motion-atlas/tide.png",
+      "sha256": "26acb933f0f7715c25d655b9a9acfd08526cd8c7fce3a34510afc1106eaf48d9"
+    },
+    {
+      "name": "public/motion-atlas/volt.png",
+      "sha256": "3746bafd006ae1a9f315d326a528358458856493a9e1a35b841567728db8724b"
+    },
+    {
+      "name": "public/motion-atlas/wildvine.png",
+      "sha256": "27946d29c991a6574bf08fc0e1949cb44375543a9175a93bd062f9fbb369a9b1"
+    },
+    {
+      "name": "public/motion-catalog.js",
+      "sha256": "64e5335cc9f55517dbba0572f2cfe7f12c3b2ebc2247da5797f74f52e9405b56"
+    },
+    {
+      "name": "public/omni-absorption.js",
+      "sha256": "e97410aa50458631851b6ec32e9940cb98bfa69adeb3c39ea9aa82f47b8abc13"
+    },
+    {
+      "name": "public/party-camera.js",
+      "sha256": "d202ac80d4c75bdf5c93a0c80640eb5aa112056078edbbea25c85027e2c29fa3"
+    },
+    {
+      "name": "public/party-controls.js",
+      "sha256": "122ec88dc12dec7a06945e11cae85d5b1a41fffeb837bacca5719660438c8251"
+    },
+    {
+      "name": "public/party-lighting.js",
+      "sha256": "beda616646616f3b7faab3fa7a5e2cfd201449a3dcc5f2484d94e5cb0d221448"
+    },
+    {
+      "name": "public/party-settings.js",
+      "sha256": "0331281b465d53fab2ea62526010d948aecafff10faf3030d80fed640bfe046b"
+    },
+    {
+      "name": "public/phonk-clock.js",
+      "sha256": "717bf83d73241fe94f9e8e6561b4b0838c5b189db5d3753a8fd674aea319d647"
+    },
+    {
+      "name": "public/power-effects.js",
+      "sha256": "ddff8e01b9919c14d8b8fcba163e9a1d72a8da6e3674fc4af3ecca8d15b9d3ca"
+    },
+    {
+      "name": "public/release.js",
+      "sha256": "83c7829dda34571dfda6bc3d7e17488e82c45c11ec038b9301e8fabd239b0279"
+    },
+    {
+      "name": "public/rhythm-input.js",
+      "sha256": "96ebeb9112360d31bc0ab25e084e661b2d6db38847671eae363f40121f56fb4c"
+    },
+    {
+      "name": "public/toon-vfx.js",
+      "sha256": "a1c8d63eb9c1c615872790650a166607e429a45f4acb264a3fbe54938dd92b3f"
+    },
+    {
+      "name": "public/transformations.js",
+      "sha256": "840f2a4900a415d195e96a6f4bcf19c9519934f510b07ad73b82f04b7a9d4f38"
+    },
+    {
+      "name": "public/world.js",
+      "sha256": "21eac47d56e283e20f0e596004e166d7b4598cafa8cb7e30a9469dc5651edb84"
+    },
+    {
+      "name": "scripts/animation-update.js",
+      "sha256": "1c99aaf7684c2dbc985eb43ab63a0f4095ecbd0f91db56483b038548478b1350"
+    },
+    {
+      "name": "scripts/campaign-update.js",
+      "sha256": "6db631b591e530f83ac0abca24652ea5ee3e97ac0c70e8f6018d18c5bd640678"
+    },
+    {
+      "name": "scripts/local-ai/project-processes.js",
+      "sha256": "dbf0b856ae4b814ef1f3616801c435d57570ef28338de6920d845f2526976b1e"
+    },
+    {
+      "name": "scripts/phone-update.js",
+      "sha256": "ffc4d160eccbd8f169bc30023329bed92daf5c3792ce02611d3e1bb51a1125c9"
+    },
+    {
+      "name": "scripts/phonk-update.js",
+      "sha256": "2312b585f1b9d5cbbc6b5ed87ba429570798fd8838ac36bb2503660f980850e8"
+    },
+    {
+      "name": "scripts/update-stop.js",
+      "sha256": "2fe26ffbde4da9da850d43b6e5907a70ffc88341df4b2e789c4ae5a106ccb8c5"
+    },
+    {
+      "name": "server/ai-session.js",
+      "sha256": "457283167e5d6cdb1e60e8a03b0c3d0f1d19310f87bfa10c82a803a18db74b88"
+    },
+    {
+      "name": "server/arena-session.js",
+      "sha256": "0099d0159cfab30aecbc542c9bde9e6afd5a0ec9c8596a0a4cf25a3e20fea4bd"
+    },
+    {
+      "name": "server/battle-dialogue.js",
+      "sha256": "6f994d6d8edd2b6bca4dea4a9896be32ed765de545ba30a2404a16af226ee713"
+    },
+    {
+      "name": "server/classic.js",
+      "sha256": "656e6897c5f478f7df232dc1c7e69c7c00b5867aaed1c321b8bd5fe6914dec05"
+    },
+    {
+      "name": "server/index.js",
+      "sha256": "bc05043b783b7c94752dda76b21c07af6adad84573e3ccc274c1f2b4d4ecefaf"
+    },
+    {
+      "name": "server/live-action-router.js",
+      "sha256": "f5740843af51601749d1ad5caab2910298150d63ea967343208d06b36e9d0e45"
+    },
+    {
+      "name": "server/live-audience.js",
+      "sha256": "197dd0cd3a38252dd4e3b48537af2aa5188d1514a4f9841e890a69c317c7f24b"
+    },
+    {
+      "name": "server/live-battle.js",
+      "sha256": "2eaf04d381b65300ec94489b52d36150246ad98625de601adde36b9e4dbb748e"
+    },
+    {
+      "name": "server/live-host.js",
+      "sha256": "c5673e15bf00bcd654c839b928c34687b3116e040b941add82f2c5d499c275a8"
+    },
+    {
+      "name": "server/party-director.js",
+      "sha256": "fa45e37a9b502a2a93014c3beaa066210a5e7e1e556524c3ea9a98c7b6fbc0b4"
+    },
+    {
+      "name": "server/party-speech.js",
+      "sha256": "df3167779fc70d4486634e7398e140320f69b53b5237aff5103c9f02832f4900"
+    },
+    {
+      "name": "server/rhythm-bridge.js",
+      "sha256": "bd49cce4786eb1f32664e8ecc511ef19532434dc8a9a263ab52f180906a4c890"
+    },
+    {
+      "name": "tests/alien-unlocks-http.test.js",
+      "sha256": "1a1baf35d6440951e0155051b88fa9bfa78cb31410827eeb01deedb7a4ab3c29"
+    },
+    {
+      "name": "tests/animation47.test.js",
+      "sha256": "e273b00723889c1066097b1bd97a5ddbb8c1913dd7b52ed0f657f67e1f0f654b"
+    },
+    {
+      "name": "tests/bass-meter.test.js",
+      "sha256": "ab52cdacfc4ef345b4c55728de10a7cfed7f604634ca1b63a70f98756c1e38c4"
+    },
+    {
+      "name": "tests/battle-dialogue.test.js",
+      "sha256": "a0a82a0777f5bbb1df7ac16c78a9149d3bf114ecb7b47a5183d36659d3d65970"
+    },
+    {
+      "name": "tests/battle-presentation.test.js",
+      "sha256": "f31feee1ec58cf261978e44443d79e102f7f71072d4add918aa03b3dcbd56cec"
+    },
+    {
+      "name": "tests/campaign-update.test.js",
+      "sha256": "dcffda61150edd3d4b4964b6cf3d2a0fca4c5b1e5494dfa13ee14e1be37d155b"
+    },
+    {
+      "name": "tests/comic-assets.test.js",
+      "sha256": "128bae99bc755f3620fd78799fd9338c0197b8652551cc49a753d64f0c107c12"
+    },
+    {
+      "name": "tests/comic-power.test.js",
+      "sha256": "814b6f931db7ff58f24ead9c8df72cf916e49bed4f026bde9d90b0824a87f808"
+    },
+    {
+      "name": "tests/dance-clock.test.js",
+      "sha256": "364e98edd55b76c1e33b9ad571c09d40ae4fedb14dc85b8a3dbd2dad042481dc"
+    },
+    {
+      "name": "tests/http.test.js",
+      "sha256": "5350ab23d7ea738aeb81f1042aa61f0cd765dd9d52e5824683c74b51c5d82f86"
+    },
+    {
+      "name": "tests/live-battle.test.js",
+      "sha256": "be84b308cc76aa83f316e6f07763ff6b98a9d2112b4619b31251fa29e3bd4634"
+    },
+    {
+      "name": "tests/party48-http.test.js",
+      "sha256": "e989f8bd43947533c7f367785a2f7272fecb1bd2c211ae4d7bf2119ff038ef94"
+    },
+    {
+      "name": "tests/party48.test.js",
+      "sha256": "c9cf48c48c123b8e9eb18888b55cc96fe12207f6f6fa11506fde1bcfb590efbc"
+    },
+    {
+      "name": "tests/phonk48.test.js",
+      "sha256": "2e946eee280c8d969360fb418706f56dd0200a79377ed7360567051c5537c3dd"
+    },
+    {
+      "name": "tests/power-loadouts.test.js",
+      "sha256": "1b28a926d38b02b4c7a03c6a5e28a378bffad5c60707ee56be6ca0bd991fcc71"
+    },
+    {
+      "name": "tests/rhythm48.test.js",
+      "sha256": "b4d783b8197ad3a52c8a9e791f52e0fb952646a4513da702f7deb214ba9d693f"
+    },
+    {
+      "name": "tests/update-stop.test.js",
+      "sha256": "de2f5c7dfcc51a4342a868d20f197068ab51f5f1dce437c0f8a1a1d4c3dd290a"
+    },
+    {
+      "name": "tests/v44-abilities-live.test.js",
+      "sha256": "8d19ba3607991aaff377fecbf3948243971a43d45445ad2be216641a796af0fc"
+    }
+  ]
+}

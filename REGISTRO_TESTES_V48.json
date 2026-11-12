@@ -1,0 +1,281 @@
+{
+  "version": "48.0.0",
+  "recordedAtUtc": "2026-11-12T06:55:49.211208+00:00",
+  "baseline": {
+    "version": "47.0.0",
+    "testsPassedBeforeChanges": 315,
+    "backupPreserved": true
+  },
+  "suite": {
+    "tests": 331,
+    "passed": 331,
+    "failed": 0,
+    "durationMs": 40435.999485,
+    "lint": "passed",
+    "build": "passed"
+  },
+  "browser": {
+    "ok": true,
+    "initial": {
+      "drawing": true,
+      "party": {
+        "enabled": true,
+        "quietSpeech": true,
+        "autoTransform": false,
+        "transformBeats": 32,
+        "beatCamera": true,
+        "arrivalCamera": true,
+        "lightStrength": 0.55,
+        "danceStyle": "phonk"
+      },
+      "enabledForms": 10
+    },
+    "local": {
+      "bpm": 120,
+      "confidence": 1,
+      "worklet": true,
+      "dance": "dance",
+      "style": "phonk",
+      "source": "local",
+      "camera": {
+        "x": 0.07440993353493552,
+        "z": 0,
+        "y": 1.8,
+        "radius": 10.012607188925237,
+        "roll": -0.0030033183825940958,
+        "height": 5,
+        "fov": 0.88,
+        "kind": "hero"
+      }
+    },
+    "duet": {
+      "viewer": "eb7f1cbfe93b05569333",
+      "camera": "duet",
+      "distance": 1.4884000612634622,
+      "visible": true,
+      "waiting": 0,
+      "draws": 90
+    },
+    "android": {
+      "bpm": 90,
+      "input": {
+        "source": "android",
+        "connected": true,
+        "signal": true,
+        "level": 0.3
+      },
+      "source": "android",
+      "active": true,
+      "status": "90 BPM · Dançando · batidas detectadas · captador Android"
+    },
+    "mic": {
+      "mode": "microphone",
+      "stream": 1,
+      "node": true
+    },
+    "errors": [],
+    "scope": "Real V48 server, Linux Chromium, actual WebAudio file and synthetic microphone fixture; Android bridge HTTP simulation, no physical Android capture or TikTok LIVE."
+  },
+  "audio": {
+    "results": [
+      {
+        "name": "synthetic-90",
+        "native20Hz": false,
+        "bpm": 90,
+        "confidence": 1,
+        "beats": 26,
+        "frames": 843,
+        "seconds": 0.089859714
+      },
+      {
+        "name": "synthetic-90",
+        "native20Hz": true,
+        "bpm": 90,
+        "confidence": 1,
+        "beats": 26,
+        "frames": 359,
+        "seconds": 0.051259658
+      },
+      {
+        "name": "synthetic-120",
+        "native20Hz": false,
+        "bpm": 120,
+        "confidence": 1,
+        "beats": 35,
+        "frames": 843,
+        "seconds": 0.04415777800000001
+      },
+      {
+        "name": "synthetic-120",
+        "native20Hz": true,
+        "bpm": 120,
+        "confidence": 1,
+        "beats": 34,
+        "frames": 359,
+        "seconds": 0.03525179800000001
+      },
+      {
+        "name": "synthetic-160",
+        "native20Hz": false,
+        "bpm": 160,
+        "confidence": 1,
+        "beats": 47,
+        "frames": 843,
+        "seconds": 0.03957387499999999
+      },
+      {
+        "name": "synthetic-160",
+        "native20Hz": true,
+        "bpm": 160,
+        "confidence": 1,
+        "beats": 46,
+        "frames": 359,
+        "seconds": 0.03958559999999994
+      },
+      {
+        "name": "synthetic-180",
+        "native20Hz": false,
+        "bpm": 180,
+        "confidence": 1,
+        "beats": 53,
+        "frames": 843,
+        "seconds": 0.03805729500000007
+      },
+      {
+        "name": "synthetic-180",
+        "native20Hz": true,
+        "bpm": 180,
+        "confidence": 1,
+        "beats": 52,
+        "frames": 359,
+        "seconds": 0.040040340000000015
+      },
+      {
+        "name": "uploaded-phonk",
+        "native20Hz": false,
+        "bpm": 90,
+        "confidence": 1,
+        "beats": 97,
+        "frames": 2818,
+        "seconds": 0.22682076299999995
+      },
+      {
+        "name": "uploaded-phonk",
+        "native20Hz": true,
+        "bpm": 90,
+        "confidence": 1,
+        "beats": 94,
+        "frames": 1202,
+        "seconds": 0.16844964499999993
+      },
+      {
+        "name": "uploaded-phonk-visualizer-fft-simulation",
+        "bpm": 90,
+        "confidence": 1,
+        "frames": 1203,
+        "source": "Simulated 8-bit FFT packets at 20 Hz; not a physical Visualizer driver"
+      }
+    ],
+    "scope": "Offline DSP and timing in Linux CPU; synthetic fixtures plus previously supplied phonk file. No Android playback capture, Bluetooth latency, or phone performance benchmark."
+  },
+  "android": {
+    "build": {
+      "file": "BATIDA_OMNITRIX_V48.apk",
+      "bytes": 25123,
+      "sha256": "0408dcba5390a4cb6b7a7ef39df49e963c787ec92199aa06586196cc2836e1fc",
+      "signatureVerification": "Verifies\nVerified using v1 scheme (JAR signing): false\nVerified using v2 scheme (APK Signature Scheme v2): false\nVerified using v3 scheme (APK Signature Scheme v3): true\nVerified using v3.1 scheme (APK Signature Scheme v3.1): false\nVerified using v4 scheme (APK Signature Scheme v4): false\nVerified for SourceStamp: false\nNumber of signers: 1\nSigner #1 certificate DN: CN=Batida Omnitrix, OU=Local Audio, O=Clareira LIVE, C=BR\nSigner #1 certificate SHA-256 digest: e08ef80662989a6da44c76b0be6ad9e8ae7b56287223cd4a420724f2879bf051\nSigner #1 certificate SHA-1 digest: f06c55bbc0ce441649b5fe8a7f20d16bb2b06cfe\nSigner #1 certificate MD5 digest: 8c50bc3c6729ad0d1bb8a8bc65ce2f83\nSigner #1 key algorithm: RSA\nSigner #1 key size (bits): 2048\nSigner #1 public key SHA-256 digest: 00626be8b1ed637d0cf27b558cc1f9898c3eb1ea1aac6d2e9ee78ced975c0e52\nSigner #1 public key SHA-1 digest: 314e74bfd38e3391fef926be27150f34bf31cf5f\nSigner #1 public key MD5 digest: c0a81761352f01df8d54166303be8cfa\n",
+      "manifest": "package: name='br.ben10.rhythm' versionCode='4800' versionName='48.0.0' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'\nminSdkVersion:'29'\ntargetSdkVersion:'35'\nuses-permission: name='android.permission.INTERNET'\nuses-permission: name='android.permission.RECORD_AUDIO'\nuses-permission: name='android.permission.MODIFY_AUDIO_SETTINGS'\nuses-permission: name='android.permission.FOREGROUND_SERVICE_SPECIAL_USE'\nuses-permission: name='android.permission.FOREGROUND_SERVICE'\nuses-permission: name='android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION'\nuses-permission: name='android.permission.POST_NOTIFICATIONS'\napplication-label:'Batida Omnitrix'\napplication-icon-160:'res/drawable/icon.xml'\napplication: label='Batida Omnitrix' icon='res/drawable/icon.xml'\nlaunchable-activity: name='br.ben10.rhythm.MainActivity'  label='' icon=''\nproperty: name='android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE' value='Real-time local audio energy analysis for synchronized interactive live visuals' \nfeature-group: label=''\n  uses-feature: name='android.hardware.faketouch'\n  uses-implied-feature: name='android.hardware.faketouch' reason='default feature for all apps'\n  uses-feature: name='android.hardware.microphone'\n  uses-implied-feature: name='android.hardware.microphone' reason='requested android.permission.RECORD_AUDIO permission'\nmain\nother-services\nsupports-screens: 'small' 'normal' 'large' 'xlarge'\nsupports-any-density: 'true'\nlocales: '--_--'\ndensities: '160'\n",
+      "testsScope": "Compilação, manifesto e assinatura; captura real depende de teste no Android."
+    },
+    "filterJvmTest": "PASS: FFT, graves, rejeição de agudos e silêncio; teste JVM, sem captura Android.",
+    "defaultMode": "Visualizer output mix, no MediaProjection started",
+    "sharedMode": "Optional explicit MediaProjection with warning; never automatic fallback",
+    "physicalDeviceTested": false
+  },
+  "installer": {
+    "ok": true,
+    "results": [
+      {
+        "from": "45.0.0",
+        "to": "48.0.0",
+        "files": 107,
+        "allHashesVerified": true,
+        "buildAfterApply": true,
+        "buildAfterRollback": true,
+        "privateDataAndModelFixturePreserved": true,
+        "liveStopAndRestart": false,
+        "foreignProcessPreserved": false
+      },
+      {
+        "from": "46.0.0",
+        "to": "48.0.0",
+        "files": 107,
+        "allHashesVerified": true,
+        "buildAfterApply": true,
+        "buildAfterRollback": true,
+        "privateDataAndModelFixturePreserved": true,
+        "liveStopAndRestart": false,
+        "foreignProcessPreserved": false
+      },
+      {
+        "from": "47.0.0",
+        "to": "48.0.0",
+        "files": 107,
+        "allHashesVerified": true,
+        "buildAfterApply": true,
+        "buildAfterRollback": true,
+        "privateDataAndModelFixturePreserved": true,
+        "liveStopAndRestart": true,
+        "foreignProcessPreserved": true
+      }
+    ],
+    "tamperedPackageRefusedBeforeStopping": true,
+    "symlinkRefusedBeforeStopping": true,
+    "scope": "Real V47/V48 HTTP servers and session launchers in Linux, plus V45/V46 offline migration; no phone or neural model execution."
+  },
+  "payload": {
+    "files": 107,
+    "manifestSha256": "e61025baf0d6070e2e91acf810df4bad4e2ae89ea0528d9460266580e7f1f3ef"
+  },
+  "preservation": {
+    "voiceAndAiFilesVerifiedUnchanged": 33,
+    "modelsRedownloaded": false,
+    "voiceModelsExecuted": false,
+    "coreVoiceFiles": [
+      {
+        "name": "server/ai-voice.js",
+        "sha256": "0c6728c284311452103827632b0b78e8cc522e83a580bbc928646ebad045e09f"
+      },
+      {
+        "name": "server/conversation.js",
+        "sha256": "7d12c9ae76af148b3b8e8db9192963c4ab3eb080b7403f4a0480789f8983c786"
+      },
+      {
+        "name": "server/voice.js",
+        "sha256": "deb4b7b521014ea0b0fe25740b1a5ca96ddab69433800177a71a16d4cbea9790"
+      },
+      {
+        "name": "server/local-ai.js",
+        "sha256": "cfe896436f22702e00c50ea46057687ba1cde9f104548b57c7b1849ece0c3724"
+      },
+      {
+        "name": "public/local-voice-jobs.js",
+        "sha256": "c5e369d875d718c68e820443ef5ce1e88e5fa90687951e6b346b888e732815c3"
+      },
+      {
+        "name": "public/voice-text.js",
+        "sha256": "57566cc658e7bfd567c3dea76a6b80ba730c3dacf25296e8c5c52bc59b10741b"
+      },
+      {
+        "name": "public/browser-voice.js",
+        "sha256": "ba229fdcd12a6d50487bd009447af9282c27f26a7f00fc4f154feba6ee4a6b8c"
+      }
+    ]
+  },
+  "limits": [
+    "Nenhuma captura física no GT3/GreenTube/Bluetooth foi executada.",
+    "FFT simulado e sinais HTTP não comprovam disponibilidade do driver Visualizer.",
+    "Captura compartilhada opcional pode interromper outra projeção; não usar durante uma LIVE que compartilha a tela.",
+    "LOCAL-010 e desempenho em LIVE prolongada no Android continuam pendentes."
+  ]
+}

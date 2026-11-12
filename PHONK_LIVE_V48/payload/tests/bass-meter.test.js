@@ -1,0 +1,5 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';
+import {BassMeter} from '../public/bass-meter.js';import {DanceClock} from '../public/dance-clock.js';
+function measure(hz){const m=new BassMeter(48000),values=[];for(let i=0;i<48000;i++){const e=m.push(Math.sin(i/48000*Math.PI*2*hz)*.7);if(e!==null)values.push(e);}return values.slice(5).reduce((a,b)=>a+b,0)/(values.length-5);}
+test('medidor da trilha de áudio destaca grave e atenua voz/agudos',()=>{const bass=measure(110);assert(bass>.3);assert(measure(1800)<bass*.04);assert(measure(6000)<bass*.01);});
+test('pulso medido no áudio continua em 120 BPM sem depender de quadros de renderização',()=>{const rate=48000,m=new BassMeter(rate),c=new DanceClock();for(let i=0;i<rate*6;i++){const t=i/rate,e=m.push(Math.sin(t*Math.PI*220)*Math.exp(-(t%.5)*18)*.75);if(e!==null)c.analyze(e,i/rate*1000);}assert(Math.abs(c.bpm-120)<2);assert(c.beats>=11);assert(c.confidence>.9);const phase=c.sample(5500).phase;assert(phase>.9||phase<.12);});
