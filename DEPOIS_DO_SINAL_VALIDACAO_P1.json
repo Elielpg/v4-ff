@@ -1,0 +1,58 @@
+{
+  "video": {
+    "file": "DEPOIS_DO_SINAL_ONIBUS_P1_CARTOON.mp4",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "frames": 1839,
+    "duration": 61.3,
+    "codec": "H264",
+    "colorSpace": "bt709",
+    "faststart": true,
+    "bytes": 19193545,
+    "sha256": "09ccbefc6c51c02f6aae23ce02e915367d1a88d00f0f98f08eabc47ce1d888b8"
+  },
+  "art": {
+    "source": "Original procedural articulated 2D vector cast and scenery, inspired by general cartoon narrative conventions visible in user supplied screenshots. No creator artwork copied.",
+    "scenes": 14,
+    "shots": 20,
+    "originalVectorCharacters": true,
+    "articulatedArmsAndLegs": true,
+    "blinksAndEyeMotion": true,
+    "mouth": "Audio amplitude driven, not phoneme alignment",
+    "imageStudyIncludedInFinal": false,
+    "pageErrors": []
+  },
+  "audio": {
+    "voices": [
+      "Kokoro pm_alex",
+      "Kokoro pf_dora"
+    ],
+    "sampleRate": 48000,
+    "channels": 2,
+    "scoreAndEffects": "Original synthesized audio",
+    "integratedLUFS": -15.16,
+    "truePeakDBTP": -1.37
+  },
+  "checks": {
+    "fullDecode": "passed",
+    "frameSequence": "passed",
+    "dimensions": "passed",
+    "audioVideoDuration": "passed",
+    "zipCRC": "verified during packaging"
+  },
+  "research": {
+    "userScreenshotsAnalyzed": true,
+    "referenceTikTokVideoWatched": false,
+    "creatorWebsitesAccessed": false,
+    "publicDocumentationAccessed": [
+      "Motion Canvas",
+      "Remotion"
+    ],
+    "publicDomainCatalogsLocated": [
+      "Grimm via GITenberg",
+      "Andersen via GITenberg"
+    ]
+  },
+  "scope": "Fictional first-part demonstration. No profile created, no TikTok posting or audience analytics measured."
+}
