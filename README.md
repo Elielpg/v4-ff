@@ -1,5 +1,7 @@
 # Ben 10 · Clareira LIVE
 
+**Novo convite V48 — Uma rosa, você na dupla:** [Vídeo MP4 · 1080p/60 fps](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/CONVITE_BEN10_ROSA_V48.mp4) · [Pacote com capa e legenda](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/CONVITE_BEN10_ROSA_V48_COMPLETO.zip) · [Detalhes](VIDEO_CONVITE_ROSA_V48.md)
+
 **V48 — PHONK LIVE:** [Baixar ZIP — 41 MB](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BEN10_PHONK_V48.zip) · [Instalar e iniciar](DOWNLOAD_V48.md) · [Captador Android](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/BATIDA_OMNITRIX_V48.apk) · [Relatório](RELATORIO_V48.md) · [331 testes](REGISTRO_TESTES_V48.json)
 
 Luzes e câmera na batida, destaque de visitantes, dupla por rosa, dez formas livres e troca automática de aliens. Menos falas espontâneas, com perguntas e chamadas ao Ben na conversa. Atualização para V45/V46/V47, preservando IA, voz e progresso.

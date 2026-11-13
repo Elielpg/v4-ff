@@ -1,0 +1,58 @@
+{
+  "video": {
+    "file": "CONVITE_BEN10_ROSA_V48.mp4",
+    "width": 1080,
+    "height": 1920,
+    "fps": 60,
+    "frames": 1600,
+    "durationSeconds": 26.666667,
+    "codec": "H264",
+    "pixelFormat": "yuv420p",
+    "colorSpace": "bt709",
+    "faststart": true,
+    "bytes": 27560254,
+    "sha256": "552ce89f0f8737bf5d6e8845ceb229e5150d36f658c0ae8c73ae0779ede7a6b7"
+  },
+  "animation": {
+    "sourceVersion": "V48",
+    "formsIncludingBen": [
+      "base",
+      "beast",
+      "blaze",
+      "cannon",
+      "fourarms",
+      "nova",
+      "rock",
+      "shade",
+      "tide",
+      "volt",
+      "wildvine"
+    ],
+    "aliens": 10,
+    "roseDuetDemonstrated": true,
+    "beatBPM": 144,
+    "framesPerBeat": 25,
+    "pageErrors": [],
+    "scope": "Cinematic 2D composition using the existing V48 camp, drawing atlases, audience dance atlas and DanceClock; demonstration with a fictional viewer, not a recording of TikTok viewers.",
+    "renderSeconds": 122.968
+  },
+  "audio": {
+    "narration": "Kokoro pm_alex standard Brazilian Portuguese",
+    "music": "Original synthesized phonk-style composition",
+    "sfx": "Original synthesized effects",
+    "sampleRate": 48000,
+    "channels": 2,
+    "integratedLUFS": -14.64,
+    "truePeakDBTP": -1.41
+  },
+  "checks": {
+    "fullVideoDecode": "passed",
+    "native1080Frames": "passed",
+    "frameSequence": "passed",
+    "audioVideoDuration": "passed",
+    "narrationWithinScenes": "passed",
+    "oldHandlePresent": false,
+    "physicalAndroidTest": false,
+    "realLiveRecording": false
+  }
+}
