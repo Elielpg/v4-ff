@@ -1,0 +1,48 @@
+{
+  "project": "Arquivo 03:17",
+  "episode": 1,
+  "title": "O botão que não existia",
+  "video": {
+    "width": 1080,
+    "height": 1920,
+    "fps": "30/1",
+    "codec": "h264",
+    "pixelFormat": "yuv420p",
+    "frames": 1355,
+    "durationSeconds": 45.166667,
+    "bytes": 23215312,
+    "sha256": "3c0d1fba37b43636db4625fb36d1a261fee21673fee466e7c0efcb1c5734893a"
+  },
+  "audio": {
+    "codec": "aac",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationSeconds": 45.166,
+    "integratedLUFS": -14.29,
+    "truePeakDBTP": -1.27,
+    "loudnessRangeLU": 1.3
+  },
+  "subtitles": {
+    "cues": 42,
+    "words": 131,
+    "recognizedMatches": 125,
+    "alignmentCoverage": 0.9541984732824428,
+    "externalSrtOffsetSeconds": -0.1,
+    "boundsAndOrder": "passed"
+  },
+  "fullDecode": "passed",
+  "visualDirection": "Original illustrated cutout 2.5D animation, not traditional frame-by-frame character animation",
+  "postedToTikTok": false,
+  "reachMeasured": false,
+  "browserPlayback": {
+    "duration": 45.166667,
+    "width": 1080,
+    "height": 1920,
+    "paused": false,
+    "currentTime": 1.135708,
+    "readyState": 4,
+    "error": null,
+    "decodedFrames": 39,
+    "errors": []
+  }
+}
