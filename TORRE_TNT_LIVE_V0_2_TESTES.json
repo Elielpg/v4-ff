@@ -1,0 +1,629 @@
+{
+  "version": "0.2.0",
+  "unitAndHttp": {
+    "passed": 54,
+    "failed": 0
+  },
+  "sha256": "eca7e66d9a36af2082bd27383967029984a12b2d8e00a8c7b17931ff2f9640ad",
+  "browser": {
+    "checkedAt": "2026-11-19T19:15:17.392Z",
+    "browser": "155.0.8059.79",
+    "version": "0.2.0",
+    "checks": [
+      "AudioContext and original WAV playing after a real click",
+      "Explosion samples contain audio",
+      "36 actual sequential placements, one per action",
+      "Rose removes 10 cells",
+      "Shield absorbs 3 damage",
+      "GG supplies 80 blocks without an early 100-block victory",
+      "Restored floor 40 follows camera",
+      "Overview shows all 100 floors",
+      "Four viewport layouts fit and cull hidden cells",
+      "1795 cells do not win: only the last five reach 1800",
+      "15 excess materials survive celebration",
+      "Demo taps cannot become real LIVE likes"
+    ],
+    "placements": [
+      {
+        "index": 0,
+        "amount": 1,
+        "at": 1795115678769
+      },
+      {
+        "index": 1,
+        "amount": 1,
+        "at": 1795115678869
+      },
+      {
+        "index": 2,
+        "amount": 1,
+        "at": 1795115678969
+      },
+      {
+        "index": 3,
+        "amount": 1,
+        "at": 1795115679069
+      },
+      {
+        "index": 4,
+        "amount": 1,
+        "at": 1795115679170
+      },
+      {
+        "index": 5,
+        "amount": 1,
+        "at": 1795115679271
+      },
+      {
+        "index": 6,
+        "amount": 1,
+        "at": 1795115679371
+      },
+      {
+        "index": 7,
+        "amount": 1,
+        "at": 1795115679471
+      },
+      {
+        "index": 8,
+        "amount": 1,
+        "at": 1795115679571
+      },
+      {
+        "index": 9,
+        "amount": 1,
+        "at": 1795115679672
+      },
+      {
+        "index": 10,
+        "amount": 1,
+        "at": 1795115679773
+      },
+      {
+        "index": 11,
+        "amount": 1,
+        "at": 1795115679872
+      },
+      {
+        "index": 12,
+        "amount": 1,
+        "at": 1795115679973
+      },
+      {
+        "index": 13,
+        "amount": 1,
+        "at": 1795115680073
+      },
+      {
+        "index": 14,
+        "amount": 1,
+        "at": 1795115680173
+      },
+      {
+        "index": 15,
+        "amount": 1,
+        "at": 1795115680273
+      },
+      {
+        "index": 16,
+        "amount": 1,
+        "at": 1795115680374
+      },
+      {
+        "index": 17,
+        "amount": 1,
+        "at": 1795115680474
+      },
+      {
+        "index": 35,
+        "amount": 1,
+        "at": 1795115680573
+      },
+      {
+        "index": 34,
+        "amount": 1,
+        "at": 1795115680674
+      },
+      {
+        "index": 33,
+        "amount": 1,
+        "at": 1795115680775
+      },
+      {
+        "index": 32,
+        "amount": 1,
+        "at": 1795115680874
+      },
+      {
+        "index": 31,
+        "amount": 1,
+        "at": 1795115680974
+      },
+      {
+        "index": 30,
+        "amount": 1,
+        "at": 1795115681075
+      },
+      {
+        "index": 29,
+        "amount": 1,
+        "at": 1795115681176
+      },
+      {
+        "index": 28,
+        "amount": 1,
+        "at": 1795115681276
+      },
+      {
+        "index": 27,
+        "amount": 1,
+        "at": 1795115681377
+      },
+      {
+        "index": 26,
+        "amount": 1,
+        "at": 1795115681478
+      },
+      {
+        "index": 25,
+        "amount": 1,
+        "at": 1795115681579
+      },
+      {
+        "index": 24,
+        "amount": 1,
+        "at": 1795115681679
+      },
+      {
+        "index": 23,
+        "amount": 1,
+        "at": 1795115681779
+      },
+      {
+        "index": 22,
+        "amount": 1,
+        "at": 1795115681880
+      },
+      {
+        "index": 21,
+        "amount": 1,
+        "at": 1795115681980
+      },
+      {
+        "index": 20,
+        "amount": 1,
+        "at": 1795115682080
+      },
+      {
+        "index": 19,
+        "amount": 1,
+        "at": 1795115682180
+      },
+      {
+        "index": 18,
+        "amount": 1,
+        "at": 1795115682280
+      }
+    ],
+    "sound": {
+      "context": "running",
+      "musicPaused": false,
+      "musicReady": 4,
+      "effectRms": 0.06347596911826227
+    },
+    "overview": {
+      "fps": 60,
+      "visualBlocks": 720,
+      "pending": 0,
+      "particles": 0,
+      "profile": "balanced",
+      "overview": true,
+      "columns": 18,
+      "rows": 100,
+      "capacity": 1800,
+      "visibleCells": 720,
+      "cameraOffset": 0,
+      "builder": {
+        "x": 138.86857142857144,
+        "y": 524.0285714285715,
+        "row": 39,
+        "col": 0
+      },
+      "tile": 3.0742857142857143,
+      "canvasWidth": 360,
+      "canvasHeight": 768,
+      "towerBounds": {
+        "left": 137.33142857142857,
+        "right": 192.66857142857143,
+        "top": 339.57142857142856,
+        "bottom": 647
+      },
+      "worldTop": 324.2,
+      "worldFloor": 647,
+      "worldHeight": 768,
+      "map": {
+        "x": 325,
+        "y": 344.2,
+        "width": 19,
+        "height": 200
+      }
+    },
+    "layouts": [
+      {
+        "viewport": {
+          "width": 360,
+          "height": 800
+        },
+        "fps": 59,
+        "visualBlocks": 720,
+        "pending": 0,
+        "particles": 0,
+        "profile": "balanced",
+        "overview": false,
+        "columns": 18,
+        "rows": 100,
+        "capacity": 1800,
+        "visibleCells": 126,
+        "cameraOffset": 538.7590868269409,
+        "builder": {
+          "x": 28.055555555555557,
+          "y": 526.314467317062,
+          "row": 39,
+          "col": 0
+        },
+        "tile": 16.11111111111111,
+        "canvasWidth": 360,
+        "canvasHeight": 800,
+        "towerBounds": {
+          "left": 20,
+          "right": 310,
+          "top": -440.35202428417017,
+          "bottom": 1170.7590868269408
+        },
+        "worldTop": 402.25,
+        "worldFloor": 632,
+        "worldHeight": 800,
+        "map": {
+          "x": 325,
+          "y": 422.25,
+          "width": 19,
+          "height": 200
+        },
+        "hud": {
+          "x": 14,
+          "y": 75,
+          "width": 332,
+          "height": 315.25,
+          "top": 75,
+          "right": 346,
+          "bottom": 390.25,
+          "left": 14
+        },
+        "footer": {
+          "x": 14,
+          "y": 657,
+          "width": 332,
+          "height": 131,
+          "top": 657,
+          "right": 346,
+          "bottom": 788,
+          "left": 14
+        },
+        "scroll": 360,
+        "screen": 360
+      },
+      {
+        "viewport": {
+          "width": 450,
+          "height": 960
+        },
+        "fps": 52,
+        "visualBlocks": 720,
+        "pending": 0,
+        "particles": 0,
+        "profile": "balanced",
+        "overview": false,
+        "columns": 18,
+        "rows": 100,
+        "capacity": 1800,
+        "visibleCells": 180,
+        "cameraOffset": 495.9569550455871,
+        "builder": {
+          "x": 28.055555555555557,
+          "y": 498.5128018432455,
+          "row": 39,
+          "col": 0
+        },
+        "tile": 16.11111111111111,
+        "canvasWidth": 360,
+        "canvasHeight": 768,
+        "towerBounds": {
+          "left": 20,
+          "right": 310,
+          "top": -468.154156065524,
+          "bottom": 1142.9569550455872
+        },
+        "worldTop": 324.2,
+        "worldFloor": 647,
+        "worldHeight": 768,
+        "map": {
+          "x": 325,
+          "y": 344.2,
+          "width": 19,
+          "height": 200
+        },
+        "hud": {
+          "x": 14,
+          "y": 75,
+          "width": 422,
+          "height": 315.25,
+          "top": 75,
+          "right": 436,
+          "bottom": 390.25,
+          "left": 14
+        },
+        "footer": {
+          "x": 14,
+          "y": 840,
+          "width": 422,
+          "height": 108,
+          "top": 840,
+          "right": 436,
+          "bottom": 948,
+          "left": 14
+        },
+        "scroll": 450,
+        "screen": 450
+      },
+      {
+        "viewport": {
+          "width": 916,
+          "height": 2040
+        },
+        "fps": 56,
+        "visualBlocks": 720,
+        "pending": 0,
+        "particles": 0,
+        "profile": "balanced",
+        "overview": false,
+        "columns": 18,
+        "rows": 100,
+        "capacity": 1800,
+        "visibleCells": 306,
+        "cameraOffset": 384.9077088228221,
+        "builder": {
+          "x": 28.055555555555557,
+          "y": 470.04880957003724,
+          "row": 39,
+          "col": 0
+        },
+        "tile": 16.11111111111111,
+        "canvasWidth": 360,
+        "canvasHeight": 802,
+        "towerBounds": {
+          "left": 20,
+          "right": 310,
+          "top": -496.6182494498611,
+          "bottom": 1114.4928616612501
+        },
+        "worldTop": 165.37336244541484,
+        "worldFloor": 729.5851528384279,
+        "worldHeight": 801.7467248908297,
+        "map": {
+          "x": 325,
+          "y": 185.37336244541484,
+          "width": 19,
+          "height": 200
+        },
+        "hud": {
+          "x": 14,
+          "y": 75,
+          "width": 888,
+          "height": 315.25,
+          "top": 75,
+          "right": 902,
+          "bottom": 390.25,
+          "left": 14
+        },
+        "footer": {
+          "x": 14,
+          "y": 1920,
+          "width": 888,
+          "height": 108,
+          "top": 1920,
+          "right": 902,
+          "bottom": 2028,
+          "left": 14
+        },
+        "scroll": 916,
+        "screen": 916
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "fps": 60,
+        "visualBlocks": 720,
+        "pending": 0,
+        "particles": 0,
+        "profile": "balanced",
+        "overview": false,
+        "columns": 18,
+        "rows": 100,
+        "capacity": 1800,
+        "visibleCells": 126,
+        "cameraOffset": 274.0488359179479,
+        "builder": {
+          "x": 166.11111111111106,
+          "y": 95.37902096590089,
+          "row": 39,
+          "col": 0
+        },
+        "tile": 8.222222222222221,
+        "canvasWidth": 360,
+        "canvasHeight": 203,
+        "towerBounds": {
+          "left": 162,
+          "right": 310,
+          "top": -397.9546363042743,
+          "bottom": 424.2675859179479
+        },
+        "worldTop": 31,
+        "worldFloor": 150.21875,
+        "worldHeight": 202.5,
+        "map": {
+          "x": 325,
+          "y": 51,
+          "width": 19,
+          "height": 94.21875
+        },
+        "hud": {
+          "x": 25,
+          "y": 59,
+          "width": 480,
+          "height": 264.40625,
+          "top": 59,
+          "right": 505,
+          "bottom": 323.40625,
+          "left": 25
+        },
+        "footer": {
+          "x": 300,
+          "y": 623,
+          "width": 680,
+          "height": 85,
+          "top": 623,
+          "right": 980,
+          "bottom": 708,
+          "left": 300
+        },
+        "scroll": 1280,
+        "screen": 1280
+      }
+    ],
+    "pageErrors": [],
+    "failedResponses": [],
+    "fixtureNote": "Camera screenshots use restored deterministic DEMO progress; no real LIVE or real-time full-room benchmark is claimed",
+    "realTikTokLiveTested": false,
+    "physicalAndroidTested": false
+  },
+  "recovery": {
+    "checkedAt": "2026-11-19T19:25:00.538Z",
+    "signal": "SIGKILL, twice, only on verified isolated server children",
+    "restartMs": 2143,
+    "restored": {
+      "blocks": 230,
+      "wins": 0,
+      "likes": 240,
+      "score": 273,
+      "gifts": 1,
+      "shield": 10,
+      "queued": 17,
+      "gridCells": 1800
+    },
+    "mode": "live",
+    "duplicateSupervisorExit": 78,
+    "maxRestarts": 1,
+    "spawnCount": 2,
+    "stoppedAtLimit": true,
+    "limit": "Does not simulate Android killing the entire Termux application",
+    "output": "TORRE TNT · LIVE 0.2.0 · http://127.0.0.1:34331\nServidor encerrou (SIGKILL). Recuperação 1/1 em 2s.\nTORRE TNT · LIVE 0.2.0 · http://127.0.0.1:34331\nLimite de recuperação atingido. Confira logs/supervisor.jsonl.\n"
+  },
+  "benchmark": {
+    "checkedAt": "2026-11-19T19:25:02.030Z",
+    "environment": {
+      "platform": "linux",
+      "arch": "x64",
+      "node": "v24.22.1"
+    },
+    "scope": "CPU game engine only; one hour of virtual events, not a real-time LIVE or a phone benchmark",
+    "virtualSeconds": 3600,
+    "events": 36000,
+    "players": 1000,
+    "elapsedMs": 1387.99,
+    "cpuMs": 1579,
+    "eventsPerSecond": 25937,
+    "rssMB": 60.9,
+    "peakRssMB": 61.1,
+    "snapshotBytes": 460313,
+    "wins": 10,
+    "queuedBlocks": 129125,
+    "queueOwners": 823,
+    "gridCells": 1800,
+    "blocks": 239,
+    "likes": 1151963,
+    "saveRestoreMatches": true,
+    "realTimeDurationTested": false,
+    "physicalAndroidTested": false
+  },
+  "delivery": {
+    "checkedAt": "2026-11-19T19:31:35.454Z",
+    "archive": "TORRE_TNT_LIVE_V0_2.zip",
+    "cleanInstall": true,
+    "extractedTests": 54,
+    "failedTests": 0,
+    "manifestMatched": true,
+    "startedVia": "bash start.sh",
+    "stoppedVia": "bash stop.sh",
+    "restartedProgress": {
+      "blocks": 45,
+      "likes": 1000,
+      "gridCells": 1800,
+      "gridIdentical": true,
+      "rankedPlayer": "tester"
+    },
+    "duplicateStartExit": 0,
+    "assets": {
+      "/": {
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 11784
+      },
+      "/grid.js": {
+        "status": 200,
+        "contentType": "text/javascript",
+        "bytes": 1220
+      },
+      "/assets/bloco-a-bloco.wav": {
+        "status": 200,
+        "contentType": "audio/wav",
+        "bytes": 2194330
+      },
+      "/assets/gifts/rose.webp": {
+        "status": 200,
+        "contentType": "image/webp",
+        "bytes": 4904
+      }
+    },
+    "log": "TORRE TNT · LIVE 0.2.0 · http://127.0.0.1:34901\nEsta instalação já está aberta. Use http://127.0.0.1:34901\nTORRE TNT · LIVE 0.2.0 · http://127.0.0.1:34901\n",
+    "physicalAndroidTested": false
+  },
+  "upgrade": {
+    "checkedAt": "2026-11-19T19:30:41.027Z",
+    "oldVersion": "0.1.0",
+    "newVersion": "0.2.0",
+    "manualServerStopped": true,
+    "backupCrcChecked": true,
+    "preserved": {
+      "blocks": 63,
+      "wins": 3,
+      "likes": 3450,
+      "likeCarry": 10,
+      "score": 63,
+      "followed": true,
+      "customGiftAmount": 5,
+      "bridgeToken": true
+    },
+    "geometry": {
+      "columns": 18,
+      "rows": 100,
+      "capacity": 1800
+    },
+    "schema": 2,
+    "otherProjectRefused": true,
+    "changedSourceRefused": true,
+    "physicalAndroidTested": false,
+    "output": "TORRE TNT · LIVE 0.1.0 · http://127.0.0.1:34893\nNenhum supervisor desta instalação encontrado.\nBackup verificado: /tmp/torre-upgrade-LNgJVq/TORRE_TNT_LIVE_V0_1/backups/antes-0.2.0-20261119-193039.zip\n\nadded 25 packages in 764ms\n\nInstalado. Execute: bash start.sh\nAbra: http://127.0.0.1:3300\nAtualizado para 0.2.0. Progresso, configurações e logs preservados.\nBackup da versão anterior: /tmp/torre-upgrade-LNgJVq/TORRE_TNT_LIVE_V0_1/backups/antes-0.2.0-20261119-193039.zip\nPara iniciar: cd /tmp/torre-upgrade-LNgJVq/TORRE_TNT_LIVE_V0_1 && bash start.sh\nTORRE TNT · LIVE 0.2.0 · http://127.0.0.1:34893\n"
+  }
+}
