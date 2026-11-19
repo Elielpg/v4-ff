@@ -1,0 +1,287 @@
+{
+  "version": "0.1.0",
+  "unitAndHttp": {
+    "passed": 40,
+    "failed": 0
+  },
+  "archiveSha256": "95bec67cf539f2cac4d469aec759370d70878169341432ce31af975810f74f8d",
+  "browser": {
+    "checkedAt": "2026-11-19T18:22:27.290Z",
+    "browser": "155.0.8059.79",
+    "checks": [
+      "AudioContext running after first click",
+      "Original WAV playing",
+      "Gift photos decoded",
+      "1200 likes build 60 blocks",
+      "Rose removes 10 blocks with delayed visual impact",
+      "Shield absorbs 3 before damage",
+      "GG awards victory and preserves 23 overflow blocks",
+      "Celebration ends on next board",
+      "Four viewport layouts fit",
+      "Local demo taps rejected in LIVE"
+    ],
+    "sound": {
+      "context": "running",
+      "musicPaused": false,
+      "musicReady": 4,
+      "effectRms": 0.035172015442116705
+    },
+    "layouts": [
+      {
+        "viewport": {
+          "width": 360,
+          "height": 800
+        },
+        "fps": 60,
+        "visualBlocks": 23,
+        "pending": 0,
+        "particles": 0,
+        "profile": "balanced",
+        "canvasWidth": 360,
+        "canvasHeight": 800,
+        "towerBounds": {
+          "left": 130.47934782608698,
+          "right": 179.12065217391307,
+          "top": 425.4347826086956,
+          "bottom": 620
+        },
+        "worldTop": 388.25,
+        "worldHeight": 800,
+        "hud": {
+          "x": 14,
+          "y": 75,
+          "width": 332,
+          "height": 283.25,
+          "top": 75,
+          "right": 346,
+          "bottom": 358.25,
+          "left": 14
+        },
+        "footer": {
+          "x": 14,
+          "y": 657,
+          "width": 332,
+          "height": 131,
+          "top": 657,
+          "right": 346,
+          "bottom": 788,
+          "left": 14
+        },
+        "scroll": 360,
+        "screen": 360
+      },
+      {
+        "viewport": {
+          "width": 450,
+          "height": 960
+        },
+        "fps": 59,
+        "visualBlocks": 23,
+        "pending": 0,
+        "particles": 0,
+        "profile": "balanced",
+        "canvasWidth": 360,
+        "canvasHeight": 768,
+        "towerBounds": {
+          "left": 119.10434782608698,
+          "right": 190.49565217391307,
+          "top": 349.4347826086957,
+          "bottom": 635
+        },
+        "worldTop": 298.6,
+        "worldHeight": 768,
+        "hud": {
+          "x": 14,
+          "y": 75,
+          "width": 422,
+          "height": 283.25,
+          "top": 75,
+          "right": 436,
+          "bottom": 358.25,
+          "left": 14
+        },
+        "footer": {
+          "x": 14,
+          "y": 840,
+          "width": 422,
+          "height": 108,
+          "top": 840,
+          "right": 436,
+          "bottom": 948,
+          "left": 14
+        },
+        "scroll": 450,
+        "screen": 450
+      },
+      {
+        "viewport": {
+          "width": 916,
+          "height": 2040
+        },
+        "fps": 60,
+        "visualBlocks": 23,
+        "pending": 0,
+        "particles": 0,
+        "profile": "balanced",
+        "canvasWidth": 360,
+        "canvasHeight": 802,
+        "towerBounds": {
+          "left": 109.80000000000001,
+          "right": 199.8,
+          "top": 357.5851528384279,
+          "bottom": 717.5851528384279
+        },
+        "worldTop": 152.79694323144105,
+        "worldHeight": 801.7467248908297,
+        "hud": {
+          "x": 14,
+          "y": 75,
+          "width": 888,
+          "height": 283.25,
+          "top": 75,
+          "right": 902,
+          "bottom": 358.25,
+          "left": 14
+        },
+        "footer": {
+          "x": 14,
+          "y": 1920,
+          "width": 888,
+          "height": 108,
+          "top": 1920,
+          "right": 902,
+          "bottom": 2028,
+          "left": 14
+        },
+        "scroll": 916,
+        "screen": 916
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "fps": 60,
+        "visualBlocks": 23,
+        "pending": 0,
+        "particles": 0,
+        "profile": "balanced",
+        "canvasWidth": 360,
+        "canvasHeight": 203,
+        "towerBounds": {
+          "left": 216.34144021739132,
+          "right": 237.2585597826087,
+          "top": 54.55027173913044,
+          "bottom": 138.21875
+        },
+        "worldTop": 34,
+        "worldHeight": 202.5,
+        "hud": {
+          "x": 25,
+          "y": 59,
+          "width": 480,
+          "height": 234.40625,
+          "top": 59,
+          "right": 505,
+          "bottom": 293.40625,
+          "left": 25
+        },
+        "footer": {
+          "x": 300,
+          "y": 623,
+          "width": 680,
+          "height": 85,
+          "top": 623,
+          "right": 980,
+          "bottom": 708,
+          "left": 300
+        },
+        "scroll": 1280,
+        "screen": 1280
+      }
+    ],
+    "pageErrors": [],
+    "failedResponses": [],
+    "realTikTokLiveTested": false,
+    "physicalAndroidTested": false
+  },
+  "recovery": {
+    "checkedAt": "2026-11-19T18:22:08.542Z",
+    "signal": "SIGKILL, twice, only on verified isolated server children",
+    "restartMs": 2151,
+    "restored": {
+      "blocks": 47,
+      "wins": 2,
+      "likes": 240,
+      "score": 278,
+      "gifts": 1,
+      "shield": 10
+    },
+    "mode": "live",
+    "duplicateSupervisorExit": 78,
+    "maxRestarts": 1,
+    "spawnCount": 2,
+    "stoppedAtLimit": true,
+    "limit": "Does not simulate Android killing the entire Termux application",
+    "output": "TORRE TNT · LIVE 0.1.0 · http://127.0.0.1:34323\nServidor encerrou (SIGKILL). Recuperação 1/1 em 2s.\nTORRE TNT · LIVE 0.1.0 · http://127.0.0.1:34323\nLimite de recuperação atingido. Confira logs/supervisor.jsonl.\n"
+  },
+  "engineBenchmark": {
+    "checkedAt": "2026-11-19T18:23:19.302Z",
+    "environment": {
+      "platform": "linux",
+      "arch": "x64",
+      "node": "v24.22.1"
+    },
+    "scope": "CPU game engine only; one hour of virtual events, not a real-time LIVE or a phone benchmark",
+    "virtualSeconds": 3600,
+    "events": 36000,
+    "players": 1000,
+    "elapsedMs": 235.43,
+    "cpuMs": 339,
+    "eventsPerSecond": 152912,
+    "rssMB": 52.7,
+    "peakRssMB": 52.7,
+    "snapshotBytes": 385189,
+    "wins": 1486,
+    "blocks": 38,
+    "likes": 1151963,
+    "saveRestoreMatches": true,
+    "realTimeDurationTested": false,
+    "physicalAndroidTested": false
+  },
+  "cleanDelivery": {
+    "checkedAt": "2026-11-19T18:26:39.924Z",
+    "archive": "TORRE_TNT_LIVE_V0_1.zip",
+    "cleanInstall": true,
+    "extractedTests": 40,
+    "failedTests": 0,
+    "manifestMatched": true,
+    "startedVia": "bash start.sh",
+    "stoppedVia": "bash stop.sh",
+    "restartedProgress": {
+      "blocks": 45,
+      "likes": 1000,
+      "rankedPlayer": "tester"
+    },
+    "duplicateStartExit": 0,
+    "assets": {
+      "/": {
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 10475
+      },
+      "/assets/bloco-a-bloco.wav": {
+        "status": 200,
+        "contentType": "audio/wav",
+        "bytes": 2194330
+      },
+      "/assets/gifts/rose.webp": {
+        "status": 200,
+        "contentType": "image/webp",
+        "bytes": 4904
+      }
+    },
+    "log": "TORRE TNT · LIVE 0.1.0 · http://127.0.0.1:34891\nEsta instalação já está aberta. Use http://127.0.0.1:34891\nTORRE TNT · LIVE 0.1.0 · http://127.0.0.1:34891\n",
+    "physicalAndroidTested": false
+  }
+}
