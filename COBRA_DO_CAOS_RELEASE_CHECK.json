@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "archive": "COBRA_DO_CAOS_V0_1.zip",
+  "sha256": "383e8e6d4f1854081b412828ffb1d445a3e76f161384cf150cae50b21496225d",
+  "manifestFiles": 97,
+  "cleanExtraction": true,
+  "installScriptPassed": true,
+  "dependencyInstallMode": "offline from previously downloaded package cache",
+  "startScriptPassed": true,
+  "snakeAdvanced": true,
+  "serverKillRecovery": true,
+  "recoveredPlayer": true,
+  "newBootId": true,
+  "stopScriptPassed": true,
+  "spawnCount": 2,
+  "note": "Computador Cloud/Linux; não reproduz o encerramento de todo o Termux pelo Android."
+}
