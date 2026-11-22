@@ -18,7 +18,7 @@ bash install.sh &&
 bash start.sh
 ```
 
-Se necessário: `pkg install python nodejs-lts ffmpeg`. Abra **http://127.0.0.1:3500** e toque em **TESTAR COM SOM**.
+É necessário Python para extrair o ZIP. O instalador cuida de Node e FFmpeg pela fonte principal configurada, preservando os repositórios extras e a autenticação. Abra **http://127.0.0.1:3500** e toque em **TESTAR COM SOM**.
 
 Para iniciar depois:
 
@@ -29,3 +29,7 @@ cd ~/COBRA_DO_CAOS_V0_1 && bash start.sh
 Transmissão: **☰ → Transmitir**. Eventos do chat: **☰ → LIVE**. Documentação, regras, arquitetura, testes e pendências estão no ZIP. O encerramento de todo o Termux pelo Android e o desempenho prolongado no celular ainda precisam de validação; o supervisor recupera quedas do servidor com limite de tentativas.
 
 Este jogo é independente dos projetos anteriores e não declara vínculo com @cobradoabismo.
+
+## Reparo do instalador 0.1.1
+
+Se a instalação parar com `NO_PUBKEY` no repositório extra `termux-glibc`, use o [pequeno reparo](https://github.com/Elielpg/v4-ff/raw/refs/heads/main/COBRA_REPARO_APT_V0_1_1.zip) e siga [as instruções](COBRA_REPARO_APT_V0_1_1.md). Ele faz backup do instalador e preserva os dados. O ZIP completo acima também foi corrigido. A ausência do FFmpeg deixa somente a transmissão RTMP pendente, sem impedir iniciar o jogo.

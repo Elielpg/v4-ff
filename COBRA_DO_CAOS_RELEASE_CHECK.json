@@ -1,8 +1,8 @@
 {
   "ok": true,
   "archive": "COBRA_DO_CAOS_V0_1.zip",
-  "sha256": "383e8e6d4f1854081b412828ffb1d445a3e76f161384cf150cae50b21496225d",
-  "manifestFiles": 97,
+  "sha256": "978852fb80e57d0c4f9c19b32296b0f045757f5b943b7261f50d98114948f27b",
+  "manifestFiles": 102,
   "cleanExtraction": true,
   "installScriptPassed": true,
   "dependencyInstallMode": "offline from previously downloaded package cache",

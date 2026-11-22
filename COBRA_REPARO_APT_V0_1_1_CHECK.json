@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "archive": "COBRA_REPARO_APT_V0_1_1.zip",
+  "sha256": "2bf61104755259b8f250478027ac339319f7995e6eb35b6b18a38febec7d07c1",
+  "appliedToOriginalRelease": true,
+  "originalInstallerBackedUp": true,
+  "progressPreserved": true,
+  "envPreserved": true,
+  "patchedInstallerPassed": true,
+  "packageInstall": "npm offline from existing cache; Node and FFmpeg already available on Cloud",
+  "note": "Testes de APT são simulados na suíte. Este teste confirma o reparo do ZIP real e a instalação no Linux; não instala pacotes no aparelho."
+}
