@@ -1,0 +1,38 @@
+COBRA DO CAOS — PARQUE SOCIAL 3D — V0.5.0
+
+ZIP completo: COBRA_DO_CAOS_V0_5.zip
+
+COBRA DO CAOS V0.5 — INICIAR
+
+Se você atualizou a pasta antiga:
+cd ~/COBRA_DO_CAOS_V0_1 && bash start.sh
+
+Se fez instalação nova:
+cd ~/COBRA_DO_CAOS_V0_5 && bash start.sh
+
+Abra no Chrome:
+http://127.0.0.1:3500/?v=0.5.0
+
+Toque em TESTAR COM SOM ou conecte sua LIVE no menu.
+ATIRAR é o comando gratuito do canhão. GG tem prioridade por padrão.
+
+Para parar somente o jogo desta pasta:
+bash stop.sh
+
+Para usar as respostas livres com sua IA local existente, em outra sessão:
+bash ia-local.sh
+
+Não execute duas instalações do jogo na porta 3500 ao mesmo tempo.
+Os comandos completos de instalação, atualização e reversão estão no README.md.
+
+PARA ATUALIZAR A PASTA ANTIGA, PRESERVANDO PROGRESSO:
+
+cd ~/COBRA_DO_CAOS_V0_1 &&
+python3 -m zipfile -e ~/storage/downloads/COBRA_DO_CAOS_V0_5.zip "$TMPDIR/cobra-v05" &&
+bash "$TMPDIR/cobra-v05/COBRA_DO_CAOS_V0_5/ATUALIZAR_V0_5.sh" "$PWD" &&
+bash install.sh &&
+bash start.sh
+
+Termine a LIVE antes de atualizar. O atualizador confere o manifesto, para apenas esta instalação e faz backup automático. Instalação nova, reversão, arquitetura e relatórios estão no README.md e docs/ do ZIP.
+
+SHA-256: 0437d4476a8f202ce360ba51c1f8272ded1cab57d091beb1f739134808cdc191

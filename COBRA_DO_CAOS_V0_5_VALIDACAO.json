@@ -1,0 +1,531 @@
+{
+  "ok": true,
+  "version": "0.5.0",
+  "dateBrazil": "2026-11-23",
+  "package": {
+    "archive": "COBRA_DO_CAOS_V0_5.zip",
+    "bytes": 16209657,
+    "files": 242,
+    "sha256": "0437d4476a8f202ce360ba51c1f8272ded1cab57d091beb1f739134808cdc191"
+  },
+  "unitIntegrationTests": {
+    "passed": 74,
+    "failed": 0
+  },
+  "installUpgradeRecoveryRollback": [
+    {
+      "ok": true,
+      "archive": "COBRA_DO_CAOS_V0_5.zip",
+      "sha256": "0437d4476a8f202ce360ba51c1f8272ded1cab57d091beb1f739134808cdc191",
+      "manifestFiles": 241,
+      "cleanInstall": true,
+      "freshStart": true,
+      "updatedFrom": "0.1.0",
+      "updatedTo": "0.5.0",
+      "oldServerStopped": true,
+      "otherInstallationPreserved": true,
+      "progressMigrated": true,
+      "configPreserved": true,
+      "cageMissionSurvivedServerCrash": true,
+      "cannonSurvivedCrash": true,
+      "newBootId": true,
+      "rollbackRestoredCodeAndData": true,
+      "note": "Instalação e recuperação verificadas no Linux Cloud, npm do cache. Não é teste no Android nem encerramento completo do Termux."
+    },
+    {
+      "ok": true,
+      "archive": "COBRA_DO_CAOS_V0_5.zip",
+      "sha256": "0437d4476a8f202ce360ba51c1f8272ded1cab57d091beb1f739134808cdc191",
+      "manifestFiles": 241,
+      "cleanInstall": true,
+      "freshStart": true,
+      "updatedFrom": "0.2.0",
+      "updatedTo": "0.5.0",
+      "oldServerStopped": true,
+      "otherInstallationPreserved": true,
+      "progressMigrated": true,
+      "configPreserved": true,
+      "cageMissionSurvivedServerCrash": true,
+      "cannonSurvivedCrash": true,
+      "newBootId": true,
+      "rollbackRestoredCodeAndData": true,
+      "note": "Instalação e recuperação verificadas no Linux Cloud, npm do cache. Não é teste no Android nem encerramento completo do Termux."
+    },
+    {
+      "ok": true,
+      "archive": "COBRA_DO_CAOS_V0_5.zip",
+      "sha256": "0437d4476a8f202ce360ba51c1f8272ded1cab57d091beb1f739134808cdc191",
+      "manifestFiles": 241,
+      "cleanInstall": true,
+      "freshStart": true,
+      "updatedFrom": "0.3.0",
+      "updatedTo": "0.5.0",
+      "oldServerStopped": true,
+      "otherInstallationPreserved": true,
+      "progressMigrated": true,
+      "configPreserved": true,
+      "cageMissionSurvivedServerCrash": true,
+      "cannonSurvivedCrash": true,
+      "newBootId": true,
+      "rollbackRestoredCodeAndData": true,
+      "note": "Instalação e recuperação verificadas no Linux Cloud, npm do cache. Não é teste no Android nem encerramento completo do Termux."
+    },
+    {
+      "ok": true,
+      "archive": "COBRA_DO_CAOS_V0_5.zip",
+      "sha256": "0437d4476a8f202ce360ba51c1f8272ded1cab57d091beb1f739134808cdc191",
+      "manifestFiles": 241,
+      "cleanInstall": true,
+      "freshStart": true,
+      "updatedFrom": "0.4.0",
+      "updatedTo": "0.5.0",
+      "oldServerStopped": true,
+      "otherInstallationPreserved": true,
+      "progressMigrated": true,
+      "configPreserved": true,
+      "cageMissionSurvivedServerCrash": true,
+      "cannonSurvivedCrash": true,
+      "newBootId": true,
+      "rollbackRestoredCodeAndData": true,
+      "note": "Instalação e recuperação verificadas no Linux Cloud, npm do cache. Não é teste no Android nem encerramento completo do Termux."
+    }
+  ],
+  "browserAudioRtmp": {
+    "V05_BROWSER_CHECK.json": {
+      "ok": true,
+      "version": "0.5.0",
+      "errors": [],
+      "model": {
+        "actors": 16,
+        "photoOnChest": true,
+        "portraitDimensions": {
+          "width": 1024,
+          "height": 1024
+        },
+        "continuousRings": 37,
+        "meshes": 253,
+        "topSize": 6,
+        "carCount": 8,
+        "instanceCapacity": 1920
+      },
+      "flight": {
+        "camera": "flight",
+        "height": 12.665168932505644,
+        "caged": true,
+        "soundEnabled": true
+      },
+      "podium": {
+        "x": 22.997317580788103,
+        "y": 1.3243341116308835
+      },
+      "viewports": [
+        {
+          "width": 360,
+          "height": 800,
+          "controlsFit": true
+        },
+        {
+          "width": 932,
+          "height": 430,
+          "controlsFit": true
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "controlsFit": true
+        }
+      ],
+      "studio": {
+        "width": 720,
+        "height": 1280,
+        "labels": 1
+      },
+      "reducedMotion": true,
+      "rainbowBody": true,
+      "note": "Chromium em Linux Cloud com GPU por software. Retratos de teste são imagens locais de presente, sem fotos reais de espectadores. Não mede desempenho/temperatura do Realme GT3 nem eventos de LIVE real."
+    },
+    "V05_CAGE_BROWSER_CHECK.json": {
+      "ok": true,
+      "errors": [],
+      "failed": [],
+      "day": {
+        "daylight": 0.9951642896483881,
+        "actors": 24,
+        "caged": 20,
+        "labels": 3
+      },
+      "night": 0,
+      "escapeMethods": [
+        "500 likes individuais",
+        "10 comentários",
+        "1 rosa"
+      ],
+      "escaped": 3,
+      "shareColor": [
+        0.40821350458930494,
+        0.38539705882352937,
+        0.8355882352941176
+      ],
+      "camera": {
+        "before": 2.636440295249142,
+        "after": 2.728211407896024
+      },
+      "landed": {
+        "food": 50,
+        "growth": 0,
+        "pile": true
+      },
+      "banquet": {
+        "length": 27,
+        "credits": 50,
+        "owners": 13
+      },
+      "playlist": {
+        "first": "track-1",
+        "second": {
+          "id": "track-2",
+          "loop": false,
+          "playing": true
+        }
+      },
+      "overflow": false,
+      "live": {
+        "people": 0,
+        "players": 0,
+        "blocked": [
+          true,
+          true,
+          true
+        ]
+      },
+      "note": "Eventos fictícios em Chromium com GPU por software. Não mede o GT3, TikTok real ou uma live prolongada."
+    },
+    "V05_AVATAR_CHECK.json": {
+      "ok": true,
+      "errors": [],
+      "cageCount": 1,
+      "slot": 4,
+      "rgba": [
+        240,
+        90,
+        105,
+        255
+      ],
+      "captureCanvasReadable": true,
+      "maxFPS": 30,
+      "note": "Imagem sintética com CORS permitido. Confirma atualização tardia da foto no atlas, sem duplicar cadastro e com canvas capturável; não testa a política CORS real do TikTok."
+    },
+    "V05_VOICE_AND_PACING_CHECK.json": {
+      "ok": true,
+      "errors": [],
+      "eating": {
+        "lastEat": 2.1507482993197278,
+        "bufferSamples": 18522,
+        "goal": 504,
+        "goalLabel": "504",
+        "foods": 1,
+        "stepMs": 279
+      },
+      "ai": {
+        "caption": "ZIG · IA LOCALSete vezes oito são cinquenta e seis!",
+        "src": "c3fc2c8910f42b406ed759f3020d34cece1ccfaf6dc01f6b28dd2aeb95fc7947.wav",
+        "time": 0.350241,
+        "level": 0.2730521270436314
+      },
+      "ambientInterruptedByGreeting": true,
+      "resumedAfterTap": true,
+      "colors": {
+        "green": [
+          0.6235294117647059,
+          0.9137254901960784,
+          0.48627450980392156
+        ],
+        "rainbow": [
+          0.8585294117647059,
+          0.8130093050276531,
+          0.3406911764705882
+        ]
+      },
+      "promptUsesNewRules": true,
+      "note": "Chromium software + síntese real Piper. A resposta de texto é uma fixture HTTP controlada; não avalia o Qwen ou latência/temperatura no GT3."
+    },
+    "V05_STUDIO_CHECK.json": {
+      "localRecordingDownloaded": true,
+      "localRecordingBytes": 709842,
+      "audioDbFS": -19.84329933865068,
+      "encoderStopped": true,
+      "gameContinuedAfterStop": true,
+      "confirmedFrameProgress": true,
+      "ok": true,
+      "errors": [],
+      "source": "Canvas do jogo + áudio WebAudio → MediaRecorder WebM → HTTP local → FFmpeg → servidor RTMP local → FLV verificado por ffprobe",
+      "during": {
+        "status": {
+          "state": "streaming",
+          "message": "FFmpeg enviando vídeo e áudio ao servidor RTMP.",
+          "active": true,
+          "profile": "balanced",
+          "frames": 85,
+          "inputBytes": 245602,
+          "seconds": 5,
+          "lastError": "",
+          "lastWarning": "",
+          "hasSession": true,
+          "capability": {
+            "ready": true,
+            "required": "FFmpeg com libx264 e AAC",
+            "install": "bash scripts/termux-packages.sh ffmpeg"
+          }
+        },
+        "recording": true,
+        "cageCount": 26,
+        "badge": "● TRANSMITINDO"
+      },
+      "received": {
+        "bytes": 3352515,
+        "duration": 9.966,
+        "video": "h264",
+        "width": 720,
+        "height": 1280,
+        "frameRate": "30/1",
+        "audio": "aac"
+      },
+      "keyAbsentFromPublicState": true,
+      "note": "Teste de transmissão real para receptor RTMP local na nuvem; não é transmissão ao TikTok nem benchmark do Realme GT3."
+    },
+    "V05_AUDIO_ASSETS.json": {
+      "ok": true,
+      "count": 28,
+      "method": "Cabeçalho WAV, duração, pico e RMS; não é avaliação humana de timbre.",
+      "files": [
+        {
+          "key": "cageEnter",
+          "seconds": 7.19,
+          "peak": 0.667,
+          "rms": 0.0808,
+          "sha256": "686fdf3e83e90e5fbec41edf57bbc19da8334ec3cfdc0d0b1927d9dae8124959"
+        },
+        {
+          "key": "cageEscape",
+          "seconds": 4.665,
+          "peak": 0.6261,
+          "rms": 0.0828,
+          "sha256": "8b349b744e3e67df2cbb9938e35d34d90de02891dbe98856ecb7569b3b42e12d"
+        },
+        {
+          "key": "cageBanquet",
+          "seconds": 4.932,
+          "peak": 0.6715,
+          "rms": 0.0822,
+          "sha256": "84299969265af3dfa20c790e7514f82d41e17e32755e25e3302ac775c9fc9a92"
+        },
+        {
+          "key": "shareColor",
+          "seconds": 3.91,
+          "peak": 0.7846,
+          "rms": 0.0832,
+          "sha256": "28eab4eedf0a456a1e7dc7085b15f819f125272b5dbc9bde17680f56beca1fff"
+        },
+        {
+          "key": "hello",
+          "seconds": 4.191,
+          "peak": 0.739,
+          "rms": 0.0848,
+          "sha256": "6f2569f196bce828dc466c2cae636d2c01450c841e04feffbe7863d5badcf77b"
+        },
+        {
+          "key": "start",
+          "seconds": 3.803,
+          "peak": 0.6053,
+          "rms": 0.0823,
+          "sha256": "b91d9dae43f45e6c04830c5f05dc83fbe301e42d1fdced84a6d3da5295c93ff7"
+        },
+        {
+          "key": "round",
+          "seconds": 3.177,
+          "peak": 0.7468,
+          "rms": 0.0817,
+          "sha256": "0df885a5756b49f821cec4a469f6f3c545614085a51c1b2417b49ba44ab63405"
+        },
+        {
+          "key": "win",
+          "seconds": 3.148,
+          "peak": 0.5492,
+          "rms": 0.086,
+          "sha256": "9a039bf4a1a8f899d4e52a032d81532ed4db637c392518b7207b9e0c7adf62dc"
+        },
+        {
+          "key": "loss",
+          "seconds": 4.365,
+          "peak": 0.5745,
+          "rms": 0.0808,
+          "sha256": "78af14935b0c91ee3ae1bfa158a1a69558ed35120733c60c6162d604a0e97d4a"
+        },
+        {
+          "key": "gift",
+          "seconds": 4.986,
+          "peak": 0.5767,
+          "rms": 0.0841,
+          "sha256": "6d415135ec313c9c58965bc33eae35365a3238a72b06b3b185b1c89f94766810"
+        },
+        {
+          "key": "collective",
+          "seconds": 3.906,
+          "peak": 0.6987,
+          "rms": 0.0842,
+          "sha256": "3ae6911c63dbb4c7bd2bc0ca104d2616234a58c46c563dcf3878711cc0e39b38"
+        },
+        {
+          "key": "how",
+          "seconds": 7.414,
+          "peak": 0.7151,
+          "rms": 0.0823,
+          "sha256": "7566517db0b8f63748966513d24f88c145a7fc77ef89f43aabba4fbea1d12e0c"
+        },
+        {
+          "key": "follow",
+          "seconds": 4.255,
+          "peak": 0.651,
+          "rms": 0.0844,
+          "sha256": "483897885de2ebc28514ecbe6d5f1dfa565de35148eabd1ad20f0856e13b2440"
+        },
+        {
+          "key": "shield",
+          "seconds": 2.879,
+          "peak": 0.6647,
+          "rms": 0.0837,
+          "sha256": "855d99149201e29e86e43ef444d924439bd93272eb409806e53825cf5aa4f049"
+        },
+        {
+          "key": "explode",
+          "seconds": 3.766,
+          "peak": 0.6106,
+          "rms": 0.0819,
+          "sha256": "a1e2164d729a322421060c1d6c6a2e49ece0b6540dae92d9b28dfc804bce6d63"
+        },
+        {
+          "key": "rescue",
+          "seconds": 3.847,
+          "peak": 0.6536,
+          "rms": 0.0816,
+          "sha256": "e62a277d861c173bf4f18240438de5ab11a7637f1e07050d634e938228cf66a9"
+        },
+        {
+          "key": "cannonLaunch",
+          "seconds": 3.546,
+          "peak": 0.5796,
+          "rms": 0.0851,
+          "sha256": "e5fabe1b4b544d421660f3a9b29ba7579d14ea3d2a4046a07cec76fb77402c5f"
+        },
+        {
+          "key": "cannonHow",
+          "seconds": 6.015,
+          "peak": 0.6454,
+          "rms": 0.0806,
+          "sha256": "7e87cbd242ca2ac4958ddb84921e68e3a63f3b75817da465b3efb5a011ebd37a"
+        },
+        {
+          "key": "idlePark",
+          "seconds": 5.154,
+          "peak": 0.6594,
+          "rms": 0.0819,
+          "sha256": "cd1e2d23716457198b8cb6f7cd81506fad2a611452114e6d050e4d00f99136ce"
+        },
+        {
+          "key": "idleCannon",
+          "seconds": 5.335,
+          "peak": 0.6763,
+          "rms": 0.0819,
+          "sha256": "ce60076efb22040ba5b6d20e0a0e8eb265db747ecaaf747375fd1519f12a9a8e"
+        },
+        {
+          "key": "idleIsland",
+          "seconds": 5.456,
+          "peak": 0.82,
+          "rms": 0.0758,
+          "sha256": "94b1c3f83d1bce559db2db810745e06f393f30538c11a1b848ee70208cae61d3"
+        },
+        {
+          "key": "idleHunger",
+          "seconds": 5.109,
+          "peak": 0.6379,
+          "rms": 0.0831,
+          "sha256": "9db2b447290221adafaf586e37f08692860b60a716bb9d319fd13749cb9d53ba"
+        },
+        {
+          "key": "idleChat",
+          "seconds": 5.616,
+          "peak": 0.6324,
+          "rms": 0.0828,
+          "sha256": "ee62659e89c06006a5028b76ee205db3dd84672f0beb1c476268dc27e97faffb"
+        },
+        {
+          "key": "idleCrown",
+          "seconds": 5.726,
+          "peak": 0.5635,
+          "rms": 0.0817,
+          "sha256": "c9b90eeeec40ff1a29b36016b68facbf8d2c1def97740f1c1b1defa7b6e55c17"
+        },
+        {
+          "key": "idleColor",
+          "seconds": 5.039,
+          "peak": 0.5476,
+          "rms": 0.0853,
+          "sha256": "d0a769a87386d83ca1a02dec99de727d959437906cb902c227a2bab0ac735f08"
+        },
+        {
+          "key": "idleTeam",
+          "seconds": 3.856,
+          "peak": 0.5123,
+          "rms": 0.0805,
+          "sha256": "80179d6977676c92caff4a9e628be22998da8ca1a0967868dc22de1df6486cf4"
+        },
+        {
+          "key": "idleAdventure",
+          "seconds": 5.616,
+          "peak": 0.6644,
+          "rms": 0.082,
+          "sha256": "bfe21e499173683617cfb6ab04f0c177ad4c2d9bd7d16a8e47e0fb346fb5ac0a"
+        },
+        {
+          "key": "idleEscape",
+          "seconds": 5.545,
+          "peak": 0.598,
+          "rms": 0.0829,
+          "sha256": "b5bc2ed5e9d47fd77726262be8faf9f6c8f2559bec6f88b6ca014448fa2a87e7"
+        }
+      ]
+    }
+  },
+  "soak": {
+    "parkQueue": 0,
+    "parkRecords": 1500,
+    "cannonCompleted": 502,
+    "simulatedSeconds": 7200,
+    "elapsedMs": 24230.158426,
+    "rounds": 1,
+    "wins": 0,
+    "losses": 0,
+    "actions": 18640,
+    "players": 1500,
+    "cageRecords": 1500,
+    "cageBatches": 54,
+    "escaped": 479,
+    "feastCredits": 578,
+    "pendingFeasts": 9,
+    "dedupEntries": 3000,
+    "rssBefore": 33234944,
+    "rssAfter": 190771200,
+    "note": "Duas horas simuladas da lógica Node, aceleradas na nuvem. Não são duas horas reais de LIVE, Android, GPU ou IA."
+  },
+  "backupV04Sha256": "a8fd2ada7cdb26526e881e3675ccb610f5a8d129f850437920c30975fafcea2a",
+  "androidCaptureApk": "Mesmo APK V0.1, sem recompilar ou afirmar validação física.",
+  "limits": [
+    "Sem LIVE real no TikTok nesta sessão.",
+    "Sem benchmark, temperatura ou transmissão prolongada no Realme GT3.",
+    "Texto da verificação de IA é controlado; síntese Piper e reprodução são reais.",
+    "Supervisor recupera servidor isolado, não todo o Termux encerrado pelo Android.",
+    "Fotos reais dependem de eventos e CORS; testes usaram imagens sintéticas."
+  ],
+  "note": "O relatório fica fora do ZIP cujo SHA-256 registra. O pacote final foi conferido e instalado exatamente com esse hash."
+}
