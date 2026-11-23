@@ -1,0 +1,22 @@
+{
+  "file": "CAOS_LIVE_V0_1.apk",
+  "bytes": 41511,
+  "sha256": "cbcb06bdde1624faf11ca3e0e28228b97409b6742f1b928b68931a6ca21a76ea",
+  "compileSdk": 35,
+  "minSdk": 29,
+  "signatureVerified": true,
+  "certificateSha256": "7db6bf637b2abcf0d85ddd3396af901435c17a9ac7456a12c81a9b9152f64c05",
+  "protocolAndFilterChecks": 24,
+  "rtmpLocal": {
+    "video": "h264",
+    "audio": "aac",
+    "width": 320,
+    "height": 568,
+    "duration": 7.035,
+    "bytes": 1016341,
+    "audioDbFS": -21.099
+  },
+  "androidCaptureTested": false,
+  "tiktokBroadcastTested": false,
+  "note": "Cliente Java RTMP real → receptor FFmpeg local. Confere protocolo e mídia H.264/AAC. Não executa MediaProjection, EGL ou MediaCodec no Android nem transmite ao TikTok."
+}
