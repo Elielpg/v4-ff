@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "file": "COBRA_DO_CAOS_CONVITE_V04.mp4",
+  "bytes": 19747255,
+  "sha256": "e7d418556e9c68e71133bf8b3c39870fd06a72b80c63a5064cc75d24dfe1b246",
+  "duration": 25.416667,
+  "width": 1080,
+  "height": 1920,
+  "fps": "24/1",
+  "frames": 610,
+  "uniqueSourceJpegs": 606,
+  "codecs": [
+    "h264",
+    "aac"
+  ],
+  "sampleRate": 48000,
+  "channels": 2,
+  "loudnessLUFS": -16.61,
+  "truePeakDbTP": -2.61,
+  "fastStart": true,
+  "completeDecodeWithoutErrors": true,
+  "source": "Cenas do motor do jogo V0.4 em replay de demonstração; fontes/áudio originais ou creditados, sem capturas de uma LIVE real",
+  "note": "Exportação determinística 1080×1920 a 24 FPS. Não é benchmark da GPU ou gravação física do Realme GT3."
+}

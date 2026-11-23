@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "archive": "COBRA_DO_CAOS_V0_4.zip",
+  "sha256": "a8fd2ada7cdb26526e881e3675ccb610f5a8d129f850437920c30975fafcea2a",
+  "manifestFiles": 203,
+  "cleanInstall": true,
+  "freshStart": true,
+  "updatedFrom": "0.2.0",
+  "updatedTo": "0.4.0",
+  "oldServerStopped": true,
+  "otherInstallationPreserved": true,
+  "progressMigrated": true,
+  "configPreserved": true,
+  "cageMissionSurvivedServerCrash": true,
+  "newBootId": true,
+  "rollbackRestoredCodeAndData": true,
+  "note": "Instalação e recuperação verificadas no Linux Cloud, npm do cache. Não é teste no Android nem encerramento completo do Termux."
+}
