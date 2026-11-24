@@ -131,6 +131,14 @@ def prepare_presentation(env: dict, state: Path, device: dict) -> dict:
     return prepare_display(state, env, device)
 
 
+def finalize_device_audio(env: dict, state: Path, device: dict) -> tuple[dict, dict]:
+    try:
+        from .device_runtime import finalize_audio
+    except ImportError:
+        return env, device  # Older optional GPU modules keep their prior behavior.
+    return finalize_audio(env, state, device, requested_sink=os.environ.get('PULSE_SINK'))
+
+
 def verify_original(path: Path) -> dict:
     if not path.is_file() or path.stat().st_size != EXPECTED_BYTES:
         raise ValueError('Não encontrei o SnakeReyers.exe original 0.1.9 completo em game/windows.')
@@ -213,6 +221,7 @@ class NativeGame:
         self.wrapper = self.state_dir / 'bin/SnakeReyers-native'
         self.process: subprocess.Popen | None = None
         self.log = None
+        self.log_offset = 0
         self.started_at = 0.0
         self.last_exit_code = None
         self.device_report = {}
@@ -243,10 +252,22 @@ class NativeGame:
                     self.log = None
                 with (self.state_dir / 'process-events.jsonl').open('a') as file:
                     file.write(json.dumps({'event': 'game_exit', 'at': time.time(), 'code': self.last_exit_code}) + '\n')
+            audio_runtime = {'state': 'pending', 'message': 'Aguardando inicialização do áudio do jogo.'}
+            if self.process and self.log_path.exists():
+                with self.log_path.open('rb') as stream:
+                    stream.seek(self.log_offset)
+                    output = stream.read(32768).decode('utf-8', errors='replace')
+                if 'falling back to the dummy driver' in output.lower():
+                    audio_runtime = {'state': 'dummy', 'driver': 'Dummy',
+                                     'message': 'Jogo sem som: Godot iniciou com driver Dummy. Feche e abra a janela após preparar o áudio Android.'}
+                elif 'SPEECH_AUDIO_STARTED' in output or 'MUSIC_TRACK_STARTED' in output:
+                    audio_runtime = {'state': 'playback-requested',
+                                     'message': 'O jogo iniciou reprodução interna; isso não confirma som audível.'}
             return {'running': self.process is not None, 'pid': self.process.pid if self.process else None,
                     'started_at': self.started_at, 'last_exit_code': self.last_exit_code, 'log': str(self.log_path),
                     'godot': str(self.godot), 'renderer': self.renderer, 'original_verified': self.integrity['verified'],
                     'device': self.device_report,
+                    'audio_runtime': audio_runtime,
                     'automatic_restarts': 0, 'android_validation': 'pending'}
 
     def start(self) -> dict:
@@ -260,6 +281,7 @@ class NativeGame:
                 env.pop(name, None)
             env, self.device_report = prepare_device(env, self.state_dir)
             self.device_report = prepare_presentation(env, self.state_dir, self.device_report)
+            env, self.device_report = finalize_device_audio(env, self.state_dir, self.device_report)
             env['COBRINHA_LIVE_SERVER_URL'] = f'ws://127.0.0.1:{self.port}/ws/godot'
             env['COBRINHA_TERRAIN_EDITOR_FILE'] = str(self.project / 'server/private/cobrinha_terrain_editor.json')
             graphics = self.device_report.get('graphics', {})
@@ -267,10 +289,13 @@ class NativeGame:
             args = ['--fullscreen' if full else '--windowed', '--resolution', graphics.get('resolution', '720x1280')]
             if graphics.get('max_fps'):
                 args.extend(['--max-fps', str(graphics['max_fps'])])
+            if self.device_report.get('audio', {}).get('godot_latency_ms'):
+                args.extend(['--audio-output-latency', str(self.device_report['audio']['godot_latency_ms'])])
             args.extend(['--', '--cobrinha-live'])
             audio_driver = 'PulseAudio' if self.device_report.get('audio', {}).get('output_available') else None
             command = native_command(self.godot, self.pack, args, workdir=self.state_dir, renderer=self.renderer, audio_driver=audio_driver)
             self.log = self.log_path.open('ab', buffering=0)
+            self.log_offset = self.log_path.stat().st_size
             try:
                 self.process = subprocess.Popen(command, cwd=self.state_dir, env=env, stdout=self.log, stderr=subprocess.STDOUT)
             except Exception:
@@ -425,9 +450,12 @@ def main():
     for name in NVIDIA_ENV:
         env.pop(name, None)
     env, device = prepare_device(env, game.state_dir)
+    env, device = finalize_device_audio(env, game.state_dir, device)
     graphics = device.get('graphics', {})
     if graphics.get('max_fps') and '--max-fps' not in engine_args:
         engine_args = ['--max-fps', str(graphics['max_fps']), *engine_args]
+    if device.get('audio', {}).get('godot_latency_ms') and '--audio-output-latency' not in engine_args:
+        engine_args = ['--audio-output-latency', str(device['audio']['godot_latency_ms']), *engine_args]
     audio_driver = 'PulseAudio' if device.get('audio', {}).get('output_available') else None
     command = native_command(game.godot, game.pack, engine_args, workdir=game.state_dir, renderer=game.renderer, audio_driver=audio_driver)
     os.execvpe(command[0], command, env)

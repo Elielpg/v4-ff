@@ -156,6 +156,14 @@ def prepare_presentation(env: dict, state: Path, device: dict) -> dict:
     return prepare_display(state, env, device)
 
 
+def finalize_device_audio(env: dict, state: Path, device: dict) -> tuple[dict, dict]:
+    try:
+        from .device_runtime import finalize_audio
+    except ImportError:
+        return env, device  # Older optional GPU modules keep their prior behavior.
+    return finalize_audio(env, state, device, requested_sink=os.environ.get('PULSE_SINK'))
+
+
 def verify_original(path: Path) -> dict:
     if not path.is_file() or path.stat().st_size != EXPECTED_BYTES:
         raise ValueError('Não encontrei o SnakeReyers.exe original 0.1.9 completo em game/windows.')
@@ -238,6 +246,7 @@ class NativeGame:
         self.wrapper = self.state_dir / 'bin/SnakeReyers-native'
         self.process: subprocess.Popen | None = None
         self.log = None
+        self.log_offset = 0
         self.started_at = 0.0
         self.last_exit_code = None
         self.device_report = {}
@@ -268,10 +277,22 @@ class NativeGame:
                     self.log = None
                 with (self.state_dir / 'process-events.jsonl').open('a') as file:
                     file.write(json.dumps({'event': 'game_exit', 'at': time.time(), 'code': self.last_exit_code}) + '\n')
+            audio_runtime = {'state': 'pending', 'message': 'Aguardando inicialização do áudio do jogo.'}
+            if self.process and self.log_path.exists():
+                with self.log_path.open('rb') as stream:
+                    stream.seek(self.log_offset)
+                    output = stream.read(32768).decode('utf-8', errors='replace')
+                if 'falling back to the dummy driver' in output.lower():
+                    audio_runtime = {'state': 'dummy', 'driver': 'Dummy',
+                                     'message': 'Jogo sem som: Godot iniciou com driver Dummy. Feche e abra a janela após preparar o áudio Android.'}
+                elif 'SPEECH_AUDIO_STARTED' in output or 'MUSIC_TRACK_STARTED' in output:
+                    audio_runtime = {'state': 'playback-requested',
+                                     'message': 'O jogo iniciou reprodução interna; isso não confirma som audível.'}
             return {'running': self.process is not None, 'pid': self.process.pid if self.process else None,
                     'started_at': self.started_at, 'last_exit_code': self.last_exit_code, 'log': str(self.log_path),
                     'godot': str(self.godot), 'renderer': self.renderer, 'original_verified': self.integrity['verified'],
                     'device': self.device_report,
+                    'audio_runtime': audio_runtime,
                     'automatic_restarts': 0, 'android_validation': 'pending'}
 
     def start(self) -> dict:
@@ -285,6 +306,7 @@ class NativeGame:
                 env.pop(name, None)
             env, self.device_report = prepare_device(env, self.state_dir)
             self.device_report = prepare_presentation(env, self.state_dir, self.device_report)
+            env, self.device_report = finalize_device_audio(env, self.state_dir, self.device_report)
             env['COBRINHA_LIVE_SERVER_URL'] = f'ws://127.0.0.1:{self.port}/ws/godot'
             env['COBRINHA_TERRAIN_EDITOR_FILE'] = str(self.project / 'server/private/cobrinha_terrain_editor.json')
             graphics = self.device_report.get('graphics', {})
@@ -292,10 +314,13 @@ class NativeGame:
             args = ['--fullscreen' if full else '--windowed', '--resolution', graphics.get('resolution', '720x1280')]
             if graphics.get('max_fps'):
                 args.extend(['--max-fps', str(graphics['max_fps'])])
+            if self.device_report.get('audio', {}).get('godot_latency_ms'):
+                args.extend(['--audio-output-latency', str(self.device_report['audio']['godot_latency_ms'])])
             args.extend(['--', '--cobrinha-live'])
             audio_driver = 'PulseAudio' if self.device_report.get('audio', {}).get('output_available') else None
             command = native_command(self.godot, self.pack, args, workdir=self.state_dir, renderer=self.renderer, audio_driver=audio_driver)
             self.log = self.log_path.open('ab', buffering=0)
+            self.log_offset = self.log_path.stat().st_size
             try:
                 self.process = subprocess.Popen(command, cwd=self.state_dir, env=env, stdout=self.log, stderr=subprocess.STDOUT)
             except Exception:
@@ -450,9 +475,12 @@ def main():
     for name in NVIDIA_ENV:
         env.pop(name, None)
     env, device = prepare_device(env, game.state_dir)
+    env, device = finalize_device_audio(env, game.state_dir, device)
     graphics = device.get('graphics', {})
     if graphics.get('max_fps') and '--max-fps' not in engine_args:
         engine_args = ['--max-fps', str(graphics['max_fps']), *engine_args]
+    if device.get('audio', {}).get('godot_latency_ms') and '--audio-output-latency' not in engine_args:
+        engine_args = ['--audio-output-latency', str(device['audio']['godot_latency_ms']), *engine_args]
     audio_driver = 'PulseAudio' if device.get('audio', {}).get('output_available') else None
     command = native_command(game.godot, game.pack, engine_args, workdir=game.state_dir, renderer=game.renderer, audio_driver=audio_driver)
     os.execvpe(command[0], command, env)
@@ -691,7 +719,13 @@ def audio(base: dict) -> tuple[dict, dict]:
         created = False
         if not entries:
             for module in ('module-sles-sink', 'module-aaudio-sink'):
-                result = run(['pactl', 'load-module', module], env=env)
+                options = []
+                if module == 'module-aaudio-sink':
+                    # The official Termux module documents this workaround for
+                    # AAudioStream_close() crashes when an idle sink resumes.
+                    # Normal performance mode is also friendlier to Bluetooth.
+                    options = ['sink_name=snake_android_audio', 'no_close_hack=true', 'pm=0', 'latency=80']
+                result = run(['pactl', 'load-module', module, *options], env=env)
                 if result.returncode:
                     report['errors'].append(module + ': ' + result.stderr.strip()[:500])
                     continue
@@ -700,8 +734,10 @@ def audio(base: dict) -> tuple[dict, dict]:
                     created = True
                     report['loaded_module'] = module
                     report['module_id'] = result.stdout.strip()
+                    report['module_arguments'] = options
                     break
         if not entries:
+            env.pop('PULSE_SINK', None)
             report['message'] = 'PulseAudio ainda não tem saída real; auto_null é silenciosa.'
             return env, report
         current = run(['pactl', 'get-default-sink'], env=env)
@@ -724,6 +760,52 @@ def audio(base: dict) -> tuple[dict, dict]:
         report['message'] = 'Não foi possível preparar a saída PulseAudio.'
         report['errors'].append(str(exc)[:800])
     return env, report
+
+
+def finalize_audio(base: dict, state: Path, device: dict, *, requested_sink: str | None = None) -> tuple[dict, dict]:
+    """Recheck after X11 reconfiguration and open a real PCM stream once.
+
+    A module ID returned by pactl is not proof that the output survived idle or
+    route changes. No game/daemon restart loop is used. Capture sinks stay intact.
+    """
+    if config(state).get('enabled') is not True or not base.get('PREFIX', '').startswith('/data/'):
+        return dict(base), device
+    env = dict(base)
+    if not requested_sink and not device.get('audio', {}).get('virtual_capture'):
+        env.pop('PULSE_SINK', None)
+    env, output = audio(env)
+    if output.get('output_available'):
+        path = state / 'audio-startup-silence.wav'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with wave.open(str(path), 'wb') as stream:
+            stream.setnchannels(1)
+            stream.setsampwidth(2)
+            stream.setframerate(24000)
+            stream.writeframes(b'\0' * (24000 // 5 * 2))
+        try:
+            env.setdefault('PULSE_LATENCY_MSEC', '80')
+            played = run(['paplay', '--device=' + output['sink'], str(path)], env=env, timeout=6)
+            available = sinks(env)
+            retained = next((item for item in available if item['name'] == output['sink']), None)
+            if played.returncode or retained is None:
+                raise ValueError((played.stderr or 'A saída de áudio desapareceu durante o teste PCM.').strip())
+            output.update(stream_preflight_ok=True, godot_latency_ms=80,
+                          message='Saída de áudio aceitou PCM antes de abrir o jogo; confirme se ouviu a fala.')
+            if not requested_sink and not output.get('virtual_capture'):
+                # Do not bind Godot permanently to an ephemeral Android sink.
+                # PulseAudio can then move its stream if the output reconnects.
+                env.pop('PULSE_SINK', None)
+                output['route_mode'] = 'server-default'
+        except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
+            output.update(output_available=False, stream_preflight_ok=False,
+                          message='A saída Android falhou no teste PCM; o jogo pode ficar sem som.')
+            output['errors'].append(str(exc)[:800])
+            if not output.get('virtual_capture'):
+                env.pop('PULSE_SINK', None)
+    result = {**device, 'audio': output}
+    atomic_json(state / 'device-runtime.json', result)
+    print('Áudio antes de abrir o jogo: ' + output['message'], flush=True)
+    return env, result
 
 
 def prepare_game(base: dict, state: Path) -> tuple[dict, dict]:
@@ -954,7 +1036,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
   fetch('/termux/game').then(async response => {
     if (!response.ok) return;
     const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.style.marginTop = '14px';
-    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.2.5';
+    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.2.6';
     const message = document.createElement('p'); message.id = 'termuxGameStatus';
     const deviceMessage = document.createElement('p'); deviceMessage.id = 'termuxDeviceStatus';
     const start = document.createElement('button'); start.type = 'button'; start.textContent = 'Abrir jogo original';
@@ -964,6 +1046,13 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
       message.textContent = body.running ? (body.bridge_connected ? 'Janela em execução · conectada ao servidor.' : 'Janela em execução · aguardando conexão com o servidor.') : 'Janela parada. Última saída: ' + (body.last_exit_code ?? 'nenhuma') + '. Logs: ' + body.log;
       const gpu = body.device?.graphics, output = body.device?.audio, display = body.device?.display;
       deviceMessage.textContent = gpu ? (gpu.hardware_verified ? 'GPU confirmada: ' + gpu.renderer : gpu.message) + ' · ' + gpu.resolution + ' · limite ' + gpu.max_fps + ' FPS. ' + (display?.message || output?.message || '') : '';
+      if (body.audio_runtime?.state === 'dummy') {
+        deviceMessage.textContent += ' ⚠ ' + body.audio_runtime.message;
+        deviceMessage.style.color = '#ffba6b';
+      } else if (output && output.output_available === false) {
+        deviceMessage.textContent += ' ⚠ ' + output.message;
+        deviceMessage.style.color = '#ffba6b';
+      } else {deviceMessage.style.color = '';}
     }
     for (const [button, action] of [[start, 'start'], [stop, 'stop']]) button.addEventListener('click', async () => {
       button.disabled = true;
@@ -978,7 +1067,8 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
       try {
         const response = await fetch(path, {method: 'POST'}); const body = await response.json();
         if (!response.ok) throw new Error(body.detail || 'Falha no teste.');
-        testMessage.textContent = body.queued ? 'Fala enviada à fila do jogo. Confirme se ouviu.' : body.test_sent ? 'Teste de som enviado. Confirme se ouviu o sinal.' : (body.message || 'A saída não ficou disponível.') + ' ' + (body.errors || []).join(' ');
+        testMessage.textContent = body.queued ? 'Fala enfileirada; ainda não confirma reprodução. Confirme se ouviu.' : body.test_sent ? 'Teste de som enviado. Confirme se ouviu o sinal.' : (body.message || 'A saída não ficou disponível.') + ' ' + (body.errors || []).join(' ');
+        await refresh();
       } catch (error) {testMessage.textContent = error.message;} finally {button.disabled = false;}
     });
     const musicLabel = document.createElement('label'); musicLabel.htmlFor = 'termuxMusicFile'; musicLabel.textContent = 'Música de fundo · MP3/OGG/WAV · até 200 MB';
