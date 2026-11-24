@@ -6,18 +6,105 @@ import argparse
 import contextlib
 import hashlib
 import json
+import os
+import re
 import sys
 import time
 import zipfile
 from pathlib import Path, PurePosixPath
 
 
-def default_source() -> Path:
-    downloads = Path.home() / 'storage/downloads'
-    for candidate in [downloads / 'SnakeReyers-0.1.9-Windows-x64.zip', downloads / 'SnakeReyers.exe']:
-        if candidate.is_file():
-            return candidate
-    return downloads / 'SnakeReyers-0.1.9-Windows-x64.zip'
+SKIP_DIRS = {'.git', '.venv', 'venv', 'node_modules', '__pycache__', 'private', 'runs', 'logs'}
+
+
+def is_game_exe(path: Path | PurePosixPath) -> bool:
+    stem = re.sub(r'\s*\(\d+\)$', '', path.stem).casefold()
+    return path.suffix.casefold() == '.exe' and re.sub(r'[^a-z0-9]', '', stem) == 'snakereyers'
+
+
+def search_roots() -> list[Path]:
+    home = Path.home()
+    candidates = [home / 'storage/downloads', home / 'storage/shared/Download', home / 'Downloads', home / 'downloads', home / 'Download', Path('/storage/emulated/0/Download'), Path('/storage/emulated/0/Downloads'), Path('/storage/emulated/0/Documents'), Path('/storage/emulated/0/Telegram')]
+    current = Path.cwd()
+    if current != home and current != Path('/') and ('snake' in str(current).casefold() or 'download' in str(current).casefold()):
+        candidates.append(current)
+    try:
+        candidates.extend(p for p in home.iterdir() if 'snake' in p.name.casefold() and p.is_dir())
+    except OSError:
+        pass
+    roots = []
+    seen = set()
+    for candidate in candidates:
+        try:
+            resolved = candidate.resolve()
+            if resolved not in seen and resolved.is_dir():
+                roots.append(resolved)
+                seen.add(resolved)
+        except OSError:
+            pass
+    return roots
+
+
+def discover_sources(roots: list[Path], max_depth: int = 7, limit: int = 30000) -> list[Path]:
+    matches = set()
+    visited = 0
+    for root in roots:
+        root = root.resolve()
+        for directory, dirs, files in os.walk(root, followlinks=False):
+            here = Path(directory)
+            depth = len(here.relative_to(root).parts)
+            dirs[:] = sorted(d for d in dirs if d.casefold() not in SKIP_DIRS and not d.startswith('.')) if depth < max_depth else []
+            visited += len(files) + len(dirs)
+            for name in sorted(files):
+                path = here / name
+                lowered = name.casefold()
+                if is_game_exe(path):
+                    try:
+                        with path.open('rb') as stream:
+                            if stream.read(2) == b'MZ':
+                                matches.add(path.resolve())
+                    except OSError:
+                        pass
+                elif path.suffix.casefold() == '.zip' and ('snake' in lowered or 'reyers' in lowered):
+                    if any(word in lowered for word in ('diagnostico', 'diagnostic', 'parte_', 'partes_')):
+                        continue
+                    try:
+                        with zipfile.ZipFile(path) as archive:
+                            entries = [i for i in archive.infolist() if not i.is_dir() and is_game_exe(PurePosixPath(i.filename.replace('\\', '/')))]
+                        if len(entries) == 1:
+                            matches.add(path.resolve())
+                    except (OSError, ValueError, zipfile.BadZipFile, RuntimeError):
+                        pass
+            if visited >= limit:
+                return sorted(matches, key=lambda p: ('0.1.9' not in str(p), p.suffix.casefold() != '.zip', str(p)))
+    return sorted(matches, key=lambda p: ('0.1.9' not in str(p), p.suffix.casefold() != '.zip', str(p)))
+
+
+def select_source(matches: list[Path], *, interactive: bool, input_fn=input) -> Path:
+    if not matches:
+        raise ValueError('Não encontrei o jogo nas pastas acessíveis de Download/Downloads, Documents, Telegram e pastas Snake. Pelo aplicativo Arquivos, mova o ZIP original ou SnakeReyers.exe para Download. Se necessário, libere o armazenamento com termux-setup-storage. Também é possível informar o caminho com --arquivo.')
+    if len(matches) == 1:
+        return matches[0]
+    print('Encontrei mais de um arquivo. Escolha o pacote 0.1.9 ou seu executável:')
+    for index, path in enumerate(matches, 1):
+        print(f'  {index}. {path}')
+    if not interactive:
+        raise ValueError('Há vários candidatos. Execute novamente com --arquivo e o caminho do arquivo escolhido.')
+    while True:
+        try:
+            answer = input_fn(f'Digite o número (1–{len(matches)}): ').strip()
+        except EOFError as error:
+            raise ValueError('Seleção interrompida. Use --arquivo para informar o caminho diretamente.') from error
+        if answer.isdecimal() and 1 <= int(answer) <= len(matches):
+            return matches[int(answer) - 1]
+        print('Número inválido; escolha um dos arquivos listados.')
+
+
+def output_root(source: Path) -> Path:
+    for candidate in [Path.home() / 'storage/downloads', Path('/storage/emulated/0/Download'), Path.home() / 'Downloads']:
+        if candidate.is_dir() and os.access(candidate, os.W_OK):
+            return candidate.resolve()
+    return source.parent.resolve()
 
 
 def split_game(source: Path, output: Path, chunk_mb: int = 24) -> dict:
@@ -32,7 +119,7 @@ def split_game(source: Path, output: Path, chunk_mb: int = 24) -> dict:
         game_files = []
         if zipfile.is_zipfile(source):
             original = stack.enter_context(zipfile.ZipFile(source))
-            entries = [item for item in original.infolist() if not item.is_dir() and PurePosixPath(item.filename.replace('\\', '/')).name.lower() == 'snakereyers.exe']
+            entries = [item for item in original.infolist() if not item.is_dir() and is_game_exe(PurePosixPath(item.filename.replace('\\', '/'))) ]
             if len(entries) != 1:
                 raise ValueError(f'O ZIP contém {len(entries)} entradas SnakeReyers.exe; preciso de uma única entrada para identificar o jogo.')
             entry = entries[0]
@@ -40,10 +127,10 @@ def split_game(source: Path, output: Path, chunk_mb: int = 24) -> dict:
             filename, size = 'SnakeReyers.exe', entry.file_size
             game_files = [{'name': item.filename, 'bytes': item.file_size} for item in original.infolist() if '/game/' in '/' + item.filename.replace('\\', '/').lower() and not item.is_dir()]
         else:
-            if source.name.lower() != 'snakereyers.exe':
+            if not is_game_exe(source):
                 raise ValueError('Informe o ZIP original ou um arquivo chamado SnakeReyers.exe.')
             stream = stack.enter_context(source.open('rb'))
-            filename, size = source.name, source.stat().st_size
+            filename, size = 'SnakeReyers.exe', source.stat().st_size
         if size < 2:
             raise ValueError('O executável está vazio ou incompleto.')
         output.mkdir(parents=True)
@@ -83,11 +170,32 @@ def main() -> int:
     parser.add_argument('--arquivo', type=Path, default=None)
     parser.add_argument('--saida', type=Path, default=None)
     parser.add_argument('--tamanho-mb', type=int, default=24)
+    parser.add_argument('--procurar', action='store_true', help='Somente lista os arquivos encontrados, sem criar partes.')
     args = parser.parse_args()
-    source = args.arquivo or default_source()
-    output = args.saida or Path.home() / 'storage/downloads' / ('SNAKE_PARTES_' + time.strftime('%Y%m%d_%H%M%S'))
     try:
+        if args.arquivo:
+            source = args.arquivo.expanduser()
+            if args.procurar:
+                if not source.is_file():
+                    raise ValueError(f'Arquivo não encontrado: {source}')
+                print(source.resolve())
+                return 0
+        else:
+            print('Procurando o ZIP ou executável nas pastas acessíveis…', flush=True)
+            matches = discover_sources(search_roots())
+            if args.procurar:
+                for match in matches:
+                    print(match)
+                if not matches:
+                    print('Nenhum arquivo encontrado. Mova o jogo para Download ou use --arquivo.')
+                return 0 if matches else 1
+            source = select_source(matches, interactive=sys.stdin.isatty())
+        print('Arquivo escolhido:', source, flush=True)
+        output = args.saida or output_root(source) / ('SNAKE_PARTES_' + time.strftime('%Y%m%d_%H%M%S'))
         manifest = split_game(source, output, args.tamanho_mb)
+    except KeyboardInterrupt:
+        print('\nCancelado. O arquivo original foi preservado.', file=sys.stderr)
+        return 130
     except (OSError, ValueError, RuntimeError, zipfile.BadZipFile) as error:
         print('Erro:', error, file=sys.stderr)
         return 1
