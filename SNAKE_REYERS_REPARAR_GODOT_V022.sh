@@ -440,10 +440,20 @@ def attach(binding, app, native: NativeGame, *, auto_start: bool = False):
             raise HTTPException(status_code=409, detail=str(exc)) from exc
         return {'queued': True, 'sequence': sequence}
 
+    # Own validated playlist controller; optional for old partial repair packages.
+    try:
+        from .music_library import attach as attach_music
+    except ImportError:
+        library = None
+    else:
+        library = attach_music(binding, app, native)
+
     from starlette.requests import Request
     from starlette.datastructures import UploadFile
 
     async def music_upload(request):
+        if library is not None:
+            return await library.upload(request)
         from .device_runtime import save_music
         from cobrinha_server.services import music_runtime
         from cobrinha_server.bridge.godot_bridge import godot_bridge, preview_bridge

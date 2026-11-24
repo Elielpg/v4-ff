@@ -465,10 +465,20 @@ def attach(binding, app, native: NativeGame, *, auto_start: bool = False):
             raise HTTPException(status_code=409, detail=str(exc)) from exc
         return {'queued': True, 'sequence': sequence}
 
+    # Own validated playlist controller; optional for old partial repair packages.
+    try:
+        from .music_library import attach as attach_music
+    except ImportError:
+        library = None
+    else:
+        library = attach_music(binding, app, native)
+
     from starlette.requests import Request
     from starlette.datastructures import UploadFile
 
     async def music_upload(request):
+        if library is not None:
+            return await library.upload(request)
         from .device_runtime import save_music
         from cobrinha_server.services import music_runtime
         from cobrinha_server.bridge.godot_bridge import godot_bridge, preview_bridge
@@ -1096,7 +1106,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
   fetch('/termux/game').then(async response => {
     if (!response.ok) return;
     const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.style.marginTop = '14px';
-    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.2.8';
+    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.2.9';
     const message = document.createElement('p'); message.id = 'termuxGameStatus';
     const deviceMessage = document.createElement('p'); deviceMessage.id = 'termuxDeviceStatus';
     const start = document.createElement('button'); start.type = 'button'; start.textContent = 'Abrir jogo original';
@@ -1131,25 +1141,89 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
         await refresh();
       } catch (error) {testMessage.textContent = error.message;} finally {button.disabled = false;}
     });
-    const musicLabel = document.createElement('label'); musicLabel.htmlFor = 'termuxMusicFile'; musicLabel.textContent = 'Música de fundo · MP3/OGG/WAV · até 200 MB';
-    const musicFile = document.createElement('input'); musicFile.id = 'termuxMusicFile'; musicFile.type = 'file'; musicFile.accept = '.mp3,.ogg,.wav';
-    const sendMusic = document.createElement('button'); sendMusic.type = 'button'; sendMusic.id = 'termuxMusicUpload'; sendMusic.textContent = 'Adicionar música ao jogo';
-    const musicMessage = document.createElement('p'); musicMessage.id = 'termuxMusicStatus';
-    fetch('/api/music/runtime').then(r => r.json()).then(body => {
-      const music = body.music || body;
-      musicMessage.textContent = music.track_count ? music.track_count + ' faixa(s) disponíveis. ' + (music.enabled ? 'Música ativada.' : 'Música pausada; ative nos controles de música do painel.') : 'Nenhuma faixa na biblioteca. Adicione uma música do celular.';
-    }).catch(() => {});
+    const musicBox = document.createElement('fieldset'); musicBox.id = 'termuxMusicLibrary';
+    const musicTitle = document.createElement('legend'); musicTitle.textContent = 'Biblioteca de músicas';
+    const musicHelp = document.createElement('p'); musicHelp.textContent = 'Envie várias faixas. A preparação acontece uma vez e preserva o áudio original. Marque as músicas que participarão do automático.';
+    const musicLabel = document.createElement('label'); musicLabel.htmlFor = 'termuxMusicFile'; musicLabel.textContent = 'MP3, OGG, WAV, M4A, AAC, FLAC ou OPUS · até 200 MB por arquivo';
+    const musicFile = document.createElement('input'); musicFile.id = 'termuxMusicFile'; musicFile.type = 'file'; musicFile.multiple = true; musicFile.accept = '.mp3,.ogg,.wav,.m4a,.aac,.flac,.opus';
+    const sendMusic = document.createElement('button'); sendMusic.type = 'button'; sendMusic.id = 'termuxMusicUpload'; sendMusic.textContent = 'Salvar músicas';
+    const musicMessage = document.createElement('p'); musicMessage.id = 'termuxMusicStatus'; musicMessage.setAttribute('role', 'status');
+    const musicSelect = document.createElement('select'); musicSelect.id = 'termuxMusicSelect'; musicSelect.setAttribute('aria-label', 'Faixa para tocar');
+    const musicMode = document.createElement('select'); musicMode.id = 'termuxMusicMode'; musicMode.setAttribute('aria-label', 'Modo de reprodução');
+    for (const [value, text] of [['single', 'Repetir a faixa escolhida'], ['shuffle', 'Automático · sortear somente as marcadas']]) {
+      const option = document.createElement('option'); option.value = value; option.textContent = text; musicMode.append(option);
+    }
+    const musicTracks = document.createElement('div'); musicTracks.id = 'termuxMusicTracks'; musicTracks.style.cssText = 'max-height:240px;overflow:auto;display:grid;gap:8px;margin:12px 0';
+    const playMusic = document.createElement('button'); playMusic.id = 'termuxMusicPlay'; playMusic.type = 'button'; playMusic.textContent = 'Tocar / salvar seleção';
+    const nextMusic = document.createElement('button'); nextMusic.id = 'termuxMusicNext'; nextMusic.type = 'button'; nextMusic.textContent = 'Próxima faixa';
+    const pauseMusic = document.createElement('button'); pauseMusic.id = 'termuxMusicPause'; pauseMusic.type = 'button'; pauseMusic.textContent = 'Pausar';
+    const musicVolumeLabel = document.createElement('label'); musicVolumeLabel.htmlFor = 'termuxMusicVolume'; musicVolumeLabel.textContent = 'Volume da música';
+    const musicVolume = document.createElement('input'); musicVolume.type = 'range'; musicVolume.id = 'termuxMusicVolume'; musicVolume.min = '0'; musicVolume.max = '100';
+    const musicVolumeValue = document.createElement('output'); musicVolumeValue.htmlFor = 'termuxMusicVolume';
+    let library, musicBusy = false;
+    const musicButtons = [sendMusic, playMusic, nextMusic, pauseMusic];
+    function busyMusic(value) {musicBusy = value; for (const button of musicButtons) button.disabled = value; musicVolume.disabled = value;}
+    async function musicRequest(path, options) {
+      const response = await fetch(path, options); const body = await response.json();
+      if (!response.ok) throw new Error(body.detail || 'Não foi possível preparar a música.');
+      return body;
+    }
+    function showLibrary(body) {
+      library = body; musicMode.value = body.mode;
+      musicSelect.replaceChildren(); musicTracks.replaceChildren();
+      const selected = new Set(body.selected);
+      for (const track of body.tracks) {
+        const option = document.createElement('option'); option.value = track.id; option.textContent = track.title; musicSelect.append(option);
+        const row = document.createElement('label'); row.style.cssText = 'display:flex;gap:10px;align-items:center';
+        const check = document.createElement('input'); check.type = 'checkbox'; check.value = track.id; check.checked = selected.has(track.id); check.style.width = 'auto';
+        const text = document.createElement('span'); text.textContent = track.title + (track.error ? ' · ' + track.error : track.ready ? ' · pronta' : ' · preparar ao tocar');
+        row.append(check, text); musicTracks.append(row);
+      }
+      if (body.current) musicSelect.value = body.current;
+      musicVolume.value = String(Math.round(body.volume * 100)); musicVolumeValue.textContent = musicVolume.value + '%';
+      pauseMusic.textContent = body.enabled ? 'Pausar música' : 'Retomar música';
+    }
+    async function musicControl(payload) {
+      const body = await musicRequest('/termux/music/control', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
+      showLibrary(body.music);
+      musicMessage.textContent = body.sent_to_game ? 'Configuração enviada ao jogo. ' + (body.music.mode === 'single' ? 'Repetindo a faixa escolhida.' : 'Automático: somente as faixas marcadas.') : 'Seleção salva. Abra o jogo para reproduzir.';
+      return body;
+    }
+    musicRequest('/termux/music/library').then(body => {
+      showLibrary(body); musicMessage.textContent = body.tracks.length + ' faixa(s) salvas. Escolha uma e toque em Tocar. Arquivos antigos serão preparados automaticamente.';
+      const oldCard = document.getElementById('musicEnabled')?.closest('article'); if (oldCard) oldCard.hidden = true;
+    }).catch(error => {musicMessage.textContent = error.message;});
     sendMusic.addEventListener('click', async () => {
-      if (!musicFile.files[0]) {musicMessage.textContent = 'Selecione uma música do celular.'; return;}
-      if (musicFile.files[0].size > 200 * 1024 * 1024) {musicMessage.textContent = 'O arquivo deve ter até 200 MB.'; return;}
-      sendMusic.disabled = true; musicMessage.textContent = 'Enviando música…';
+      const files = Array.from(musicFile.files); if (!files.length) {musicMessage.textContent = 'Selecione uma ou mais músicas do celular.'; return;}
+      busyMusic(true); let saved = 0; const errors = [];
       try {
-        const form = new FormData(); form.append('file', musicFile.files[0]);
-        const response = await fetch('/termux/music/upload', {method: 'POST', body: form}); const body = await response.json();
-        if (!response.ok) throw new Error(body.detail || 'Não foi possível adicionar a música.');
-        musicMessage.textContent = 'Música adicionada. ' + body.track_count + ' faixa(s) disponíveis.';
-      } catch (error) {musicMessage.textContent = error.message;} finally {sendMusic.disabled = false;}
+        for (let i = 0; i < files.length; i++) {
+          musicMessage.textContent = (i + 1) + '/' + files.length + ' · recebendo e preparando ' + files[i].name + '. Faixas longas podem levar alguns minutos.';
+          try {
+            if (files[i].size > 200 * 1024 * 1024) throw new Error('O arquivo deve ter até 200 MB.');
+            const form = new FormData(); form.append('file', files[i]);
+            const body = await musicRequest('/termux/music/import', {method: 'POST', body: form});
+            showLibrary(body.music); musicSelect.value = body.id; saved++;
+          } catch (error) {errors.push(files[i].name + ': ' + error.message);}
+        }
+        musicMessage.textContent = saved + ' música(s) preparadas e salvas. Escolha uma e toque em Tocar. ' + errors.join(' ');
+        musicFile.value = '';
+      } finally {busyMusic(false);}
     });
+    playMusic.addEventListener('click', async () => {
+      busyMusic(true); musicMessage.textContent = 'Preparando a seleção. Músicas longas podem levar alguns minutos na primeira vez…';
+      try {await musicControl({mode: musicMode.value, selected: Array.from(musicTracks.querySelectorAll('input:checked'), item => item.value), current: musicSelect.value, play: true});}
+      catch (error) {musicMessage.textContent = error.message;} finally {busyMusic(false);}
+    });
+    nextMusic.addEventListener('click', async () => {busyMusic(true); try {await musicControl({next: true, play: true});} catch (error) {musicMessage.textContent = error.message;} finally {busyMusic(false);}});
+    pauseMusic.addEventListener('click', async () => {if (!library) return; busyMusic(true); try {await musicControl({enabled: !library.enabled}); musicMessage.textContent = library.enabled ? 'Música retomada.' : 'Música pausada. Voz e efeitos continuam disponíveis.';} catch (error) {musicMessage.textContent = error.message;} finally {busyMusic(false);}});
+    musicVolume.addEventListener('input', () => {musicVolumeValue.textContent = musicVolume.value + '%';});
+    musicVolume.addEventListener('change', async () => {try {const b = await musicRequest('/termux/music/control', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({volume: Number(musicVolume.value) / 100})}); library = b.music;} catch (error) {musicMessage.textContent = error.message;}});
+    setInterval(async () => {
+      if (musicBusy) return;
+      try {const body = await musicRequest('/termux/music/library'); if (body.progress.busy) musicMessage.textContent = body.progress.message;} catch (_) {}
+    }, 5000);
+    musicBox.append(musicTitle, musicHelp, musicLabel, musicFile, sendMusic, musicMode, musicSelect, musicTracks, playMusic, nextMusic, pauseMusic, musicVolumeLabel, musicVolume, musicVolumeValue, musicMessage);
     const profileLabel = document.createElement('label'); profileLabel.htmlFor = 'termuxGraphicsProfile'; profileLabel.textContent = 'Qualidade da imagem · tela limpa em retrato';
     const profile = document.createElement('select'); profile.id = 'termuxGraphicsProfile';
     for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536']]) {
@@ -1168,7 +1242,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
         profileMessage.textContent = 'Salvo. Use Fechar janela do jogo e depois Abrir jogo original para aplicar. O modo leve reduz a carga gráfica; os FPS reais dependem do aparelho.';
       } catch (error) {profileMessage.textContent = error.message;} finally {saveProfile.disabled = false;}
     });
-    card.append(title, message, deviceMessage, start, stop, profileBox, sound, speech, testMessage, musicLabel, musicFile, sendMusic, musicMessage);
+    card.append(title, message, deviceMessage, start, stop, profileBox, sound, speech, testMessage, musicBox);
     const pacing = document.createElement('fieldset'); pacing.hidden = true;
     const pacingTitle = document.createElement('legend'); pacingTitle.textContent = 'Ritmo das respostas e câmera';
     const pacingMode = document.createElement('select'); pacingMode.id = 'termuxReplyMode';

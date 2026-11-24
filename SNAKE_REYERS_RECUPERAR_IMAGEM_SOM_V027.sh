@@ -30,7 +30,7 @@ repair_backup="$(mktemp -d "$repair_target/state/launcher-backups/private-audio-
 repair_stage="$(mktemp -d "$repair_target/.private-audio-v027.XXXXXX")"
 repair_started=0
 repair_complete=0
-repair_files=('start.sh' 'snake_termux/native.py' 'snake_termux/__main__.py' 'snake_termux/device_runtime.py' 'snake_termux/ui.js' 'install-termux.sh' 'snake_termux/presentation.py' 'assets/music/Neon Garden.ogg' 'assets/music/CREDITS.md' 'snake_termux/audio_service.py' 'snake_termux/integration.py' 'snake_termux/live_tuning.py')
+repair_files=('start.sh' 'snake_termux/native.py' 'snake_termux/__main__.py' 'snake_termux/device_runtime.py' 'snake_termux/ui.js' 'install-termux.sh' 'snake_termux/presentation.py' 'assets/music/Neon Garden.ogg' 'assets/music/CREDITS.md' 'snake_termux/audio_service.py' 'snake_termux/integration.py' 'snake_termux/live_tuning.py' 'snake_termux/music_library.py')
 cleanup_repair() {
   if [[ "$repair_started" == 1 && "$repair_complete" != 1 ]]; then
     for relative in "${repair_files[@]}"; do
@@ -465,10 +465,20 @@ def attach(binding, app, native: NativeGame, *, auto_start: bool = False):
             raise HTTPException(status_code=409, detail=str(exc)) from exc
         return {'queued': True, 'sequence': sequence}
 
+    # Own validated playlist controller; optional for old partial repair packages.
+    try:
+        from .music_library import attach as attach_music
+    except ImportError:
+        library = None
+    else:
+        library = attach_music(binding, app, native)
+
     from starlette.requests import Request
     from starlette.datastructures import UploadFile
 
     async def music_upload(request):
+        if library is not None:
+            return await library.upload(request)
         from .device_runtime import save_music
         from cobrinha_server.services import music_runtime
         from cobrinha_server.bridge.godot_bridge import godot_bridge, preview_bridge
@@ -1096,7 +1106,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
   fetch('/termux/game').then(async response => {
     if (!response.ok) return;
     const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.style.marginTop = '14px';
-    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.2.8';
+    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.2.9';
     const message = document.createElement('p'); message.id = 'termuxGameStatus';
     const deviceMessage = document.createElement('p'); deviceMessage.id = 'termuxDeviceStatus';
     const start = document.createElement('button'); start.type = 'button'; start.textContent = 'Abrir jogo original';
@@ -1131,25 +1141,89 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
         await refresh();
       } catch (error) {testMessage.textContent = error.message;} finally {button.disabled = false;}
     });
-    const musicLabel = document.createElement('label'); musicLabel.htmlFor = 'termuxMusicFile'; musicLabel.textContent = 'Música de fundo · MP3/OGG/WAV · até 200 MB';
-    const musicFile = document.createElement('input'); musicFile.id = 'termuxMusicFile'; musicFile.type = 'file'; musicFile.accept = '.mp3,.ogg,.wav';
-    const sendMusic = document.createElement('button'); sendMusic.type = 'button'; sendMusic.id = 'termuxMusicUpload'; sendMusic.textContent = 'Adicionar música ao jogo';
-    const musicMessage = document.createElement('p'); musicMessage.id = 'termuxMusicStatus';
-    fetch('/api/music/runtime').then(r => r.json()).then(body => {
-      const music = body.music || body;
-      musicMessage.textContent = music.track_count ? music.track_count + ' faixa(s) disponíveis. ' + (music.enabled ? 'Música ativada.' : 'Música pausada; ative nos controles de música do painel.') : 'Nenhuma faixa na biblioteca. Adicione uma música do celular.';
-    }).catch(() => {});
+    const musicBox = document.createElement('fieldset'); musicBox.id = 'termuxMusicLibrary';
+    const musicTitle = document.createElement('legend'); musicTitle.textContent = 'Biblioteca de músicas';
+    const musicHelp = document.createElement('p'); musicHelp.textContent = 'Envie várias faixas. A preparação acontece uma vez e preserva o áudio original. Marque as músicas que participarão do automático.';
+    const musicLabel = document.createElement('label'); musicLabel.htmlFor = 'termuxMusicFile'; musicLabel.textContent = 'MP3, OGG, WAV, M4A, AAC, FLAC ou OPUS · até 200 MB por arquivo';
+    const musicFile = document.createElement('input'); musicFile.id = 'termuxMusicFile'; musicFile.type = 'file'; musicFile.multiple = true; musicFile.accept = '.mp3,.ogg,.wav,.m4a,.aac,.flac,.opus';
+    const sendMusic = document.createElement('button'); sendMusic.type = 'button'; sendMusic.id = 'termuxMusicUpload'; sendMusic.textContent = 'Salvar músicas';
+    const musicMessage = document.createElement('p'); musicMessage.id = 'termuxMusicStatus'; musicMessage.setAttribute('role', 'status');
+    const musicSelect = document.createElement('select'); musicSelect.id = 'termuxMusicSelect'; musicSelect.setAttribute('aria-label', 'Faixa para tocar');
+    const musicMode = document.createElement('select'); musicMode.id = 'termuxMusicMode'; musicMode.setAttribute('aria-label', 'Modo de reprodução');
+    for (const [value, text] of [['single', 'Repetir a faixa escolhida'], ['shuffle', 'Automático · sortear somente as marcadas']]) {
+      const option = document.createElement('option'); option.value = value; option.textContent = text; musicMode.append(option);
+    }
+    const musicTracks = document.createElement('div'); musicTracks.id = 'termuxMusicTracks'; musicTracks.style.cssText = 'max-height:240px;overflow:auto;display:grid;gap:8px;margin:12px 0';
+    const playMusic = document.createElement('button'); playMusic.id = 'termuxMusicPlay'; playMusic.type = 'button'; playMusic.textContent = 'Tocar / salvar seleção';
+    const nextMusic = document.createElement('button'); nextMusic.id = 'termuxMusicNext'; nextMusic.type = 'button'; nextMusic.textContent = 'Próxima faixa';
+    const pauseMusic = document.createElement('button'); pauseMusic.id = 'termuxMusicPause'; pauseMusic.type = 'button'; pauseMusic.textContent = 'Pausar';
+    const musicVolumeLabel = document.createElement('label'); musicVolumeLabel.htmlFor = 'termuxMusicVolume'; musicVolumeLabel.textContent = 'Volume da música';
+    const musicVolume = document.createElement('input'); musicVolume.type = 'range'; musicVolume.id = 'termuxMusicVolume'; musicVolume.min = '0'; musicVolume.max = '100';
+    const musicVolumeValue = document.createElement('output'); musicVolumeValue.htmlFor = 'termuxMusicVolume';
+    let library, musicBusy = false;
+    const musicButtons = [sendMusic, playMusic, nextMusic, pauseMusic];
+    function busyMusic(value) {musicBusy = value; for (const button of musicButtons) button.disabled = value; musicVolume.disabled = value;}
+    async function musicRequest(path, options) {
+      const response = await fetch(path, options); const body = await response.json();
+      if (!response.ok) throw new Error(body.detail || 'Não foi possível preparar a música.');
+      return body;
+    }
+    function showLibrary(body) {
+      library = body; musicMode.value = body.mode;
+      musicSelect.replaceChildren(); musicTracks.replaceChildren();
+      const selected = new Set(body.selected);
+      for (const track of body.tracks) {
+        const option = document.createElement('option'); option.value = track.id; option.textContent = track.title; musicSelect.append(option);
+        const row = document.createElement('label'); row.style.cssText = 'display:flex;gap:10px;align-items:center';
+        const check = document.createElement('input'); check.type = 'checkbox'; check.value = track.id; check.checked = selected.has(track.id); check.style.width = 'auto';
+        const text = document.createElement('span'); text.textContent = track.title + (track.error ? ' · ' + track.error : track.ready ? ' · pronta' : ' · preparar ao tocar');
+        row.append(check, text); musicTracks.append(row);
+      }
+      if (body.current) musicSelect.value = body.current;
+      musicVolume.value = String(Math.round(body.volume * 100)); musicVolumeValue.textContent = musicVolume.value + '%';
+      pauseMusic.textContent = body.enabled ? 'Pausar música' : 'Retomar música';
+    }
+    async function musicControl(payload) {
+      const body = await musicRequest('/termux/music/control', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
+      showLibrary(body.music);
+      musicMessage.textContent = body.sent_to_game ? 'Configuração enviada ao jogo. ' + (body.music.mode === 'single' ? 'Repetindo a faixa escolhida.' : 'Automático: somente as faixas marcadas.') : 'Seleção salva. Abra o jogo para reproduzir.';
+      return body;
+    }
+    musicRequest('/termux/music/library').then(body => {
+      showLibrary(body); musicMessage.textContent = body.tracks.length + ' faixa(s) salvas. Escolha uma e toque em Tocar. Arquivos antigos serão preparados automaticamente.';
+      const oldCard = document.getElementById('musicEnabled')?.closest('article'); if (oldCard) oldCard.hidden = true;
+    }).catch(error => {musicMessage.textContent = error.message;});
     sendMusic.addEventListener('click', async () => {
-      if (!musicFile.files[0]) {musicMessage.textContent = 'Selecione uma música do celular.'; return;}
-      if (musicFile.files[0].size > 200 * 1024 * 1024) {musicMessage.textContent = 'O arquivo deve ter até 200 MB.'; return;}
-      sendMusic.disabled = true; musicMessage.textContent = 'Enviando música…';
+      const files = Array.from(musicFile.files); if (!files.length) {musicMessage.textContent = 'Selecione uma ou mais músicas do celular.'; return;}
+      busyMusic(true); let saved = 0; const errors = [];
       try {
-        const form = new FormData(); form.append('file', musicFile.files[0]);
-        const response = await fetch('/termux/music/upload', {method: 'POST', body: form}); const body = await response.json();
-        if (!response.ok) throw new Error(body.detail || 'Não foi possível adicionar a música.');
-        musicMessage.textContent = 'Música adicionada. ' + body.track_count + ' faixa(s) disponíveis.';
-      } catch (error) {musicMessage.textContent = error.message;} finally {sendMusic.disabled = false;}
+        for (let i = 0; i < files.length; i++) {
+          musicMessage.textContent = (i + 1) + '/' + files.length + ' · recebendo e preparando ' + files[i].name + '. Faixas longas podem levar alguns minutos.';
+          try {
+            if (files[i].size > 200 * 1024 * 1024) throw new Error('O arquivo deve ter até 200 MB.');
+            const form = new FormData(); form.append('file', files[i]);
+            const body = await musicRequest('/termux/music/import', {method: 'POST', body: form});
+            showLibrary(body.music); musicSelect.value = body.id; saved++;
+          } catch (error) {errors.push(files[i].name + ': ' + error.message);}
+        }
+        musicMessage.textContent = saved + ' música(s) preparadas e salvas. Escolha uma e toque em Tocar. ' + errors.join(' ');
+        musicFile.value = '';
+      } finally {busyMusic(false);}
     });
+    playMusic.addEventListener('click', async () => {
+      busyMusic(true); musicMessage.textContent = 'Preparando a seleção. Músicas longas podem levar alguns minutos na primeira vez…';
+      try {await musicControl({mode: musicMode.value, selected: Array.from(musicTracks.querySelectorAll('input:checked'), item => item.value), current: musicSelect.value, play: true});}
+      catch (error) {musicMessage.textContent = error.message;} finally {busyMusic(false);}
+    });
+    nextMusic.addEventListener('click', async () => {busyMusic(true); try {await musicControl({next: true, play: true});} catch (error) {musicMessage.textContent = error.message;} finally {busyMusic(false);}});
+    pauseMusic.addEventListener('click', async () => {if (!library) return; busyMusic(true); try {await musicControl({enabled: !library.enabled}); musicMessage.textContent = library.enabled ? 'Música retomada.' : 'Música pausada. Voz e efeitos continuam disponíveis.';} catch (error) {musicMessage.textContent = error.message;} finally {busyMusic(false);}});
+    musicVolume.addEventListener('input', () => {musicVolumeValue.textContent = musicVolume.value + '%';});
+    musicVolume.addEventListener('change', async () => {try {const b = await musicRequest('/termux/music/control', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({volume: Number(musicVolume.value) / 100})}); library = b.music;} catch (error) {musicMessage.textContent = error.message;}});
+    setInterval(async () => {
+      if (musicBusy) return;
+      try {const body = await musicRequest('/termux/music/library'); if (body.progress.busy) musicMessage.textContent = body.progress.message;} catch (_) {}
+    }, 5000);
+    musicBox.append(musicTitle, musicHelp, musicLabel, musicFile, sendMusic, musicMode, musicSelect, musicTracks, playMusic, nextMusic, pauseMusic, musicVolumeLabel, musicVolume, musicVolumeValue, musicMessage);
     const profileLabel = document.createElement('label'); profileLabel.htmlFor = 'termuxGraphicsProfile'; profileLabel.textContent = 'Qualidade da imagem · tela limpa em retrato';
     const profile = document.createElement('select'); profile.id = 'termuxGraphicsProfile';
     for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536']]) {
@@ -1168,7 +1242,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
         profileMessage.textContent = 'Salvo. Use Fechar janela do jogo e depois Abrir jogo original para aplicar. O modo leve reduz a carga gráfica; os FPS reais dependem do aparelho.';
       } catch (error) {profileMessage.textContent = error.message;} finally {saveProfile.disabled = false;}
     });
-    card.append(title, message, deviceMessage, start, stop, profileBox, sound, speech, testMessage, musicLabel, musicFile, sendMusic, musicMessage);
+    card.append(title, message, deviceMessage, start, stop, profileBox, sound, speech, testMessage, musicBox);
     const pacing = document.createElement('fieldset'); pacing.hidden = true;
     const pacingTitle = document.createElement('legend'); pacingTitle.textContent = 'Ritmo das respostas e câmera';
     const pacingMode = document.createElement('select'); pacingMode.id = 'termuxReplyMode';
@@ -10395,6 +10469,317 @@ def install(binding, app):
             pass
         return status()
 SNAKE_DISPLAY_V025_FILE_11
+cat >"$repair_stage/snake_termux/music_library.py" <<'SNAKE_DISPLAY_V025_FILE_12'
+"""Validated local music library. Own runtime hooks; original game is untouched."""
+from __future__ import annotations
+
+import asyncio
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import random
+import re
+import shutil
+import subprocess
+import threading
+import time
+import uuid
+
+MAX_BYTES = 200 * 1024 * 1024
+EXTENSIONS = {'.mp3', '.ogg', '.wav', '.m4a', '.aac', '.opus', '.flac'}
+
+
+def probe(path: Path) -> dict:
+    if not shutil.which('ffprobe'):
+        raise ValueError('FFprobe não está disponível. Instale o pacote ffmpeg do Termux para preparar músicas.')
+    try:
+        result = subprocess.run(['ffprobe', '-v', 'error', '-protocol_whitelist', 'file,pipe',
+                                 '-select_streams', 'a:0', '-show_entries',
+                                 'stream=codec_name,duration:format=duration', '-of', 'json', str(path)],
+                                capture_output=True, text=True, timeout=15)
+        info = json.loads(result.stdout) if result.returncode == 0 else {}
+        streams = info.get('streams', [])
+        if not streams:
+            raise ValueError('O arquivo não contém áudio decodificável. Envie outro download da música; renomear para MP3 não converte o áudio.')
+        duration = float(info.get('format', {}).get('duration') or streams[0].get('duration') or 0)
+        if not math.isfinite(duration) or duration > 4 * 3600:
+            raise ValueError('Use uma faixa com duração de até quatro horas.')
+        return {'codec': streams[0].get('codec_name'), 'duration': duration}
+    except (subprocess.TimeoutExpired, json.JSONDecodeError, OSError) as exc:
+        raise ValueError('Não foi possível analisar o áudio. Tente outro arquivo da música.') from exc
+
+
+class MusicLibrary:
+    def __init__(self, runtime, native):
+        self.runtime, self.native = runtime, native
+        self.file = native.state_dir / 'music-library.json'
+        self.lock = threading.RLock()
+        self.operation = threading.Lock()
+        self.original_message = runtime.websocket_message
+        self.original_choose = runtime.choose_session_start_track
+        self.progress = {'busy': False, 'message': ''}
+        try:
+            self.data = json.loads(self.file.read_text())
+            if not isinstance(self.data, dict):
+                raise ValueError('Invalid library')
+        except (OSError, ValueError):
+            self.data = {}
+        self.data.setdefault('records', {})
+        self.data.setdefault('selected', [])
+        self.data.setdefault('mode', 'single')
+        self.data.setdefault('active', False)
+
+    def save(self):
+        self.file.parent.mkdir(parents=True, exist_ok=True)
+        temporary = self.file.with_suffix('.tmp')
+        temporary.write_text(json.dumps(self.data, ensure_ascii=False, indent=2))
+        os.replace(temporary, self.file)
+
+    def inventory(self):
+        with self.lock:
+            records = self.data['records']
+            hidden = {r.get('playable') for r in records.values()}
+            for entry in self.runtime.track_entries():
+                path = str(Path(entry['path']).resolve())
+                if path in hidden or re.fullmatch(r'prepared-[0-9a-f]{24}\.ogg', Path(path).name):
+                    continue
+                key = hashlib.sha256(path.encode()).hexdigest()[:24]
+                records.setdefault(key, {'source': path, 'title': entry.get('title') or Path(path).stem})
+            return {key: record for key, record in records.items() if Path(record['source']).is_file()}
+
+    def prepare(self, key):
+        records = self.inventory()
+        if key not in records:
+            raise ValueError('Faixa não encontrada na biblioteca.')
+        record = records[key]
+        source = Path(record['source'])
+        fingerprint = [source.stat().st_size, source.stat().st_mtime_ns]
+        if record.get('fingerprint') == fingerprint and Path(record.get('playable') or '/nonexistent').is_file():
+            return record
+        self.progress = {'busy': True, 'message': 'Preparando: ' + record['title']}
+        info = probe(source)
+        # Even a mislabeled AAC/M4A called .mp3 is decoded by content, then
+        # converted to Vorbis, which the original Godot loader supports.
+        reusable = source.suffix.lower() == '.ogg' and info['codec'] == 'vorbis'
+        if reusable and source.parent.resolve() == self.runtime.BACKGROUND_MUSIC_DIR.resolve():
+            target = source
+        else:
+            if not reusable and not shutil.which('ffmpeg'):
+                raise ValueError('FFmpeg não está disponível para converter esta música.')
+            directory = self.runtime.BACKGROUND_MUSIC_DIR
+            directory.mkdir(parents=True, exist_ok=True)
+            target = directory / ('prepared-' + key + '.ogg')
+            temporary = target.with_name('.' + target.stem + '-' + uuid.uuid4().hex + '.ogg')
+            log_dir = self.native.state_dir / 'logs'
+            log_dir.mkdir(parents=True, exist_ok=True)
+            try:
+                if reusable:
+                    shutil.copyfile(source, temporary)
+                else:
+                    with (log_dir / 'music-conversion.log').open('a') as log:
+                        log.write('\nPreparing ' + key + '\n'); log.flush()
+                        converted = subprocess.run(['ffmpeg', '-nostdin', '-y', '-hide_banner', '-loglevel', 'error',
+                            '-threads', '1', '-filter_threads', '1', '-protocol_whitelist', 'file,pipe',
+                            '-i', str(source), '-map', '0:a:0', '-vn', '-sn', '-dn', '-ar', '48000',
+                            '-ac', '2', '-c:a', 'libvorbis', '-q:a', '4', '-threads', '1', str(temporary)],
+                            stdout=log, stderr=log, timeout=900)
+                    if converted.returncode != 0 or not temporary.is_file():
+                        raise ValueError('A conversão falhou. O arquivo pode estar incompleto; envie outro download da música.')
+                checked = probe(temporary)
+                if checked['codec'] != 'vorbis' or temporary.stat().st_size < 128:
+                    raise ValueError('O arquivo convertido não passou na validação.')
+                os.replace(temporary, target)
+            except subprocess.TimeoutExpired as exc:
+                raise ValueError('A preparação ultrapassou 15 minutos. Divida a faixa em arquivos menores.') from exc
+            finally:
+                temporary.unlink(missing_ok=True)
+        with self.lock:
+            record.update(playable=str(target.resolve()), fingerprint=fingerprint, duration=info['duration'], error='')
+            self.save()
+        return record
+
+    def prepare_checked(self, key):
+        try:
+            return self.prepare(key)
+        except ValueError as exc:
+            with self.lock:
+                if key in self.data['records']:
+                    self.data['records'][key]['error'] = str(exc)
+                    self.save()
+            raise
+
+    def message(self):
+        with self.lock:
+            message = self.original_message()
+            if not self.data['active']:
+                return message
+            payload = dict(message['payload'])
+            records = self.inventory()
+            selected = [key for key in self.data['selected'] if key in records]
+            if self.data['mode'] == 'single':
+                selected = [self.data.get('current')] if self.data.get('current') in records else []
+            tracks = [records[key]['playable'] for key in selected if records[key].get('playable') and Path(records[key]['playable']).is_file()]
+            current = records.get(self.data.get('current'), {}).get('playable')
+            payload.update(tracks=tracks, track_count=len(tracks),
+                           current_track=current if current in tracks else (tracks[0] if tracks else ''),
+                           track_metadata={path: {'title': record['title'], 'source_path': record['source'], 'processed': False}
+                                           for record in records.values() if (path := record.get('playable')) in tracks})
+            return {**message, 'payload': payload}
+
+    def choose_session(self):
+        # Preserve the saved manual choice across the original session reset.
+        if not self.data['active']:
+            return self.original_choose()
+        return self.message()['payload']
+
+    def status(self):
+        with self.lock:
+            records = self.inventory()
+            runtime = self.runtime.status()
+            return {'tracks': [{'id': key, 'title': record['title'],
+                         'ready': bool(record.get('playable') and Path(record['playable']).is_file()),
+                         'duration': record.get('duration', 0), 'error': record.get('error', '')}
+                         for key, record in records.items()],
+                    'selected': list(self.data['selected']), 'current': self.data.get('current', ''),
+                    'mode': self.data['mode'], 'active': self.data['active'],
+                    'enabled': runtime['enabled'], 'volume': runtime['volume'],
+                    'progress': dict(self.progress)}
+
+    async def broadcast(self):
+        from cobrinha_server.bridge.godot_bridge import godot_bridge, preview_bridge
+        sent = False
+        for bridge in (godot_bridge, preview_bridge):
+            if bridge.status()['connected']:
+                await bridge.send(self.message())
+                sent = True
+        return sent
+
+    async def upload(self, request):
+        from fastapi import HTTPException
+        from starlette.datastructures import UploadFile
+        if not self.operation.acquire(blocking=False):
+            raise HTTPException(status_code=409, detail='Há outra música sendo preparada. Aguarde a conclusão.')
+        upload = None
+        source = None
+        try:
+            form = await request.form(max_files=1, max_fields=0)
+            upload = form.get('file')
+            if not isinstance(upload, UploadFile):
+                raise ValueError('Selecione um arquivo de música.')
+            suffix = Path(upload.filename or '').suffix.lower()
+            if suffix not in EXTENSIONS:
+                raise ValueError('Use MP3, OGG, WAV, M4A, AAC, FLAC ou OPUS.')
+            title = re.sub(r'[\x00-\x1f/\\]', '', Path(upload.filename.replace('\\', '/')).stem).strip()[:120] or 'Música'
+            key = uuid.uuid4().hex[:24]
+            directory = self.native.state_dir / 'music-originals'
+            directory.mkdir(parents=True, exist_ok=True)
+            source = directory / (key + suffix)
+            size = 0
+            self.progress = {'busy': True, 'message': 'Recebendo: ' + title}
+            with source.open('wb') as output:
+                while chunk := await upload.read(128 * 1024):
+                    size += len(chunk)
+                    if size > MAX_BYTES:
+                        raise ValueError('Cada arquivo deve ter até 200 MB.')
+                    output.write(chunk)
+            with self.lock:
+                self.data['records'][key] = {'source': str(source.resolve()), 'title': title}
+            record = await asyncio.to_thread(self.prepare_checked, key)
+            return {'ok': True, 'id': key, 'file': Path(record['playable']).name,
+                    'track_count': len(self.inventory()), 'music': self.status()}
+        except ValueError as exc:
+            if source:
+                source.unlink(missing_ok=True)
+            with self.lock:
+                if 'key' in locals():
+                    self.data['records'].pop(key, None)
+                    self.save()
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        finally:
+            if upload is not None and hasattr(upload, 'close'):
+                await upload.close()
+            self.progress = {'busy': False, 'message': ''}
+            self.operation.release()
+
+    async def control(self, payload):
+        from fastapi import HTTPException
+        if not self.operation.acquire(blocking=False):
+            raise HTTPException(status_code=409, detail='Aguarde a preparação da música atual.')
+        try:
+            allowed = {'mode', 'selected', 'current', 'enabled', 'volume', 'play', 'next'}
+            if set(payload) - allowed:
+                raise ValueError('Comando de música desconhecido.')
+            mode = payload.get('mode', self.data['mode'])
+            if mode not in ('single', 'shuffle'):
+                raise ValueError('Modo de reprodução inválido.')
+            for field in ('enabled', 'play', 'next'):
+                if field in payload and type(payload[field]) is not bool:
+                    raise ValueError('Controle inválido: ' + field)
+            volume = payload.get('volume')
+            if volume is not None and (isinstance(volume, bool) or not isinstance(volume, (int, float)) or not math.isfinite(volume) or not 0 <= volume <= 1):
+                raise ValueError('O volume deve estar entre 0 e 100%.')
+            records = self.inventory()
+            selected = payload.get('selected', self.data['selected'])
+            if not isinstance(selected, list) or any(not isinstance(key, str) or key not in records for key in selected):
+                raise ValueError('Selecione faixas existentes na biblioteca.')
+            selected = list(dict.fromkeys(selected))
+            current = payload.get('current', self.data.get('current', ''))
+            if not isinstance(current, str) or (current and current not in records):
+                raise ValueError('Faixa não encontrada.')
+            playing = payload.get('play') or payload.get('next') or 'mode' in payload or 'selected' in payload or 'current' in payload
+            if playing:
+                if mode == 'shuffle' and not selected:
+                    raise ValueError('Marque pelo menos uma faixa para o automático.')
+                if payload.get('next'):
+                    pool = [key for key in selected if key != current] or selected
+                    if mode == 'single':
+                        pool = [key for key in records if key != current] or list(records)
+                    current = random.choice(pool) if pool else ''
+                elif mode == 'shuffle' and current not in selected:
+                    current = selected[0]
+                if not current:
+                    raise ValueError('Escolha uma música para tocar.')
+                for key in (selected if mode == 'shuffle' else [current]):
+                    await asyncio.to_thread(self.prepare_checked, key)
+                with self.lock:
+                    self.data.update(active=True, mode=mode, selected=selected, current=current)
+                    self.save()
+            self.runtime.update(enabled=payload.get('enabled', True if payload.get('play') else None),
+                                volume=volume,
+                                current_track=self.data['records'].get(current, {}).get('playable') if playing else None)
+            sent = await self.broadcast()
+            return {'ok': True, 'sent_to_game': sent, 'music': self.status()}
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        finally:
+            self.progress = {'busy': False, 'message': ''}
+            self.operation.release()
+
+
+def attach(binding, app, native):
+    from cobrinha_server.services import music_runtime
+    from starlette.requests import Request
+    library = MusicLibrary(music_runtime, native)
+    binding.replace_aliases(music_runtime.websocket_message, library.message)
+    binding.replace_aliases(music_runtime.choose_session_start_track, library.choose_session)
+    app.state.snake_music_library = library
+
+    @app.get('/termux/music/library')
+    def status():
+        return library.status()
+
+    @app.post('/termux/music/control')
+    async def control(payload: dict):
+        return await library.control(payload)
+
+    async def upload(request):
+        return await library.upload(request)
+    upload.__annotations__['request'] = Request
+    app.add_api_route('/termux/music/import', upload, methods=['POST'])
+    return library
+SNAKE_DISPLAY_V025_FILE_12
 "$repair_python" - "$repair_stage" <<'SNAKE_CHECK_FILES'
 import ast, pathlib, sys
 for path in pathlib.Path(sys.argv[1]).rglob("*.py"):
