@@ -1,0 +1,484 @@
+{
+  "ok": true,
+  "version": "0.6.0",
+  "dateBrazil": "2026-11-23",
+  "package": {
+    "archive": "COBRA_DO_CAOS_V0_6.zip",
+    "bytes": 19522336,
+    "files": 273,
+    "sha256": "da3309d79e07c0cf5a4ace2a204b7e61ea6a285b5d1af4ce44731673a91fed5f"
+  },
+  "unitTests": {
+    "passed": 81,
+    "failed": 0
+  },
+  "installUpgradeRecoveryRollback": [
+    {
+      "ok": true,
+      "archive": "COBRA_DO_CAOS_V0_6.zip",
+      "sha256": "da3309d79e07c0cf5a4ace2a204b7e61ea6a285b5d1af4ce44731673a91fed5f",
+      "manifestFiles": 272,
+      "cleanInstall": true,
+      "freshStart": true,
+      "updatedFrom": "0.1.0",
+      "updatedTo": "0.6.0",
+      "oldServerStopped": true,
+      "otherInstallationPreserved": true,
+      "progressMigrated": true,
+      "configPreserved": true,
+      "cageMissionSurvivedServerCrash": true,
+      "cannonSurvivedCrash": true,
+      "newBootId": true,
+      "rollbackRestoredCodeAndData": true,
+      "note": "Instalação e recuperação verificadas no Linux Cloud, npm do cache. Não é teste no Android nem encerramento completo do Termux."
+    },
+    {
+      "ok": true,
+      "archive": "COBRA_DO_CAOS_V0_6.zip",
+      "sha256": "da3309d79e07c0cf5a4ace2a204b7e61ea6a285b5d1af4ce44731673a91fed5f",
+      "manifestFiles": 272,
+      "cleanInstall": true,
+      "freshStart": true,
+      "updatedFrom": "0.2.0",
+      "updatedTo": "0.6.0",
+      "oldServerStopped": true,
+      "otherInstallationPreserved": true,
+      "progressMigrated": true,
+      "configPreserved": true,
+      "cageMissionSurvivedServerCrash": true,
+      "cannonSurvivedCrash": true,
+      "newBootId": true,
+      "rollbackRestoredCodeAndData": true,
+      "note": "Instalação e recuperação verificadas no Linux Cloud, npm do cache. Não é teste no Android nem encerramento completo do Termux."
+    },
+    {
+      "ok": true,
+      "archive": "COBRA_DO_CAOS_V0_6.zip",
+      "sha256": "da3309d79e07c0cf5a4ace2a204b7e61ea6a285b5d1af4ce44731673a91fed5f",
+      "manifestFiles": 272,
+      "cleanInstall": true,
+      "freshStart": true,
+      "updatedFrom": "0.3.0",
+      "updatedTo": "0.6.0",
+      "oldServerStopped": true,
+      "otherInstallationPreserved": true,
+      "progressMigrated": true,
+      "configPreserved": true,
+      "cageMissionSurvivedServerCrash": true,
+      "cannonSurvivedCrash": true,
+      "newBootId": true,
+      "rollbackRestoredCodeAndData": true,
+      "note": "Instalação e recuperação verificadas no Linux Cloud, npm do cache. Não é teste no Android nem encerramento completo do Termux."
+    },
+    {
+      "ok": true,
+      "archive": "COBRA_DO_CAOS_V0_6.zip",
+      "sha256": "da3309d79e07c0cf5a4ace2a204b7e61ea6a285b5d1af4ce44731673a91fed5f",
+      "manifestFiles": 272,
+      "cleanInstall": true,
+      "freshStart": true,
+      "updatedFrom": "0.4.0",
+      "updatedTo": "0.6.0",
+      "oldServerStopped": true,
+      "otherInstallationPreserved": true,
+      "progressMigrated": true,
+      "configPreserved": true,
+      "cageMissionSurvivedServerCrash": true,
+      "cannonSurvivedCrash": true,
+      "newBootId": true,
+      "rollbackRestoredCodeAndData": true,
+      "note": "Instalação e recuperação verificadas no Linux Cloud, npm do cache. Não é teste no Android nem encerramento completo do Termux."
+    },
+    {
+      "ok": true,
+      "archive": "COBRA_DO_CAOS_V0_6.zip",
+      "sha256": "da3309d79e07c0cf5a4ace2a204b7e61ea6a285b5d1af4ce44731673a91fed5f",
+      "manifestFiles": 272,
+      "cleanInstall": true,
+      "freshStart": true,
+      "updatedFrom": "0.5.0",
+      "updatedTo": "0.6.0",
+      "oldServerStopped": true,
+      "otherInstallationPreserved": true,
+      "progressMigrated": true,
+      "configPreserved": true,
+      "cageMissionSurvivedServerCrash": true,
+      "cannonSurvivedCrash": true,
+      "newBootId": true,
+      "rollbackRestoredCodeAndData": true,
+      "note": "Instalação e recuperação verificadas no Linux Cloud, npm do cache. Não é teste no Android nem encerramento completo do Termux."
+    }
+  ],
+  "browserAudioRtmp": {
+    "V06_BROWSER_CHECK.json": {
+      "ok": true,
+      "version": "0.6.0",
+      "errors": [],
+      "model": {
+        "actors": 17,
+        "photoOnChest": true,
+        "portraitDimensions": {
+          "width": 1024,
+          "height": 1024
+        },
+        "continuousRings": 45,
+        "meshes": 431,
+        "realModels": 7,
+        "topSize": 6,
+        "carCount": 8,
+        "instanceCapacity": 1920
+      },
+      "flight": {
+        "camera": "flight",
+        "height": 14.55045996851471,
+        "caged": true,
+        "soundEnabled": true
+      },
+      "podium": {
+        "x": 20.198067648058807,
+        "y": 1.0502171504409163
+      },
+      "viewports": [
+        {
+          "width": 360,
+          "height": 800,
+          "controlsFit": true
+        },
+        {
+          "width": 932,
+          "height": 430,
+          "controlsFit": true
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "controlsFit": true
+        }
+      ],
+      "studio": {
+        "width": 720,
+        "height": 1280,
+        "labels": 1
+      },
+      "reducedMotion": true,
+      "dancing": {
+        "frame": 8.64999979376793,
+        "flip": 2.1739821162841375,
+        "models": 7
+      },
+      "stoppedDance": true,
+      "rainbowBody": true,
+      "note": "Chromium em Linux Cloud com GPU por software. Retratos de teste são imagens locais de presente, sem fotos reais de espectadores. Não mede desempenho/temperatura do Realme GT3 nem eventos de LIVE real."
+    },
+    "V06_VOICE_AND_PACING_CHECK.json": {
+      "ok": true,
+      "errors": [],
+      "eating": {
+        "lastEat": 3.500408163265306,
+        "bufferSamples": 18522,
+        "goal": 504,
+        "goalLabel": "504",
+        "foods": 1,
+        "stepMs": 280
+      },
+      "ai": {
+        "caption": "ZIG · IA LOCALSete vezes oito são cinquenta e seis!",
+        "src": "c3fc2c8910f42b406ed759f3020d34cece1ccfaf6dc01f6b28dd2aeb95fc7947.wav",
+        "time": 0.490629,
+        "level": 0.038000755136651146
+      },
+      "ambientInterruptedByGreeting": true,
+      "resumedAfterTap": true,
+      "colors": {
+        "green": [
+          0.6235294117647059,
+          0.9137254901960784,
+          0.48627450980392156
+        ],
+        "rainbow": [
+          0.6982985578494914,
+          0.9020588235294118,
+          0.3406911764705882
+        ]
+      },
+      "promptUsesNewRules": true,
+      "note": "Chromium software + síntese real Piper. A resposta de texto é uma fixture HTTP controlada; não avalia o Qwen ou latência/temperatura no GT3."
+    },
+    "V06_STUDIO_CHECK.json": {
+      "localRecordingDownloaded": true,
+      "localRecordingBytes": 568953,
+      "audioDbFS": -23.90188667450934,
+      "encoderStopped": true,
+      "gameContinuedAfterStop": true,
+      "confirmedFrameProgress": true,
+      "ok": true,
+      "errors": [],
+      "source": "Canvas do jogo + áudio WebAudio → MediaRecorder WebM → HTTP local → FFmpeg → servidor RTMP local → FLV verificado por ffprobe",
+      "during": {
+        "status": {
+          "state": "streaming",
+          "message": "FFmpeg enviando vídeo e áudio ao servidor RTMP.",
+          "active": true,
+          "profile": "balanced",
+          "frames": 113,
+          "inputBytes": 308839,
+          "seconds": 7,
+          "lastError": "",
+          "lastWarning": "",
+          "hasSession": true,
+          "capability": {
+            "ready": true,
+            "required": "FFmpeg com libx264 e AAC",
+            "install": "bash scripts/termux-packages.sh ffmpeg"
+          }
+        },
+        "recording": true,
+        "cageCount": 26,
+        "badge": "● TRANSMITINDO"
+      },
+      "received": {
+        "bytes": 4021841,
+        "duration": 12.156,
+        "video": "h264",
+        "width": 720,
+        "height": 1280,
+        "frameRate": "30/1",
+        "audio": "aac"
+      },
+      "keyAbsentFromPublicState": true,
+      "note": "Teste de transmissão real para receptor RTMP local na nuvem; não é transmissão ao TikTok nem benchmark do Realme GT3."
+    },
+    "V06_AUDIO_ASSETS.json": {
+      "ok": true,
+      "count": 28,
+      "files": [
+        {
+          "key": "cageEnter",
+          "duration": 7.346,
+          "rms": 0.0801,
+          "sha256": "554e33eb83872fcce8f8227459c48b3d1a8d4ad9ad5e8ee521b3f8949e0bee19"
+        },
+        {
+          "key": "cageEscape",
+          "duration": 4.665,
+          "rms": 0.0828,
+          "sha256": "8b349b744e3e67df2cbb9938e35d34d90de02891dbe98856ecb7569b3b42e12d"
+        },
+        {
+          "key": "cageBanquet",
+          "duration": 4.932,
+          "rms": 0.0822,
+          "sha256": "84299969265af3dfa20c790e7514f82d41e17e32755e25e3302ac775c9fc9a92"
+        },
+        {
+          "key": "shareColor",
+          "duration": 3.91,
+          "rms": 0.0832,
+          "sha256": "28eab4eedf0a456a1e7dc7085b15f819f125272b5dbc9bde17680f56beca1fff"
+        },
+        {
+          "key": "hello",
+          "duration": 4.191,
+          "rms": 0.0848,
+          "sha256": "6f2569f196bce828dc466c2cae636d2c01450c841e04feffbe7863d5badcf77b"
+        },
+        {
+          "key": "start",
+          "duration": 3.803,
+          "rms": 0.0823,
+          "sha256": "b91d9dae43f45e6c04830c5f05dc83fbe301e42d1fdced84a6d3da5295c93ff7"
+        },
+        {
+          "key": "round",
+          "duration": 3.177,
+          "rms": 0.0817,
+          "sha256": "0df885a5756b49f821cec4a469f6f3c545614085a51c1b2417b49ba44ab63405"
+        },
+        {
+          "key": "win",
+          "duration": 3.148,
+          "rms": 0.086,
+          "sha256": "9a039bf4a1a8f899d4e52a032d81532ed4db637c392518b7207b9e0c7adf62dc"
+        },
+        {
+          "key": "loss",
+          "duration": 4.365,
+          "rms": 0.0808,
+          "sha256": "78af14935b0c91ee3ae1bfa158a1a69558ed35120733c60c6162d604a0e97d4a"
+        },
+        {
+          "key": "gift",
+          "duration": 4.986,
+          "rms": 0.0841,
+          "sha256": "6d415135ec313c9c58965bc33eae35365a3238a72b06b3b185b1c89f94766810"
+        },
+        {
+          "key": "collective",
+          "duration": 3.906,
+          "rms": 0.0842,
+          "sha256": "3ae6911c63dbb4c7bd2bc0ca104d2616234a58c46c563dcf3878711cc0e39b38"
+        },
+        {
+          "key": "how",
+          "duration": 7.414,
+          "rms": 0.0823,
+          "sha256": "7566517db0b8f63748966513d24f88c145a7fc77ef89f43aabba4fbea1d12e0c"
+        },
+        {
+          "key": "follow",
+          "duration": 4.255,
+          "rms": 0.0844,
+          "sha256": "483897885de2ebc28514ecbe6d5f1dfa565de35148eabd1ad20f0856e13b2440"
+        },
+        {
+          "key": "shield",
+          "duration": 2.879,
+          "rms": 0.0837,
+          "sha256": "855d99149201e29e86e43ef444d924439bd93272eb409806e53825cf5aa4f049"
+        },
+        {
+          "key": "explode",
+          "duration": 3.766,
+          "rms": 0.0819,
+          "sha256": "a1e2164d729a322421060c1d6c6a2e49ece0b6540dae92d9b28dfc804bce6d63"
+        },
+        {
+          "key": "rescue",
+          "duration": 3.847,
+          "rms": 0.0816,
+          "sha256": "e62a277d861c173bf4f18240438de5ab11a7637f1e07050d634e938228cf66a9"
+        },
+        {
+          "key": "cannonLaunch",
+          "duration": 3.546,
+          "rms": 0.0851,
+          "sha256": "e5fabe1b4b544d421660f3a9b29ba7579d14ea3d2a4046a07cec76fb77402c5f"
+        },
+        {
+          "key": "cannonHow",
+          "duration": 6.015,
+          "rms": 0.0806,
+          "sha256": "7e87cbd242ca2ac4958ddb84921e68e3a63f3b75817da465b3efb5a011ebd37a"
+        },
+        {
+          "key": "idlePark",
+          "duration": 5.154,
+          "rms": 0.0819,
+          "sha256": "cd1e2d23716457198b8cb6f7cd81506fad2a611452114e6d050e4d00f99136ce"
+        },
+        {
+          "key": "idleCannon",
+          "duration": 5.335,
+          "rms": 0.0819,
+          "sha256": "ce60076efb22040ba5b6d20e0a0e8eb265db747ecaaf747375fd1519f12a9a8e"
+        },
+        {
+          "key": "idleIsland",
+          "duration": 5.456,
+          "rms": 0.0758,
+          "sha256": "94b1c3f83d1bce559db2db810745e06f393f30538c11a1b848ee70208cae61d3"
+        },
+        {
+          "key": "idleHunger",
+          "duration": 5.109,
+          "rms": 0.0831,
+          "sha256": "9db2b447290221adafaf586e37f08692860b60a716bb9d319fd13749cb9d53ba"
+        },
+        {
+          "key": "idleChat",
+          "duration": 5.616,
+          "rms": 0.0828,
+          "sha256": "ee62659e89c06006a5028b76ee205db3dd84672f0beb1c476268dc27e97faffb"
+        },
+        {
+          "key": "idleCrown",
+          "duration": 5.726,
+          "rms": 0.0817,
+          "sha256": "c9b90eeeec40ff1a29b36016b68facbf8d2c1def97740f1c1b1defa7b6e55c17"
+        },
+        {
+          "key": "idleColor",
+          "duration": 5.039,
+          "rms": 0.0853,
+          "sha256": "d0a769a87386d83ca1a02dec99de727d959437906cb902c227a2bab0ac735f08"
+        },
+        {
+          "key": "idleTeam",
+          "duration": 3.856,
+          "rms": 0.0805,
+          "sha256": "80179d6977676c92caff4a9e628be22998da8ca1a0967868dc22de1df6486cf4"
+        },
+        {
+          "key": "idleAdventure",
+          "duration": 5.616,
+          "rms": 0.082,
+          "sha256": "bfe21e499173683617cfb6ab04f0c177ad4c2d9bd7d16a8e47e0fb346fb5ac0a"
+        },
+        {
+          "key": "idleEscape",
+          "duration": 5.545,
+          "rms": 0.0829,
+          "sha256": "b5bc2ed5e9d47fd77726262be8faf9f6c8f2559bec6f88b6ca014448fa2a87e7"
+        }
+      ]
+    }
+  },
+  "model": {
+    "model": "RobotExpressive",
+    "file": "public/assets/models/RobotExpressive.glb",
+    "bytes": 463988,
+    "sha256": "047f5e5fb3bb6d378bd1df16ca6137f2a596c99b3a1b5690b4020c05aaf6f319",
+    "author": "Tomás Laulhé (Quaternius); modifications by Don McCurdy",
+    "license": "CC0-1.0",
+    "licenseDeclaration": "https://github.com/mrdoob/three.js/blob/dev/examples/webgl_animation_skinning_morph.html",
+    "source": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/RobotExpressive/RobotExpressive.glb",
+    "animations": [
+      "Dance",
+      "Death",
+      "Idle",
+      "Jump",
+      "No",
+      "Punch",
+      "Running",
+      "Sitting",
+      "Standing",
+      "ThumbsUp",
+      "Walking",
+      "WalkJump",
+      "Wave",
+      "Yes"
+    ],
+    "loaderVersion": "9.32.1",
+    "loaderLicense": "Apache-2.0",
+    "loaderSha256": "9aa6fa5de75bfeb94c8820a7459a80867d7dc6893519ff115c579d7abed9147e"
+  },
+  "soak": {
+    "parkQueue": 0,
+    "parkRecords": 1500,
+    "cannonCompleted": 502,
+    "simulatedSeconds": 7200,
+    "elapsedMs": 25288.961561,
+    "rounds": 5,
+    "wins": 4,
+    "losses": 0,
+    "actions": 24153,
+    "players": 1500,
+    "cageRecords": 1500,
+    "cageBatches": 54,
+    "escaped": 479,
+    "feastCredits": 186,
+    "pendingFeasts": 0,
+    "dedupEntries": 3000,
+    "rssBefore": 33103872,
+    "rssAfter": 188911616,
+    "note": "Duas horas simuladas da lógica Node, aceleradas na nuvem. Não são duas horas reais de LIVE, Android, GPU ou IA."
+  },
+  "limits": [
+    "Sem teste prolongado físico no Realme GT3.",
+    "Sem LIVE real TikTok ou captura física de GreenTube nesta validação.",
+    "Texto do teste de IA vem de serviço controlado; síntese e reprodução Piper são reais.",
+    "Não identifica sem diagnóstico qual falha ocorreu no celular; registra causas reproduzidas no código.",
+    "As fotos dos testes são sintéticas."
+  ],
+  "note": "ZIP exato verificado por SHA-256; relatório externo evita autorreferência do hash."
+}
