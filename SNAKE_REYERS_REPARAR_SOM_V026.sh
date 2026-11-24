@@ -30,7 +30,7 @@ repair_backup="$(mktemp -d "$repair_target/state/launcher-backups/audio-launch-v
 repair_stage="$(mktemp -d "$repair_target/.audio-launch-v026.XXXXXX")"
 repair_started=0
 repair_complete=0
-repair_files=('start.sh' 'snake_termux/native.py' 'snake_termux/__main__.py' 'snake_termux/device_runtime.py' 'snake_termux/ui.js' 'install-termux.sh' 'snake_termux/presentation.py' 'assets/music/Neon Garden.ogg' 'assets/music/CREDITS.md' 'snake_termux/audio_service.py')
+repair_files=('start.sh' 'snake_termux/native.py' 'snake_termux/__main__.py' 'snake_termux/device_runtime.py' 'snake_termux/ui.js' 'install-termux.sh' 'snake_termux/presentation.py' 'assets/music/Neon Garden.ogg' 'assets/music/CREDITS.md' 'snake_termux/audio_service.py' 'snake_termux/integration.py' 'snake_termux/live_tuning.py')
 cleanup_repair() {
   if [[ "$repair_started" == 1 && "$repair_complete" != 1 ]]; then
     for relative in "${repair_files[@]}"; do
@@ -1096,7 +1096,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
   fetch('/termux/game').then(async response => {
     if (!response.ok) return;
     const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.style.marginTop = '14px';
-    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.2.7';
+    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.2.8';
     const message = document.createElement('p'); message.id = 'termuxGameStatus';
     const deviceMessage = document.createElement('p'); deviceMessage.id = 'termuxDeviceStatus';
     const start = document.createElement('button'); start.type = 'button'; start.textContent = 'Abrir jogo original';
@@ -1152,7 +1152,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
     });
     const profileLabel = document.createElement('label'); profileLabel.htmlFor = 'termuxGraphicsProfile'; profileLabel.textContent = 'Qualidade da imagem · tela limpa em retrato';
     const profile = document.createElement('select'); profile.id = 'termuxGraphicsProfile';
-    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['sharp', 'Mais nítido · 864 × 1536']]) {
+    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536']]) {
       const option = document.createElement('option'); option.value = value; option.textContent = text; profile.append(option);
     }
     const saveProfile = document.createElement('button'); saveProfile.type = 'button'; saveProfile.id = 'termuxSaveProfile'; saveProfile.textContent = 'Salvar qualidade';
@@ -1169,6 +1169,21 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
       } catch (error) {profileMessage.textContent = error.message;} finally {saveProfile.disabled = false;}
     });
     card.append(title, message, deviceMessage, start, stop, profileBox, sound, speech, testMessage, musicLabel, musicFile, sendMusic, musicMessage);
+    const pacing = document.createElement('fieldset'); pacing.hidden = true;
+    const pacingTitle = document.createElement('legend'); pacingTitle.textContent = 'Ritmo das respostas e câmera';
+    const pacingMode = document.createElement('select'); pacingMode.id = 'termuxReplyMode';
+    for (const [value, text] of [['direct', 'Resposta direta · menos espera e trocas de foco'], ['dialogue', 'Diálogo original · usuário lê, cobra responde']]) {
+      const option = document.createElement('option'); option.value = value; option.textContent = text; pacingMode.append(option);
+    }
+    const pacingSave = document.createElement('button'); pacingSave.type = 'button'; pacingSave.textContent = 'Salvar ritmo'; pacingSave.id = 'termuxSaveReplyMode';
+    const pacingMessage = document.createElement('p'); pacingMessage.id = 'termuxReplyModeStatus';
+    fetch('/termux/live-tuning').then(async r => {if (!r.ok) return; const b = await r.json(); pacingMode.value = b.settings.reply_mode; pacing.hidden = false;}).catch(() => {});
+    pacingSave.addEventListener('click', async () => {
+      pacingSave.disabled = true;
+      try {const r = await fetch('/termux/live-tuning', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({reply_mode: pacingMode.value})}); const b = await r.json(); if (!r.ok) throw new Error(b.detail || 'Falha ao salvar.'); pacingMessage.textContent = 'Salvo para os próximos comentários. Nomes e personagens continuam aparecendo; o modo direto evita a leitura em voz alta antes da resposta.';}
+      catch (error) {pacingMessage.textContent = error.message;} finally {pacingSave.disabled = false;}
+    });
+    pacing.append(pacingTitle, pacingMode, pacingSave, pacingMessage); card.append(pacing);
     status.closest('section').before(card);
     await refresh(); setInterval(() => refresh().catch(() => {}), 5000);
   }).catch(() => {});
@@ -1212,7 +1227,7 @@ from pathlib import Path
 from .device_runtime import atomic_json
 
 ROOT = Path(__file__).resolve().parents[1]
-PROFILES = {'balanced': ('720x1280', 60), 'light': ('640x1136', 60), 'sharp': ('864x1536', 60)}
+PROFILES = {'balanced': ('720x1280', 60), 'light': ('640x1136', 60), 'sharp': ('864x1536', 60), 'live': ('640x1136', 45)}
 TRACK = ROOT / 'assets/music/Neon Garden.ogg'
 # Filled from the reproducibly generated, original audio in tools/create_music.py.
 TRACK_SHA256 = '482b4e4afbce75d1b810f1b981a0529ef4fb9fe211d6b8656e5e78530ac243f7'
@@ -1242,7 +1257,7 @@ def save_settings(state: Path, payload: dict) -> dict:
         raise ValueError('Opção de exibição desconhecida.')
     if 'profile' in payload:
         if not isinstance(payload['profile'], str) or payload['profile'] not in PROFILES:
-            raise ValueError('Escolha balanced, light ou sharp.')
+            raise ValueError('Escolha balanced, light, sharp ou live.')
         current['profile'] = payload['profile']
     if 'clean_display' in payload:
         if not isinstance(payload['clean_display'], bool):
@@ -10030,6 +10045,356 @@ class PrivateAudio:
         except OSError as exc:
             print('Não foi possível gravar diagnóstico de áudio: ' + str(exc), flush=True)
 SNAKE_DISPLAY_V025_FILE_9
+cat >"$repair_stage/snake_termux/integration.py" <<'SNAKE_DISPLAY_V025_FILE_10'
+from __future__ import annotations
+
+import functools
+import importlib
+import os
+import re
+import sys
+from pathlib import Path
+
+from .client import LocalQwen, valid_model, valid_port
+from .voice import PiperClient, voice_chunks
+
+
+def normalize_username(value: object) -> str:
+    username = str(value or '').strip().lstrip('@')
+    if not re.fullmatch(r'[A-Za-z0-9_.]{1,24}', username):
+        raise ValueError('Informe o @ do perfil que está ao vivo, por exemplo @seu.usuario.')
+    return username
+
+
+class LocalBinding:
+    """Installs reversible runtime hooks; no upstream source or game asset is rewritten."""
+    def __init__(self):
+        from cobrinha_server.services import social_text_ai, user_ai_settings
+        self.ai, self.settings = social_text_ai, user_ai_settings
+        self.original_load = self.ai.load_config
+        self.original_chat = self.ai.generate_chat_reply
+        self.original_gift = self.ai.generate_gift_reply
+        self.original_update = self.settings.update
+        self.original_public = self.settings.public_status
+        self.original_start = None
+        self.client: LocalQwen | None = None
+        self.voice_client: PiperClient | None = None
+        self.replacements: list[tuple[object, str, object]] = []
+
+    def config(self) -> dict:
+        raw = self.settings._raw()
+        local = raw.get('provider') == 'local'
+        model = raw.get('model', 'auto') if local else raw.get('local_model', 'auto')
+        try:
+            port, model = valid_port(raw.get('local_port', 8081)), valid_model(model)
+        except ValueError:
+            port, model = 8081, 'auto'
+        return {'enabled': raw.get('enabled', True) is True, 'provider': 'local', 'model': model, 'local_port': port, 'timeout': 18.0, 'max_chars': 150 if raw.get('termux_reply_mode') == 'dialogue' else 120, 'api_key_present': False, 'project_id_present': False, 'auto_external_call': False, 'auto_local_call': raw.get('enabled', True) is True}
+
+    def local_client(self) -> LocalQwen:
+        config = self.config()
+        if self.client is None or self.client.port != config['local_port']:
+            self.client = LocalQwen(config['local_port'])
+        return self.client
+
+    def public_status(self) -> dict:
+        config = self.config()
+        client = self.local_client()
+        return {**config, 'local_status': dict(client.diagnostics), 'requires_api_key': False}
+
+    def voice_config(self) -> dict:
+        raw = self.settings._raw()
+        try:
+            port = valid_port(raw.get('voice_local_port', 8083))
+        except ValueError:
+            port = 8083
+        return {'provider': 'xtts' if raw.get('voice_provider') == 'xtts' else 'piper-local', 'port': port}
+
+    def local_voice(self) -> PiperClient:
+        port = self.voice_config()['port']
+        if self.voice_client is None or self.voice_client.port != port:
+            self.voice_client = PiperClient(port)
+        return self.voice_client
+
+    def update(self, payload: dict) -> dict:
+        if payload.get('provider', 'local') != 'local':
+            raise ValueError('Esta adaptação usa a IA local do Termux.')
+        if 'enabled' in payload and not isinstance(payload['enabled'], bool):
+            raise ValueError('O estado da IA deve ser verdadeiro ou falso.')
+        current = self.settings._raw()
+        config = self.config()
+        model = valid_model(payload.get('model') or config['model'])
+        port = valid_port(payload.get('local_port', config['local_port']))
+        enabled = False if payload.get('clear_key') else payload.get('enabled', config['enabled'])
+        # Any old credentials remain private and untouched; they are never sent
+        # to the local service or returned by these settings endpoints.
+        current.update(provider='local', enabled=enabled, model=model, local_port=port)
+        self.settings.write_json_atomic(self.settings.SOCIAL_TEXT_AI_CONFIG_FILE, current)
+        try:
+            os.chmod(self.settings.SOCIAL_TEXT_AI_CONFIG_FILE, 0o600)
+        except OSError:
+            pass
+        return self.public_status()
+
+    def transport(self, request_data: dict) -> str:
+        identity = self.ai.CHAT_IDENTITY_PROMPT + '\nO público te apelidou de Cofra do Afismo. Aceite esse apelido com bom humor; a identidade e o criador originais continuam os mesmos.'
+        return self.local_client().reply(request_data, identity=identity)
+
+    def replace_aliases(self, original, replacement) -> None:
+        for module in list(sys.modules.values()):
+            if module is None or not getattr(module, '__name__', '').startswith('cobrinha_server'):
+                continue
+            for name, value in list(vars(module).items()):
+                if value is original:
+                    self.replacements.append((module, name, value))
+                    setattr(module, name, replacement)
+
+    def install_hooks(self) -> None:
+        def wrapped(original):
+            @functools.wraps(original)
+            def generate(**kwargs):
+                if kwargs.get('transport') is None:
+                    kwargs['transport'] = self.transport
+                return original(**kwargs)
+            return generate
+        self.replace_aliases(self.original_load, self.config)
+        self.replace_aliases(self.original_chat, wrapped(self.original_chat))
+        self.replace_aliases(self.original_gift, wrapped(self.original_gift))
+        self.replace_aliases(self.original_update, self.update)
+        self.replace_aliases(self.original_public, self.public_status)
+        monitor = importlib.import_module('cobrinha_server.services.tiktok_monitor')
+        self.original_start = monitor.start_monitor
+
+        @functools.wraps(self.original_start)
+        def start_monitor(username, **kwargs):
+            return self.original_start(normalize_username(username), **kwargs)
+        self.replace_aliases(self.original_start, start_monitor)
+        tts = importlib.import_module('cobrinha_server.services.tts_service')
+        original_synthesize, original_chunks, original_ready = tts.synthesize_for_job, tts.safe_tts_chunks, tts.voice_ready
+
+        @functools.wraps(original_synthesize)
+        def synthesize(text, *, voice_path=None, language='pt'):
+            if self.voice_config()['provider'] == 'xtts':
+                return original_synthesize(text, voice_path=voice_path, language=language)
+            if language not in ('pt', 'pt-br', 'pt-BR'):
+                raise ValueError('A voz Piper configurada é brasileira.')
+            return self.local_voice().synthesize(text, tts.PREPARED_AUDIO_DIR)
+
+        def chunks(text, *, max_chars=150):
+            return original_chunks(text, max_chars=max_chars) if self.voice_config()['provider'] == 'xtts' else voice_chunks(text, max_chars)
+
+        def voice_ready():
+            return original_ready() if self.voice_config()['provider'] == 'xtts' else self.local_voice().ready
+
+        self.replace_aliases(original_synthesize, synthesize)
+        self.replace_aliases(original_chunks, chunks)
+        self.replace_aliases(original_ready, voice_ready)
+
+    def restore(self) -> None:
+        for module, name, value in reversed(self.replacements):
+            setattr(module, name, value)
+        self.replacements.clear()
+
+    def install_routes(self, app) -> None:
+        from fastapi import HTTPException
+        from fastapi.responses import FileResponse, HTMLResponse
+        from starlette.concurrency import run_in_threadpool
+
+        @app.get('/termux/local-ai')
+        async def local_ai_status():
+            return self.public_status()
+
+        @app.post('/termux/local-ai/detect')
+        async def local_ai_detect():
+            health = await run_in_threadpool(self.local_client().health)
+            return {'ok': health['ready'], **health, 'settings': self.public_status()}
+
+        @app.post('/termux/local-ai/test')
+        async def local_ai_test(payload: dict):
+            text = str(payload.get('text') or '').strip()
+            if not text or len(text) > 180:
+                raise HTTPException(status_code=400, detail='Envie uma pergunta de até 180 caracteres.')
+            if not self.config()['enabled']:
+                raise HTTPException(status_code=409, detail='Ative a IA local primeiro.')
+            reply = await run_in_threadpool(self.ai.generate_chat_reply, display_name='Teste', comment=text, user_key='operator-test')
+            if not reply:
+                raise HTTPException(status_code=503, detail=self.local_client().diagnostics.get('last_error') or 'A IA local não devolveu resposta.')
+            return {'ok': True, 'text': reply, 'provider': 'local', 'diagnostics': dict(self.local_client().diagnostics)}
+
+        @app.get('/termux/ui.js')
+        def termux_ui():
+            return FileResponse(Path(__file__).with_name('ui.js'), media_type='application/javascript', headers={'Cache-Control': 'no-store'})
+
+        @app.get('/termux/voice')
+        def voice_status():
+            return {**self.voice_config(), 'ready': self.local_voice().ready}
+
+        @app.post('/termux/voice')
+        def voice_update(payload: dict):
+            provider = payload.get('provider', 'piper-local')
+            if provider not in ('piper-local', 'xtts'):
+                raise HTTPException(status_code=400, detail='Escolha Piper local ou XTTS original.')
+            try:
+                port = valid_port(payload.get('port', self.voice_config()['port']))
+            except ValueError as exc:
+                raise HTTPException(status_code=400, detail=str(exc)) from exc
+            raw = self.settings._raw()
+            raw.update(voice_provider=provider, voice_local_port=port)
+            self.settings.write_json_atomic(self.settings.SOCIAL_TEXT_AI_CONFIG_FILE, raw)
+            os.chmod(self.settings.SOCIAL_TEXT_AI_CONFIG_FILE, 0o600)
+            return self.voice_config()
+
+        @app.post('/termux/voice/detect')
+        def voice_detect():
+            return self.local_voice().health()
+
+        @app.post('/termux/voice/test')
+        def voice_test(payload: dict):
+            text = str(payload.get('text') or 'Olá! A cobra está pronta para conversar.').strip()
+            if not text or len(text) > 150:
+                raise HTTPException(status_code=400, detail='Teste de voz: até 150 caracteres.')
+            from cobrinha_server.services import tts_service
+            try:
+                result = tts_service.synthesize_for_job(text)
+            except Exception as exc:
+                raise HTTPException(status_code=503, detail='Falha na síntese local: ' + str(exc)) from exc
+            return FileResponse(result['audio_path'], media_type='audio/wav', headers={'Cache-Control': 'no-store'})
+
+        @app.middleware('http')
+        async def add_local_controls(request, call_next):
+            if request.method == 'POST' and request.url.path == '/api/system-updates/install':
+                from fastapi.responses import JSONResponse
+                return JSONResponse({'ok': False, 'error': 'O atualizador original instala binários de desktop. Nesta adaptação, atualize manualmente após conferir a compatibilidade com Termux.'}, status_code=409)
+            response = await call_next(request)
+            if request.url.path == '/' and 'text/html' in response.headers.get('content-type', ''):
+                body = b''.join([chunk async for chunk in response.body_iterator])
+                marker = b'<script src="/termux/ui.js?v=1"></script>'
+                body = body.replace(b'</body>', marker + b'</body>')
+                headers = dict(response.headers)
+                headers.pop('content-length', None)
+                return HTMLResponse(body, status_code=response.status_code, headers=headers)
+            return response
+
+
+def install(app) -> LocalBinding:
+    existing = getattr(app.state, 'snake_termux_binding', None)
+    if existing:
+        return existing
+    binding = LocalBinding()
+    binding.install_hooks()
+    binding.install_routes(app)
+    try:
+        from .live_tuning import install as install_tuning
+    except ImportError:
+        pass  # Optional in older partial repairs.
+    else:
+        install_tuning(binding, app)
+    app.state.snake_termux_binding = binding
+    return binding
+SNAKE_DISPLAY_V025_FILE_10
+cat >"$repair_stage/snake_termux/live_tuning.py" <<'SNAKE_DISPLAY_V025_FILE_11'
+"""Reversible LIVE pacing hooks. Original gameplay and dialogue mode stay available."""
+from __future__ import annotations
+
+import asyncio
+import os
+import time
+import uuid
+from pathlib import Path
+
+
+def install(binding, app):
+    from fastapi import HTTPException
+    from cobrinha_server.services import avatar_cache, event_decision_worker as worker
+
+    original_comment = worker._process_comment
+    original_avatar = avatar_cache.cache_profile_avatar
+    metrics = {'comments_direct': 0, 'last_preparation_ms': None, 'last_jobs_enqueued': None}
+
+    def settings():
+        raw = binding.settings._raw()
+        return {'reply_mode': 'dialogue' if raw.get('termux_reply_mode') == 'dialogue' else 'direct'}
+
+    def avatar(url, *, user_key='', timeout=8):
+        result = original_avatar(url, user_key=user_key, timeout=min(2.0, float(timeout)))
+        if not result.get('ok') or not result.get('path'):
+            return result
+        source = Path(result['path'])
+        target = source.with_name(source.stem + '_live256.png')
+        try:
+            if not target.exists() or target.stat().st_mtime < source.stat().st_mtime:
+                from PIL import Image, ImageOps
+                with Image.open(source) as image:
+                    if image.width * image.height > 20_000_000:
+                        return {**result, 'ok': False, 'path': '', 'error': 'avatar grande demais'}
+                    small = ImageOps.exif_transpose(image)
+                    small.thumbnail((256, 256))
+                    temporary = target.with_name('.' + uuid.uuid4().hex + '.png')
+                    try:
+                        small.convert('RGBA').save(temporary, format='PNG', compress_level=3)
+                        temporary.replace(target)
+                    finally:
+                        temporary.unlink(missing_ok=True)
+            return {**result, 'path': str(target.resolve()), 'bytes': target.stat().st_size}
+        except (ImportError, OSError, ValueError):
+            return result
+
+    async def process_comment(event):
+        if settings()['reply_mode'] == 'dialogue':
+            return await original_comment(event)
+        started = time.monotonic()
+        display_name = worker._display_name(event)
+        comment = str(event.get('text') or '').strip()
+        user_key = worker._event_user_key(event) or display_name
+        top = worker.top_supporters.is_priority_comment(event)
+        # Avatar I/O and model generation used to run sequentially. Both are
+        # awaited here so no late avatar event can interrupt an ongoing reply.
+        avatar_path, response = await asyncio.gather(
+            worker._send_spectator_activity(event, source='social_comment'),
+            asyncio.to_thread(worker._comment_reply, event, display_name=display_name,
+                              comment=comment, user_key=user_key, top_priority=top),
+        )
+        if len(response) > 120:
+            cut = response[:119].rsplit(' ', 1)[0].rstrip(' ,.;:')
+            response = cut + '.'
+        # A normal, single main job bypasses paired comment reading and its
+        # spectator -> snake camera handoff. Never invent unsupported camera API.
+        job = worker.enqueue_text(response, priority=80 if top else 70, actor='main', metadata={
+            'source': 'social_comment', 'event_id': str(event.get('id') or ''),
+            'speaker': 'main', 'user_id': str(event.get('user_id') or user_key),
+            'username': str(event.get('username') or ''), 'display_name': display_name,
+            'avatar_url': str(event.get('avatar_url') or event.get('profile_image') or ''),
+            'avatar_path': avatar_path, 'snake_color': worker._snake_color_for_user(user_key),
+            'audio_role': 'direct_reply', 'top_supporter_priority': top,
+        })
+        metrics.update(comments_direct=metrics['comments_direct'] + 1,
+                       last_preparation_ms=round((time.monotonic() - started) * 1000), last_jobs_enqueued=1)
+        worker._write_status(running=True, last_action='comment_direct_reply_queued', last_error='',
+                             events_processed=int(worker._STATE.get('events_processed') or 0) + 1,
+                             comments_processed=int(worker._STATE.get('comments_processed') or 0) + 1)
+        return {'ok': True, 'kind': 'comment', 'mode': 'direct', 'user_job': None, 'main_job': job}
+
+    binding.replace_aliases(original_avatar, avatar)
+    binding.replace_aliases(original_comment, process_comment)
+
+    @app.get('/termux/live-tuning')
+    def status():
+        return {'settings': settings(), 'metrics': dict(metrics),
+                'camera_note': 'O modo direto evita a leitura do comentário e a troca de foco associada. A interpolação interna continua original.'}
+
+    @app.post('/termux/live-tuning')
+    def save(payload: dict):
+        if set(payload) != {'reply_mode'} or payload['reply_mode'] not in ('direct', 'dialogue'):
+            raise HTTPException(status_code=400, detail='Escolha direct ou dialogue.')
+        raw = binding.settings._raw()
+        raw['termux_reply_mode'] = payload['reply_mode']
+        binding.settings.write_json_atomic(binding.settings.SOCIAL_TEXT_AI_CONFIG_FILE, raw)
+        try:
+            os.chmod(binding.settings.SOCIAL_TEXT_AI_CONFIG_FILE, 0o600)
+        except OSError:
+            pass
+        return status()
+SNAKE_DISPLAY_V025_FILE_11
 "$repair_python" - "$repair_stage" <<'SNAKE_CHECK_FILES'
 import ast, pathlib, sys
 for path in pathlib.Path(sys.argv[1]).rglob("*.py"):

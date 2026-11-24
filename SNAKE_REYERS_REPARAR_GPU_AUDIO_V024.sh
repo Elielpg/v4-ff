@@ -1096,7 +1096,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
   fetch('/termux/game').then(async response => {
     if (!response.ok) return;
     const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.style.marginTop = '14px';
-    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.2.7';
+    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.2.8';
     const message = document.createElement('p'); message.id = 'termuxGameStatus';
     const deviceMessage = document.createElement('p'); deviceMessage.id = 'termuxDeviceStatus';
     const start = document.createElement('button'); start.type = 'button'; start.textContent = 'Abrir jogo original';
@@ -1152,7 +1152,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
     });
     const profileLabel = document.createElement('label'); profileLabel.htmlFor = 'termuxGraphicsProfile'; profileLabel.textContent = 'Qualidade da imagem · tela limpa em retrato';
     const profile = document.createElement('select'); profile.id = 'termuxGraphicsProfile';
-    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['sharp', 'Mais nítido · 864 × 1536']]) {
+    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536']]) {
       const option = document.createElement('option'); option.value = value; option.textContent = text; profile.append(option);
     }
     const saveProfile = document.createElement('button'); saveProfile.type = 'button'; saveProfile.id = 'termuxSaveProfile'; saveProfile.textContent = 'Salvar qualidade';
@@ -1169,6 +1169,21 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
       } catch (error) {profileMessage.textContent = error.message;} finally {saveProfile.disabled = false;}
     });
     card.append(title, message, deviceMessage, start, stop, profileBox, sound, speech, testMessage, musicLabel, musicFile, sendMusic, musicMessage);
+    const pacing = document.createElement('fieldset'); pacing.hidden = true;
+    const pacingTitle = document.createElement('legend'); pacingTitle.textContent = 'Ritmo das respostas e câmera';
+    const pacingMode = document.createElement('select'); pacingMode.id = 'termuxReplyMode';
+    for (const [value, text] of [['direct', 'Resposta direta · menos espera e trocas de foco'], ['dialogue', 'Diálogo original · usuário lê, cobra responde']]) {
+      const option = document.createElement('option'); option.value = value; option.textContent = text; pacingMode.append(option);
+    }
+    const pacingSave = document.createElement('button'); pacingSave.type = 'button'; pacingSave.textContent = 'Salvar ritmo'; pacingSave.id = 'termuxSaveReplyMode';
+    const pacingMessage = document.createElement('p'); pacingMessage.id = 'termuxReplyModeStatus';
+    fetch('/termux/live-tuning').then(async r => {if (!r.ok) return; const b = await r.json(); pacingMode.value = b.settings.reply_mode; pacing.hidden = false;}).catch(() => {});
+    pacingSave.addEventListener('click', async () => {
+      pacingSave.disabled = true;
+      try {const r = await fetch('/termux/live-tuning', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({reply_mode: pacingMode.value})}); const b = await r.json(); if (!r.ok) throw new Error(b.detail || 'Falha ao salvar.'); pacingMessage.textContent = 'Salvo para os próximos comentários. Nomes e personagens continuam aparecendo; o modo direto evita a leitura em voz alta antes da resposta.';}
+      catch (error) {pacingMessage.textContent = error.message;} finally {pacingSave.disabled = false;}
+    });
+    pacing.append(pacingTitle, pacingMode, pacingSave, pacingMessage); card.append(pacing);
     status.closest('section').before(card);
     await refresh(); setInterval(() => refresh().catch(() => {}), 5000);
   }).catch(() => {});
