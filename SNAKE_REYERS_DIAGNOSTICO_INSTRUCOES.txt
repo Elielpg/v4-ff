@@ -1,0 +1,19 @@
+FERRAMENTA INDEPENDENTE DE DIAGNÓSTICO · SNAKE REYERS
+
+Esta ferramenta não é um jogo, não é uma versão modificada do Snake Reyers e não foi publicada pelo criador do jogo.
+
+Objetivo: produzir um ZIP pequeno para analisar a compatibilidade do seu pacote Windows 0.1.9 com Termux/ARM64 e o protocolo da IA. O anexo original excede o limite de transferência de 32 MB da ferramenta do assistente.
+
+No Termux, com o arquivo original em Downloads, execute:
+
+curl -fL https://raw.githubusercontent.com/Elielpg/v4-ff/main/SNAKE_REYERS_COLETAR_DIAGNOSTICO.py -o "$HOME/snake-diagnostico.py" &&
+python3 "$HOME/snake-diagnostico.py"
+
+O nome esperado é SnakeReyers-0.1.9-Windows-x64.zip. Se o nome ou local forem diferentes, informe explicitamente:
+python3 "$HOME/snake-diagnostico.py" --arquivo "/caminho/para/o/arquivo.zip"
+
+Envie ao assistente o SNAKE_REYERS_DIAGNOSTICO_DATA_HORA.zip criado na pasta Downloads.
+
+O arquivo original não é alterado e nenhum executável do jogo é executado. São coletados nomes e tamanhos dos arquivos, cabeçalhos de compatibilidade PE/PCK e textos do servidor/painel/instaladores. Pastas privadas, cookies, ambientes, executáveis, bibliotecas, áudio, modelos e scripts-fonte do jogo não são copiados. O limite de textos é 24 MiB; cada texto deve ter até 2 MiB. Arquivos excluídos por tamanho aparecem no diagnóstico. Não é necessário informar chaves de API.
+
+A versão do servidor público encontrada é 0.1.7; isso não comprova o conteúdo do seu ZIP 0.1.9. O próximo passo depende do diagnóstico real do arquivo que você baixou.
