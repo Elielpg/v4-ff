@@ -1,0 +1,45 @@
+COBRA DO CAOS V0.7 · 23/11/2026
+
+Pasta do ZIP: COBRA_DO_CAOS_V0_7
+
+ATUALIZAR A INSTALAÇÃO EXISTENTE
+1. Pare o jogo com Ctrl+C.
+2. Entre na pasta onde o seu jogo atual está instalado.
+3. Execute:
+
+python3 -m zipfile -e "$HOME/storage/downloads/COBRA_DO_CAOS_V0_7.zip" "$TMPDIR/cobra-v07"
+bash "$TMPDIR/cobra-v07/COBRA_DO_CAOS_V0_7/ATUALIZAR_V0_7.sh" "$PWD"
+bash install.sh
+bash start.sh
+
+O atualizador confere os arquivos, encerra apenas a instalação correspondente e cria backup em data/update-backups/. Não extraia o ZIP por cima da pasta atual. Mantenha o arquivo antigo e seu backup.
+
+INSTALAÇÃO NOVA
+cd ~
+python3 -m zipfile -e "$HOME/storage/downloads/COBRA_DO_CAOS_V0_7.zip" .
+cd ~/COBRA_DO_CAOS_V0_7
+bash install.sh
+bash start.sh
+
+ABRIR O JOGO
+http://127.0.0.1:3500/?v=0.7.0
+
+PARA AS PRÓXIMAS VEZES
+Na pasta do jogo: bash start.sh
+Para parar: Ctrl+C ou bash stop.sh
+IA local: bash ia-local.sh em outra sessão; depois Apresentador → Detectar IA local e conectar.
+
+RODADAS MAIS CURTAS
+LIVE → Eventos e replays → escolha 126, 252, 378 ou 504. A mudança vale para a próxima rodada. Para começar imediatamente, use Iniciar rodada com a nova meta e confirme: o corpo e os créditos da rodada atual reiniciam; ranking, pontos e missões permanecem.
+
+MÚSICA
+Música → Adicionar as 3 trilhas originais incluídas. Seus arquivos continuam aceitos. Captura de outro aplicativo depende do Android e de o player permitir.
+
+REVERSÃO
+Pare a transmissão. Use o REVERTER.sh do backup mostrado pelo atualizador. Ele restaura código e estados daquele momento; progresso posterior será substituído.
+
+VALIDAÇÃO E LIMITES
+94 testes aprovados; navegação em quatro tamanhos de tela; Piper real com texto controlado; RTMP local H.264/AAC 720×1280; duas horas simuladas da lógica. Instalação, atualização e reversão verificadas no ZIP entregue.
+Não houve LIVE real, teste prolongado no GT3 ou diagnóstico físico do encerramento do Termux. O APK anterior foi mantido. Consulte o relatório PDF e docs/BUGS_PENDENTES_V0_7.md.
+
+Não há automação de curtidas reais. Participantes das prévias são DEMO.

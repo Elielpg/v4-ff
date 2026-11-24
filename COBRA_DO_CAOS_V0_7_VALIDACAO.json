@@ -1,0 +1,258 @@
+{
+  "version": "0.7.0",
+  "archive": {
+    "archive": "COBRA_DO_CAOS_V0_7.zip",
+    "bytes": 24104958,
+    "files": 316,
+    "sha256": "9f3c7768feabae670d7687d7d231345af5de238971384a821032235c7daaa01a"
+  },
+  "unitTests": 94,
+  "unitPassed": 94,
+  "browser": {
+    "ok": true,
+    "version": "0.7.0",
+    "errors": [],
+    "models": {
+      "originals": 7,
+      "visible": 7,
+      "previousModelsPreserved": 7,
+      "portraits": 7
+    },
+    "viewports": [
+      {
+        "width": 360,
+        "height": 800,
+        "expanded": false,
+        "bad": [],
+        "giftVisible": false,
+        "lowerHeight": 122.6875
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "expanded": true,
+        "bad": [],
+        "giftVisible": true,
+        "lowerHeight": 240.6875
+      },
+      {
+        "width": 430,
+        "height": 932,
+        "expanded": false,
+        "bad": [],
+        "giftVisible": false,
+        "lowerHeight": 122.6875
+      },
+      {
+        "width": 430,
+        "height": 932,
+        "expanded": true,
+        "bad": [],
+        "giftVisible": true,
+        "lowerHeight": 229.6875
+      },
+      {
+        "width": 932,
+        "height": 430,
+        "expanded": false,
+        "bad": [],
+        "giftVisible": false,
+        "lowerHeight": 109.390625
+      },
+      {
+        "width": 932,
+        "height": 430,
+        "expanded": true,
+        "bad": [],
+        "giftVisible": true,
+        "lowerHeight": 216.390625
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "expanded": false,
+        "bad": [],
+        "giftVisible": false,
+        "lowerHeight": 109.390625
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "expanded": true,
+        "bad": [],
+        "giftVisible": true,
+        "lowerHeight": 216.390625
+      }
+    ],
+    "playlist": [
+      "caos-132.mp3",
+      "zig-neon-140.mp3",
+      "parque-110.mp3"
+    ],
+    "camera": {
+      "faded": 0.08,
+      "restored": 1
+    },
+    "replay": {
+      "frames": 7,
+      "started": true
+    },
+    "before": {
+      "round": 1,
+      "wins": 0,
+      "losses": 0
+    },
+    "after": {
+      "round": 1,
+      "wins": 0,
+      "losses": 0
+    },
+    "note": "Chromium Linux, GPU por software. Participantes DEMO. Não mede desempenho no GT3 nem eventos reais do TikTok."
+  },
+  "voice": {
+    "ok": true,
+    "errors": [],
+    "eating": {
+      "lastEat": 2.4322902494331067,
+      "bufferSamples": 18522,
+      "goal": 504,
+      "goalLabel": "504",
+      "foods": 1,
+      "stepMs": 280
+    },
+    "ai": {
+      "caption": "ZIG · IA LOCALSete vezes oito são cinquenta e seis!",
+      "src": "c3fc2c8910f42b406ed759f3020d34cece1ccfaf6dc01f6b28dd2aeb95fc7947.wav",
+      "time": 0.476278,
+      "level": 0.04606031026715545
+    },
+    "ambientInterruptedByGreeting": true,
+    "resumedAfterTap": true,
+    "colors": {
+      "green": [
+        0.6235294117647059,
+        0.9137254901960784,
+        0.48627450980392156
+      ],
+      "rainbow": [
+        0.8293010554748423,
+        0.9020588235294118,
+        0.3406911764705882
+      ]
+    },
+    "promptUsesNewRules": true,
+    "note": "Chromium software + síntese real Piper. A resposta de texto é uma fixture HTTP controlada; não avalia o Qwen ou latência/temperatura no GT3."
+  },
+  "studio": {
+    "localRecordingDownloaded": true,
+    "localRecordingBytes": 467993,
+    "audioDbFS": -23.272997281007612,
+    "encoderStopped": true,
+    "gameContinuedAfterStop": true,
+    "confirmedFrameProgress": true,
+    "ok": true,
+    "errors": [],
+    "source": "Canvas do jogo + áudio WebAudio → MediaRecorder WebM → HTTP local → FFmpeg → servidor RTMP local → FLV verificado por ffprobe",
+    "during": {
+      "status": {
+        "state": "streaming",
+        "message": "FFmpeg enviando vídeo e áudio ao servidor RTMP.",
+        "active": true,
+        "profile": "balanced",
+        "frames": 52,
+        "inputBytes": 161376,
+        "seconds": 7,
+        "lastError": "",
+        "lastWarning": "",
+        "hasSession": true,
+        "capability": {
+          "ready": true,
+          "required": "FFmpeg com libx264 e AAC",
+          "install": "bash scripts/termux-packages.sh ffmpeg"
+        }
+      },
+      "recording": true,
+      "cageCount": 26,
+      "badge": "● TRANSMITINDO"
+    },
+    "received": {
+      "bytes": 3972966,
+      "duration": 11.337,
+      "video": "h264",
+      "width": 720,
+      "height": 1280,
+      "frameRate": "30/1",
+      "audio": "aac"
+    },
+    "keyAbsentFromPublicState": true,
+    "note": "Teste de transmissão real para receptor RTMP local na nuvem; não é transmissão ao TikTok nem benchmark do Realme GT3."
+  },
+  "simulatedLoad": {
+    "parkQueue": 0,
+    "parkRecords": 1500,
+    "cannonCompleted": 502,
+    "simulatedSeconds": 7200,
+    "elapsedMs": 32890.553325,
+    "rounds": 1,
+    "wins": 0,
+    "losses": 0,
+    "actions": 22624,
+    "players": 1500,
+    "cageRecords": 1500,
+    "cageBatches": 54,
+    "escaped": 479,
+    "feastCredits": 546,
+    "pendingFeasts": 5,
+    "dedupEntries": 3000,
+    "rssBefore": 33230848,
+    "rssAfter": 192425984,
+    "note": "Duas horas simuladas da lógica Node, aceleradas na nuvem. Não são duas horas reais de LIVE, Android, GPU ou IA."
+  },
+  "releaseChecks": [
+    {
+      "ok": true,
+      "archive": "COBRA_DO_CAOS_V0_7.zip",
+      "sha256": "9f3c7768feabae670d7687d7d231345af5de238971384a821032235c7daaa01a",
+      "manifestFiles": 315,
+      "cleanInstall": true,
+      "freshStart": true,
+      "updatedFrom": "0.6.0",
+      "updatedTo": "0.7.0",
+      "oldServerStopped": true,
+      "otherInstallationPreserved": true,
+      "progressMigrated": true,
+      "configPreserved": true,
+      "cageMissionSurvivedServerCrash": true,
+      "cannonSurvivedCrash": true,
+      "newBootId": true,
+      "rollbackRestoredCodeAndData": true,
+      "note": "Instalação e recuperação verificadas no Linux Cloud, npm do cache. Não é teste no Android nem encerramento completo do Termux."
+    },
+    {
+      "ok": true,
+      "archive": "COBRA_DO_CAOS_V0_7.zip",
+      "sha256": "9f3c7768feabae670d7687d7d231345af5de238971384a821032235c7daaa01a",
+      "manifestFiles": 315,
+      "cleanInstall": true,
+      "freshStart": true,
+      "updatedFrom": "0.1.0",
+      "updatedTo": "0.7.0",
+      "oldServerStopped": true,
+      "otherInstallationPreserved": true,
+      "progressMigrated": true,
+      "configPreserved": true,
+      "cageMissionSurvivedServerCrash": true,
+      "cannonSurvivedCrash": true,
+      "newBootId": true,
+      "rollbackRestoredCodeAndData": true,
+      "note": "Instalação e recuperação verificadas no Linux Cloud, npm do cache. Não é teste no Android nem encerramento completo do Termux."
+    }
+  ],
+  "limitations": [
+    "Sem LIVE real",
+    "Sem sessão prolongada no Realme GT3",
+    "LOCAL-010 físico pendente",
+    "Balanceamento da rodada completa pendente; metas curtas opcionais",
+    "APK de captura anterior preservado"
+  ]
+}
