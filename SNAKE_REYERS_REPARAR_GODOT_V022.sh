@@ -110,6 +110,17 @@ EXPECTED_SHA256 = '9a16a7f9596146927ececdbba523b8f0aefc59f0568d898e097f6f2bd598c
 NVIDIA_ENV = ('DRI_PRIME', '__GLX_VENDOR_LIBRARY_NAME', '__NV_PRIME_RENDER_OFFLOAD', '__VK_LAYER_NV_optimus')
 
 
+def prepare_device(env: dict, state: Path) -> tuple[dict, dict]:
+    try:
+        from .device_runtime import prepare_game
+    except ModuleNotFoundError as exc:
+        # Older version-only repairs can still run without the optional module.
+        if exc.name != 'snake_termux.device_runtime':
+            raise
+        return dict(env), {}
+    return prepare_game(env, state)
+
+
 def verify_original(path: Path) -> dict:
     if not path.is_file() or path.stat().st_size != EXPECTED_BYTES:
         raise ValueError('Não encontrei o SnakeReyers.exe original 0.1.9 completo em game/windows.')
@@ -156,7 +167,7 @@ def resolve_godot(value: str | None = None) -> Path:
     return path
 
 
-def native_command(godot: Path, pack: Path, args: list[str], *, workdir: Path, renderer: str = 'gl_compatibility') -> list[str]:
+def native_command(godot: Path, pack: Path, args: list[str], *, workdir: Path, renderer: str = 'gl_compatibility', audio_driver: str | None = None) -> list[str]:
     if renderer not in ('gl_compatibility', 'mobile'):
         raise ValueError('Renderizador inválido; use gl_compatibility ou mobile.')
     # Desktop launch plans target a second monitor. Termux:X11 normally has one.
@@ -171,7 +182,7 @@ def native_command(godot: Path, pack: Path, args: list[str], *, workdir: Path, r
         if '--display-driver' not in args:
             defaults += ['--display-driver', 'x11']
         if '--audio-driver' not in args:
-            audio_driver = os.environ.get('SNAKE_AUDIO_DRIVER', 'PulseAudio')
+            audio_driver = audio_driver or os.environ.get('SNAKE_AUDIO_DRIVER', 'PulseAudio')
             if audio_driver not in ('PulseAudio', 'Dummy'):
                 raise ValueError('Driver de áudio inválido; use PulseAudio ou Dummy para diagnóstico.')
             defaults += ['--audio-driver', audio_driver]
@@ -194,6 +205,7 @@ class NativeGame:
         self.log = None
         self.started_at = 0.0
         self.last_exit_code = None
+        self.device_report = {}
         self.lock = threading.RLock()
         self.renderer = os.environ.get('SNAKE_RENDERER', 'gl_compatibility')
         native_command(self.godot, self.pack, [], workdir=self.state_dir, renderer=self.renderer)
@@ -224,6 +236,7 @@ class NativeGame:
             return {'running': self.process is not None, 'pid': self.process.pid if self.process else None,
                     'started_at': self.started_at, 'last_exit_code': self.last_exit_code, 'log': str(self.log_path),
                     'godot': str(self.godot), 'renderer': self.renderer, 'original_verified': self.integrity['verified'],
+                    'device': self.device_report,
                     'automatic_restarts': 0, 'android_validation': 'pending'}
 
     def start(self) -> dict:
@@ -235,10 +248,16 @@ class NativeGame:
             env = os.environ.copy()
             for name in NVIDIA_ENV:
                 env.pop(name, None)
+            env, self.device_report = prepare_device(env, self.state_dir)
             env['COBRINHA_LIVE_SERVER_URL'] = f'ws://127.0.0.1:{self.port}/ws/godot'
             env['COBRINHA_TERRAIN_EDITOR_FILE'] = str(self.project / 'server/private/cobrinha_terrain_editor.json')
-            args = ['--windowed', '--resolution', '720x1280', '--', '--cobrinha-live']
-            command = native_command(self.godot, self.pack, args, workdir=self.state_dir, renderer=self.renderer)
+            graphics = self.device_report.get('graphics', {})
+            args = ['--windowed', '--resolution', graphics.get('resolution', '720x1280')]
+            if graphics.get('max_fps'):
+                args.extend(['--max-fps', str(graphics['max_fps'])])
+            args.extend(['--', '--cobrinha-live'])
+            audio_driver = 'PulseAudio' if self.device_report.get('audio', {}).get('output_available') else None
+            command = native_command(self.godot, self.pack, args, workdir=self.state_dir, renderer=self.renderer, audio_driver=audio_driver)
             self.log = self.log_path.open('ab', buffering=0)
             try:
                 self.process = subprocess.Popen(command, cwd=self.state_dir, env=env, stdout=self.log, stderr=subprocess.STDOUT)
@@ -287,6 +306,49 @@ def attach(binding, app, native: NativeGame, *, auto_start: bool = False):
     def stop():
         return native.stop()
 
+    @app.post('/termux/audio/test')
+    def audio_test():
+        from .device_runtime import test_audio
+        return test_audio(native.state_dir)
+
+    @app.post('/termux/audio/speech-test')
+    def speech_test():
+        from cobrinha_server.bridge.godot_bridge import godot_bridge
+        from cobrinha_server.services.speech_queue import enqueue_manual_sequence
+        if not godot_bridge.status()['connected']:
+            raise HTTPException(status_code=409, detail='Abra o jogo primeiro para testar sua fala.')
+        try:
+            sequence = enqueue_manual_sequence('Olá! A cobra está pronta para conversar com vocês.')
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        return {'queued': True, 'sequence': sequence}
+
+    from starlette.requests import Request
+    from starlette.datastructures import UploadFile
+
+    async def music_upload(request):
+        from .device_runtime import save_music
+        from cobrinha_server.services import music_runtime
+        from cobrinha_server.bridge.godot_bridge import godot_bridge, preview_bridge
+        form = await request.form(max_files=1, max_fields=0)
+        upload = form.get('file')
+        if not isinstance(upload, UploadFile):
+            raise HTTPException(status_code=400, detail='Selecione um arquivo de música.')
+        try:
+            target = await save_music(upload, music_runtime.BACKGROUND_MUSIC_DIR)
+        except ValueError as exc:
+            await upload.close()
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        music = music_runtime.update(enabled=True, current_track=str(target))
+        for bridge in (godot_bridge, preview_bridge):
+            if bridge.status()['connected']:
+                await bridge.send(music_runtime.websocket_message())
+        return {'ok': True, 'file': target.name, 'track_count': len(music.get('tracks', []))}
+
+    # Keep native.py importable before FastAPI is installed by the bootstrap.
+    music_upload.__annotations__['request'] = Request
+    app.add_api_route('/termux/music/upload', music_upload, methods=['POST'])
+
     if auto_start:
         app.add_event_handler('startup', native.start)
 
@@ -317,10 +379,15 @@ def main():
     # Used only by launch plans of the original server, never by model output.
     game = NativeGame(args.project, godot=args.godot, state_dir=args.workdir)
     engine_args = args.engine_args[1:] if args.engine_args[:1] == ['--'] else args.engine_args
-    command = native_command(game.godot, game.pack, engine_args, workdir=game.state_dir, renderer=game.renderer)
     env = os.environ.copy()
     for name in NVIDIA_ENV:
         env.pop(name, None)
+    env, device = prepare_device(env, game.state_dir)
+    graphics = device.get('graphics', {})
+    if graphics.get('max_fps') and '--max-fps' not in engine_args:
+        engine_args = ['--max-fps', str(graphics['max_fps']), *engine_args]
+    audio_driver = 'PulseAudio' if device.get('audio', {}).get('output_available') else None
+    command = native_command(game.godot, game.pack, engine_args, workdir=game.state_dir, renderer=game.renderer, audio_driver=audio_driver)
     os.execvpe(command[0], command, env)
 
 
