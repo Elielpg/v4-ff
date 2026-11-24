@@ -121,6 +121,16 @@ def prepare_device(env: dict, state: Path) -> tuple[dict, dict]:
     return prepare_game(env, state)
 
 
+def prepare_presentation(env: dict, state: Path, device: dict) -> dict:
+    try:
+        from .presentation import prepare_display
+    except ModuleNotFoundError as exc:
+        if exc.name != 'snake_termux.presentation':
+            raise
+        return device
+    return prepare_display(state, env, device)
+
+
 def verify_original(path: Path) -> dict:
     if not path.is_file() or path.stat().st_size != EXPECTED_BYTES:
         raise ValueError('Não encontrei o SnakeReyers.exe original 0.1.9 completo em game/windows.')
@@ -249,10 +259,12 @@ class NativeGame:
             for name in NVIDIA_ENV:
                 env.pop(name, None)
             env, self.device_report = prepare_device(env, self.state_dir)
+            self.device_report = prepare_presentation(env, self.state_dir, self.device_report)
             env['COBRINHA_LIVE_SERVER_URL'] = f'ws://127.0.0.1:{self.port}/ws/godot'
             env['COBRINHA_TERRAIN_EDITOR_FILE'] = str(self.project / 'server/private/cobrinha_terrain_editor.json')
             graphics = self.device_report.get('graphics', {})
-            args = ['--windowed', '--resolution', graphics.get('resolution', '720x1280')]
+            full = self.device_report.get('display', {}).get('fullscreen', False)
+            args = ['--fullscreen' if full else '--windowed', '--resolution', graphics.get('resolution', '720x1280')]
             if graphics.get('max_fps'):
                 args.extend(['--max-fps', str(graphics['max_fps'])])
             args.extend(['--', '--cobrinha-live'])
@@ -289,6 +301,36 @@ def attach(binding, app, native: NativeGame, *, auto_start: bool = False):
     binding.replace_aliases(old_executable, wrapper)
     binding.replace_aliases(old_dir, wrapper.parent)
     app.state.snake_native_game = native
+
+    # Optional for older, version-only repairs. Music is installed before the
+    # game's initial websocket handshake, only when its library is empty.
+    try:
+        from . import presentation
+    except ImportError:
+        presentation = None
+    if presentation is not None:
+        def starter_music():
+            from cobrinha_server.services import music_runtime
+            try:
+                result = presentation.provision_music(music_runtime, native.state_dir)
+                if result.get('added'):
+                    print(result['message'], flush=True)
+            except (OSError, ValueError) as exc:
+                print('Trilha opcional: ' + str(exc), flush=True)
+        app.add_event_handler('startup', starter_music)
+
+        @app.get('/termux/presentation')
+        def presentation_status():
+            return {'settings': presentation.settings(native.state_dir),
+                    'display': native.device_report.get('display', {})}
+
+        @app.post('/termux/presentation')
+        def presentation_settings(payload: dict):
+            try:
+                saved = presentation.save_settings(native.state_dir, payload)
+            except ValueError as exc:
+                raise HTTPException(status_code=400, detail=str(exc)) from exc
+            return {'settings': saved, 'restart_required': True}
 
     @app.get('/termux/game')
     def status():

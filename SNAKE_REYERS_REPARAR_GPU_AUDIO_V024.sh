@@ -146,6 +146,16 @@ def prepare_device(env: dict, state: Path) -> tuple[dict, dict]:
     return prepare_game(env, state)
 
 
+def prepare_presentation(env: dict, state: Path, device: dict) -> dict:
+    try:
+        from .presentation import prepare_display
+    except ModuleNotFoundError as exc:
+        if exc.name != 'snake_termux.presentation':
+            raise
+        return device
+    return prepare_display(state, env, device)
+
+
 def verify_original(path: Path) -> dict:
     if not path.is_file() or path.stat().st_size != EXPECTED_BYTES:
         raise ValueError('Não encontrei o SnakeReyers.exe original 0.1.9 completo em game/windows.')
@@ -274,10 +284,12 @@ class NativeGame:
             for name in NVIDIA_ENV:
                 env.pop(name, None)
             env, self.device_report = prepare_device(env, self.state_dir)
+            self.device_report = prepare_presentation(env, self.state_dir, self.device_report)
             env['COBRINHA_LIVE_SERVER_URL'] = f'ws://127.0.0.1:{self.port}/ws/godot'
             env['COBRINHA_TERRAIN_EDITOR_FILE'] = str(self.project / 'server/private/cobrinha_terrain_editor.json')
             graphics = self.device_report.get('graphics', {})
-            args = ['--windowed', '--resolution', graphics.get('resolution', '720x1280')]
+            full = self.device_report.get('display', {}).get('fullscreen', False)
+            args = ['--fullscreen' if full else '--windowed', '--resolution', graphics.get('resolution', '720x1280')]
             if graphics.get('max_fps'):
                 args.extend(['--max-fps', str(graphics['max_fps'])])
             args.extend(['--', '--cobrinha-live'])
@@ -314,6 +326,36 @@ def attach(binding, app, native: NativeGame, *, auto_start: bool = False):
     binding.replace_aliases(old_executable, wrapper)
     binding.replace_aliases(old_dir, wrapper.parent)
     app.state.snake_native_game = native
+
+    # Optional for older, version-only repairs. Music is installed before the
+    # game's initial websocket handshake, only when its library is empty.
+    try:
+        from . import presentation
+    except ImportError:
+        presentation = None
+    if presentation is not None:
+        def starter_music():
+            from cobrinha_server.services import music_runtime
+            try:
+                result = presentation.provision_music(music_runtime, native.state_dir)
+                if result.get('added'):
+                    print(result['message'], flush=True)
+            except (OSError, ValueError) as exc:
+                print('Trilha opcional: ' + str(exc), flush=True)
+        app.add_event_handler('startup', starter_music)
+
+        @app.get('/termux/presentation')
+        def presentation_status():
+            return {'settings': presentation.settings(native.state_dir),
+                    'display': native.device_report.get('display', {})}
+
+        @app.post('/termux/presentation')
+        def presentation_settings(payload: dict):
+            try:
+                saved = presentation.save_settings(native.state_dir, payload)
+            except ValueError as exc:
+                raise HTTPException(status_code=400, detail=str(exc)) from exc
+            return {'settings': saved, 'restart_required': True}
 
     @app.get('/termux/game')
     def status():
@@ -912,7 +954,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
   fetch('/termux/game').then(async response => {
     if (!response.ok) return;
     const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.style.marginTop = '14px';
-    const title = document.createElement('h2'); title.textContent = 'Jogo original · Godot nativo';
+    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.2.5';
     const message = document.createElement('p'); message.id = 'termuxGameStatus';
     const deviceMessage = document.createElement('p'); deviceMessage.id = 'termuxDeviceStatus';
     const start = document.createElement('button'); start.type = 'button'; start.textContent = 'Abrir jogo original';
@@ -920,8 +962,8 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
     async function refresh() {
       const response = await fetch('/termux/game'); const body = await response.json();
       message.textContent = body.running ? (body.bridge_connected ? 'Janela em execução · conectada ao servidor.' : 'Janela em execução · aguardando conexão com o servidor.') : 'Janela parada. Última saída: ' + (body.last_exit_code ?? 'nenhuma') + '. Logs: ' + body.log;
-      const gpu = body.device?.graphics, output = body.device?.audio;
-      deviceMessage.textContent = gpu ? (gpu.hardware_verified ? 'GPU confirmada: ' + gpu.renderer : gpu.message) + ' · ' + gpu.resolution + ' · limite ' + gpu.max_fps + ' FPS. ' + (output?.message || '') : '';
+      const gpu = body.device?.graphics, output = body.device?.audio, display = body.device?.display;
+      deviceMessage.textContent = gpu ? (gpu.hardware_verified ? 'GPU confirmada: ' + gpu.renderer : gpu.message) + ' · ' + gpu.resolution + ' · limite ' + gpu.max_fps + ' FPS. ' + (display?.message || output?.message || '') : '';
     }
     for (const [button, action] of [[start, 'start'], [stop, 'stop']]) button.addEventListener('click', async () => {
       button.disabled = true;
@@ -943,6 +985,10 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
     const musicFile = document.createElement('input'); musicFile.id = 'termuxMusicFile'; musicFile.type = 'file'; musicFile.accept = '.mp3,.ogg,.wav';
     const sendMusic = document.createElement('button'); sendMusic.type = 'button'; sendMusic.id = 'termuxMusicUpload'; sendMusic.textContent = 'Adicionar música ao jogo';
     const musicMessage = document.createElement('p'); musicMessage.id = 'termuxMusicStatus';
+    fetch('/api/music/runtime').then(r => r.json()).then(body => {
+      const music = body.music || body;
+      musicMessage.textContent = music.track_count ? music.track_count + ' faixa(s) disponíveis. ' + (music.enabled ? 'Música ativada.' : 'Música pausada; ative nos controles de música do painel.') : 'Nenhuma faixa na biblioteca. Adicione uma música do celular.';
+    }).catch(() => {});
     sendMusic.addEventListener('click', async () => {
       if (!musicFile.files[0]) {musicMessage.textContent = 'Selecione uma música do celular.'; return;}
       if (musicFile.files[0].size > 200 * 1024 * 1024) {musicMessage.textContent = 'O arquivo deve ter até 200 MB.'; return;}
@@ -954,7 +1000,25 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
         musicMessage.textContent = 'Música adicionada. ' + body.track_count + ' faixa(s) disponíveis.';
       } catch (error) {musicMessage.textContent = error.message;} finally {sendMusic.disabled = false;}
     });
-    card.append(title, message, deviceMessage, start, stop, sound, speech, testMessage, musicLabel, musicFile, sendMusic, musicMessage);
+    const profileLabel = document.createElement('label'); profileLabel.htmlFor = 'termuxGraphicsProfile'; profileLabel.textContent = 'Qualidade da imagem · tela limpa em retrato';
+    const profile = document.createElement('select'); profile.id = 'termuxGraphicsProfile';
+    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['sharp', 'Mais nítido · 864 × 1536']]) {
+      const option = document.createElement('option'); option.value = value; option.textContent = text; profile.append(option);
+    }
+    const saveProfile = document.createElement('button'); saveProfile.type = 'button'; saveProfile.id = 'termuxSaveProfile'; saveProfile.textContent = 'Salvar qualidade';
+    const profileMessage = document.createElement('p'); profileMessage.id = 'termuxProfileStatus';
+    const profileBox = document.createElement('div'); profileBox.hidden = true;
+    profileBox.append(profileLabel, profile, saveProfile, profileMessage);
+    fetch('/termux/presentation').then(r => {if (!r.ok) throw new Error('Exibição não disponível nesta revisão.'); return r.json();}).then(body => {profile.value = body.settings.profile; profileBox.hidden = false;}).catch(() => {});
+    saveProfile.addEventListener('click', async () => {
+      saveProfile.disabled = true;
+      try {
+        const response = await fetch('/termux/presentation', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({profile: profile.value})});
+        const body = await response.json(); if (!response.ok) throw new Error(body.detail || 'Não foi possível salvar.');
+        profileMessage.textContent = 'Salvo. Use Fechar janela do jogo e depois Abrir jogo original para aplicar. O modo leve reduz a carga gráfica; os FPS reais dependem do aparelho.';
+      } catch (error) {profileMessage.textContent = error.message;} finally {saveProfile.disabled = false;}
+    });
+    card.append(title, message, deviceMessage, start, stop, profileBox, sound, speech, testMessage, musicLabel, musicFile, sendMusic, musicMessage);
     status.closest('section').before(card);
     await refresh(); setInterval(() => refresh().catch(() => {}), 5000);
   }).catch(() => {});
