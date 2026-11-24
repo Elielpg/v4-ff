@@ -30,7 +30,7 @@ for relative in start.sh snake_termux/native.py snake_termux/__main__.py; do
 done
 cat >"$repair_stage/start.sh" <<'SNAKE_START_V022'
 #!/usr/bin/env bash
-# Adapter 0.2.3: untagged X11 service and default Android window must match.
+# Audio failure must not block the X11 game window.
 set -euo pipefail
 adapter_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd -- "$adapter_dir"
@@ -49,7 +49,7 @@ if [[ ! -x .venv/bin/python ]]; then
 fi
 mkdir -p state/logs
 if [[ -n "${PREFIX:-}" && "$PREFIX" == /data/* ]]; then
-  for required_command in termux-x11 xdpyinfo pulseaudio; do
+  for required_command in termux-x11 xdpyinfo; do
     if ! command -v "$required_command" >/dev/null 2>&1; then
       printf 'Falta o comando %s no Termux. Confira o preparo dos pacotes X11.\n' "$required_command" >&2
       exit 1
@@ -57,7 +57,8 @@ if [[ -n "${PREFIX:-}" && "$PREFIX" == /data/* ]]; then
   done
   export DISPLAY="${DISPLAY:-:1}"
   export XDG_RUNTIME_DIR="${TMPDIR:-$PREFIX/tmp}"
-  pulseaudio --check 2>/dev/null || pulseaudio --start --exit-idle-time=-1
+  # Python starts an owned, private audio server after checking graphics.
+  # Never query/start the shared daemon here: it can hang before X11 opens.
   if ! xdpyinfo -display "$DISPLAY" >/dev/null 2>&1; then
     termux-x11 "$DISPLAY" >state/logs/x11.log 2>&1 &
     x11_pid=$!
@@ -118,7 +119,11 @@ def prepare_device(env: dict, state: Path) -> tuple[dict, dict]:
         if exc.name != 'snake_termux.device_runtime':
             raise
         return dict(env), {}
-    return prepare_game(env, state)
+    try:
+        from .device_runtime import prepare_graphics
+    except ImportError:
+        return prepare_game(env, state)
+    return prepare_graphics(env, state)
 
 
 def prepare_presentation(env: dict, state: Path, device: dict) -> dict:
@@ -136,7 +141,17 @@ def finalize_device_audio(env: dict, state: Path, device: dict) -> tuple[dict, d
         from .device_runtime import finalize_audio
     except ImportError:
         return env, device  # Older optional GPU modules keep their prior behavior.
-    return finalize_audio(env, state, device, requested_sink=os.environ.get('PULSE_SINK'))
+    try:
+        return finalize_audio(env, state, device, requested_sink=os.environ.get('PULSE_SINK'))
+    except Exception as exc:
+        # Audio is optional for opening the game. Filesystem/adapter errors
+        # during this preflight must not abort FastAPI's startup and kill X11.
+        error = f'{type(exc).__name__}: {exc}'[:900]
+        print('Preparação de áudio falhou; abrindo a imagem mesmo assim. ' + error, flush=True)
+        report = {**device, 'audio': {**device.get('audio', {}), 'output_available': False,
+                  'stream_preflight_ok': False, 'message': 'Áudio não preparado; a janela pode abrir sem som.',
+                  'preparation_error': error}}
+        return dict(env), report
 
 
 def verify_original(path: Path) -> dict:
@@ -222,6 +237,9 @@ class NativeGame:
         self.process: subprocess.Popen | None = None
         self.log = None
         self.log_offset = 0
+        self.audio_service = None
+        self.audio_driver = None
+        self.audio_env = None
         self.started_at = 0.0
         self.last_exit_code = None
         self.device_report = {}
@@ -247,12 +265,17 @@ class NativeGame:
             if self.process and self.process.poll() is not None:
                 self.last_exit_code = self.process.returncode
                 self.process = None
+                if self.audio_service:
+                    self.audio_service.stop()
                 if self.log:
                     self.log.close()
                     self.log = None
                 with (self.state_dir / 'process-events.jsonl').open('a') as file:
                     file.write(json.dumps({'event': 'game_exit', 'at': time.time(), 'code': self.last_exit_code}) + '\n')
             audio_runtime = {'state': 'pending', 'message': 'Aguardando inicialização do áudio do jogo.'}
+            if self.process and self.audio_driver == 'Dummy':
+                audio_runtime = {'state': 'dummy', 'driver': 'Dummy',
+                                 'message': 'Imagem em execução sem som: a saída de áudio não ficou disponível.'}
             if self.process and self.log_path.exists():
                 with self.log_path.open('rb') as stream:
                     stream.seek(self.log_offset)
@@ -260,7 +283,7 @@ class NativeGame:
                 if 'falling back to the dummy driver' in output.lower():
                     audio_runtime = {'state': 'dummy', 'driver': 'Dummy',
                                      'message': 'Jogo sem som: Godot iniciou com driver Dummy. Feche e abra a janela após preparar o áudio Android.'}
-                elif 'SPEECH_AUDIO_STARTED' in output or 'MUSIC_TRACK_STARTED' in output:
+                elif self.audio_driver != 'Dummy' and ('SPEECH_AUDIO_STARTED' in output or 'MUSIC_TRACK_STARTED' in output):
                     audio_runtime = {'state': 'playback-requested',
                                      'message': 'O jogo iniciou reprodução interna; isso não confirma som audível.'}
             return {'running': self.process is not None, 'pid': self.process.pid if self.process else None,
@@ -281,7 +304,23 @@ class NativeGame:
                 env.pop(name, None)
             env, self.device_report = prepare_device(env, self.state_dir)
             self.device_report = prepare_presentation(env, self.state_dir, self.device_report)
-            env, self.device_report = finalize_device_audio(env, self.state_dir, self.device_report)
+            try:
+                from .device_runtime import config
+            except ImportError:
+                managed_audio = False
+            else:
+                managed_audio = env.get('PREFIX', '').startswith('/data/') and config(self.state_dir).get('enabled') is True
+            # Explicit capture routes belong to the original capture launcher.
+            if managed_audio and not os.environ.get('PULSE_SINK'):
+                try:
+                    from .audio_service import PrivateAudio
+                except ImportError:
+                    env, self.device_report = finalize_device_audio(env, self.state_dir, self.device_report)
+                else:
+                    self.audio_service = PrivateAudio(self.state_dir)
+                    env, self.device_report = self.audio_service.start(env, self.device_report)
+            else:
+                env, self.device_report = finalize_device_audio(env, self.state_dir, self.device_report)
             env['COBRINHA_LIVE_SERVER_URL'] = f'ws://127.0.0.1:{self.port}/ws/godot'
             env['COBRINHA_TERRAIN_EDITOR_FILE'] = str(self.project / 'server/private/cobrinha_terrain_editor.json')
             graphics = self.device_report.get('graphics', {})
@@ -292,7 +331,10 @@ class NativeGame:
             if self.device_report.get('audio', {}).get('godot_latency_ms'):
                 args.extend(['--audio-output-latency', str(self.device_report['audio']['godot_latency_ms'])])
             args.extend(['--', '--cobrinha-live'])
-            audio_driver = 'PulseAudio' if self.device_report.get('audio', {}).get('output_available') else None
+            output = self.device_report.get('audio', {})
+            audio_driver = 'PulseAudio' if output.get('output_available') else ('Dummy' if 'output_available' in output else None)
+            self.audio_driver = audio_driver
+            self.audio_env = dict(env)
             command = native_command(self.godot, self.pack, args, workdir=self.state_dir, renderer=self.renderer, audio_driver=audio_driver)
             self.log = self.log_path.open('ab', buffering=0)
             self.log_offset = self.log_path.stat().st_size
@@ -301,6 +343,8 @@ class NativeGame:
             except Exception:
                 self.log.close()
                 self.log = None
+                if self.audio_service:
+                    self.audio_service.stop()
                 raise
             self.started_at = time.time()
             return self.status()
@@ -314,6 +358,8 @@ class NativeGame:
                 except subprocess.TimeoutExpired:
                     self.process.kill()
                     self.process.wait(timeout=5)
+            if self.audio_service:
+                self.audio_service.stop()
             return self.status()
 
 
@@ -376,6 +422,10 @@ def attach(binding, app, native: NativeGame, *, auto_start: bool = False):
     @app.post('/termux/audio/test')
     def audio_test():
         from .device_runtime import test_audio
+        if native.audio_service:
+            if not native.device_report.get('audio', {}).get('output_available'):
+                return native.device_report.get('audio', {})
+            return test_audio(native.state_dir, base=native.audio_env)
         return test_audio(native.state_dir)
 
     @app.post('/termux/audio/speech-test')
@@ -456,7 +506,8 @@ def main():
         engine_args = ['--max-fps', str(graphics['max_fps']), *engine_args]
     if device.get('audio', {}).get('godot_latency_ms') and '--audio-output-latency' not in engine_args:
         engine_args = ['--audio-output-latency', str(device['audio']['godot_latency_ms']), *engine_args]
-    audio_driver = 'PulseAudio' if device.get('audio', {}).get('output_available') else None
+    output = device.get('audio', {})
+    audio_driver = 'PulseAudio' if output.get('output_available') else ('Dummy' if 'output_available' in output else None)
     command = native_command(game.godot, game.pack, engine_args, workdir=game.state_dir, renderer=game.renderer, audio_driver=audio_driver)
     os.execvpe(command[0], command, env)
 

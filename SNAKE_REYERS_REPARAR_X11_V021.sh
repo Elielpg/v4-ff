@@ -14,7 +14,7 @@ repair_temp="$(mktemp "$repair_target/.start-x11-fix.XXXXXX")"
 trap 'rm -f -- "$repair_temp"' EXIT
 cat >"$repair_temp" <<'SNAKE_X11_LAUNCHER_V021'
 #!/usr/bin/env bash
-# Adapter 0.2.3: untagged X11 service and default Android window must match.
+# Audio failure must not block the X11 game window.
 set -euo pipefail
 adapter_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd -- "$adapter_dir"
@@ -33,7 +33,7 @@ if [[ ! -x .venv/bin/python ]]; then
 fi
 mkdir -p state/logs
 if [[ -n "${PREFIX:-}" && "$PREFIX" == /data/* ]]; then
-  for required_command in termux-x11 xdpyinfo pulseaudio; do
+  for required_command in termux-x11 xdpyinfo; do
     if ! command -v "$required_command" >/dev/null 2>&1; then
       printf 'Falta o comando %s no Termux. Confira o preparo dos pacotes X11.\n' "$required_command" >&2
       exit 1
@@ -41,7 +41,8 @@ if [[ -n "${PREFIX:-}" && "$PREFIX" == /data/* ]]; then
   done
   export DISPLAY="${DISPLAY:-:1}"
   export XDG_RUNTIME_DIR="${TMPDIR:-$PREFIX/tmp}"
-  pulseaudio --check 2>/dev/null || pulseaudio --start --exit-idle-time=-1
+  # Python starts an owned, private audio server after checking graphics.
+  # Never query/start the shared daemon here: it can hang before X11 opens.
   if ! xdpyinfo -display "$DISPLAY" >/dev/null 2>&1; then
     termux-x11 "$DISPLAY" >state/logs/x11.log 2>&1 &
     x11_pid=$!
