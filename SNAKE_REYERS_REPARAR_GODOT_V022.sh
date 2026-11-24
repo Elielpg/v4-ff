@@ -30,7 +30,7 @@ for relative in start.sh snake_termux/native.py snake_termux/__main__.py; do
 done
 cat >"$repair_stage/start.sh" <<'SNAKE_START_V022'
 #!/usr/bin/env bash
-# Adapter 0.2.1: test the X11 service; Android package queries can fail in Termux.
+# Adapter 0.2.3: untagged X11 service and default Android window must match.
 set -euo pipefail
 adapter_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd -- "$adapter_dir"
@@ -77,7 +77,7 @@ if [[ -n "${PREFIX:-}" && "$PREFIX" == /data/* ]]; then
       exit 1
     fi
   fi
-  am start --user 0 -n com.termux.x11/.MainActivity -d main >state/logs/x11-activity.log 2>&1 || true
+  am start --user 0 -n com.termux.x11/com.termux.x11.MainActivity >state/logs/x11-activity.log 2>&1 || true
 fi
 printf 'Painel: http://127.0.0.1:9393 | Janela: aplicativo Termux:X11\n'
 printf 'Ctrl+C encerra esta execução. Nenhum processo de outros projetos será encerrado.\n'
