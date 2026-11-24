@@ -30,7 +30,7 @@ repair_backup="$(mktemp -d "$repair_target/state/launcher-backups/display-music-
 repair_stage="$(mktemp -d "$repair_target/.display-music-v025.XXXXXX")"
 repair_started=0
 repair_complete=0
-repair_files=('start.sh' 'snake_termux/native.py' 'snake_termux/__main__.py' 'snake_termux/device_runtime.py' 'snake_termux/ui.js' 'install-termux.sh' 'snake_termux/presentation.py' 'assets/music/Neon Garden.ogg' 'assets/music/CREDITS.md' 'snake_termux/audio_service.py' 'snake_termux/integration.py' 'snake_termux/live_tuning.py' 'snake_termux/music_library.py')
+repair_files=('start.sh' 'snake_termux/native.py' 'snake_termux/__main__.py' 'snake_termux/device_runtime.py' 'snake_termux/ui.js' 'install-termux.sh' 'snake_termux/presentation.py' 'assets/music/Neon Garden.ogg' 'assets/music/CREDITS.md' 'snake_termux/audio_service.py' 'snake_termux/integration.py' 'snake_termux/live_tuning.py' 'snake_termux/music_library.py' 'snake_termux/piper_worker.py')
 cleanup_repair() {
   if [[ "$repair_started" == 1 && "$repair_complete" != 1 ]]; then
     for relative in "${repair_files[@]}"; do
@@ -763,6 +763,14 @@ def real_sinks(entries: list[dict]) -> list[dict]:
     return [item for item in entries if item['name'] != 'auto_null' and 'null-sink' not in item['module']]
 
 
+def output_latency(env: dict) -> int:
+    try:
+        latency = int(env.get('PULSE_LATENCY_MSEC', '80'))
+    except (TypeError, ValueError):
+        latency = 80
+    return max(40, min(300, latency))
+
+
 def audio(base: dict) -> tuple[dict, dict]:
     env = dict(base)
     report = {'output_available': False, 'sink': None, 'audibility_confirmed': False, 'errors': []}
@@ -785,7 +793,7 @@ def audio(base: dict) -> tuple[dict, dict]:
                     # The official Termux module documents this workaround for
                     # AAudioStream_close() crashes when an idle sink resumes.
                     # Normal performance mode is also friendlier to Bluetooth.
-                    options = ['sink_name=snake_android_audio', 'no_close_hack=true', 'pm=0', 'latency=80']
+                    options = ['sink_name=snake_android_audio', 'no_close_hack=true', 'pm=0', 'latency=' + str(output_latency(env))]
                 result = run(['pactl', 'load-module', module, *options], env=env, timeout=3)
                 if result.returncode:
                     report['errors'].append(module + ': ' + result.stderr.strip()[:500])
@@ -850,7 +858,7 @@ def finalize_audio(base: dict, state: Path, device: dict, *, requested_sink: str
             retained = next((item for item in available if item['name'] == output['sink']), None)
             if played.returncode or retained is None:
                 raise ValueError((played.stderr or 'A saída de áudio desapareceu durante o teste PCM.').strip())
-            output.update(stream_preflight_ok=True, godot_latency_ms=80,
+            output.update(stream_preflight_ok=True, godot_latency_ms=output_latency(env),
                           message='Saída de áudio aceitou PCM antes de abrir o jogo; confirme se ouviu a fala.')
             if not requested_sink and not output.get('virtual_capture'):
                 # Do not bind Godot permanently to an ephemeral Android sink.
@@ -1106,7 +1114,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
   fetch('/termux/game').then(async response => {
     if (!response.ok) return;
     const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.style.marginTop = '14px';
-    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.2.9';
+    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.3.0';
     const message = document.createElement('p'); message.id = 'termuxGameStatus';
     const deviceMessage = document.createElement('p'); deviceMessage.id = 'termuxDeviceStatus';
     const start = document.createElement('button'); start.type = 'button'; start.textContent = 'Abrir jogo original';
@@ -1226,7 +1234,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
     musicBox.append(musicTitle, musicHelp, musicLabel, musicFile, sendMusic, musicMode, musicSelect, musicTracks, playMusic, nextMusic, pauseMusic, musicVolumeLabel, musicVolume, musicVolumeValue, musicMessage);
     const profileLabel = document.createElement('label'); profileLabel.htmlFor = 'termuxGraphicsProfile'; profileLabel.textContent = 'Qualidade da imagem · tela limpa em retrato';
     const profile = document.createElement('select'); profile.id = 'termuxGraphicsProfile';
-    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536']]) {
+    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536'], ['stable', 'Estável · 640 × 1136 · limite 30 FPS']]) {
       const option = document.createElement('option'); option.value = value; option.textContent = text; profile.append(option);
     }
     const saveProfile = document.createElement('button'); saveProfile.type = 'button'; saveProfile.id = 'termuxSaveProfile'; saveProfile.textContent = 'Salvar qualidade';
@@ -1301,7 +1309,7 @@ from pathlib import Path
 from .device_runtime import atomic_json
 
 ROOT = Path(__file__).resolve().parents[1]
-PROFILES = {'balanced': ('720x1280', 60), 'light': ('640x1136', 60), 'sharp': ('864x1536', 60), 'live': ('640x1136', 45)}
+PROFILES = {'balanced': ('720x1280', 60), 'light': ('640x1136', 60), 'sharp': ('864x1536', 60), 'live': ('640x1136', 45), 'stable': ('640x1136', 30)}
 TRACK = ROOT / 'assets/music/Neon Garden.ogg'
 # Filled from the reproducibly generated, original audio in tools/create_music.py.
 TRACK_SHA256 = '482b4e4afbce75d1b810f1b981a0529ef4fb9fe211d6b8656e5e78530ac243f7'
@@ -1331,7 +1339,7 @@ def save_settings(state: Path, payload: dict) -> dict:
         raise ValueError('Opção de exibição desconhecida.')
     if 'profile' in payload:
         if not isinstance(payload['profile'], str) or payload['profile'] not in PROFILES:
-            raise ValueError('Escolha balanced, light, sharp ou live.')
+            raise ValueError('Escolha balanced, light, sharp, live ou stable.')
         current['profile'] = payload['profile']
     if 'clean_display' in payload:
         if not isinstance(payload['clean_display'], bool):
@@ -10071,6 +10079,9 @@ class PrivateAudio:
             env['PULSE_SERVER'] = 'unix:' + str(self.directory / 'native')
             env.pop('PULSE_SINK', None)
             env.pop('PULSE_SOURCE', None)
+            # More scheduling margin for local music + speech under game load.
+            # Explicit latency chosen by the user/capture environment is retained.
+            env.setdefault('PULSE_LATENCY_MSEC', '160')
             self.state.joinpath('logs').mkdir(parents=True, exist_ok=True)
             self.log = (self.state / 'logs/audio-private.log').open('ab', buffering=0)
             # -n skips the shared default.pa. In particular no suspend-on-idle
@@ -10580,7 +10591,10 @@ class MusicLibrary:
                 else:
                     with (log_dir / 'music-conversion.log').open('a') as log:
                         log.write('\nPreparing ' + key + '\n'); log.flush()
-                        converted = subprocess.run(['ffmpeg', '-nostdin', '-y', '-hide_banner', '-loglevel', 'error',
+                        # Lower only our own preparation child, never Godot,
+                        # PulseAudio or processes belonging to another project.
+                        prefix = [shutil.which('nice'), '-n', '10'] if shutil.which('nice') else []
+                        converted = subprocess.run([*prefix, 'ffmpeg', '-nostdin', '-y', '-hide_banner', '-loglevel', 'error',
                             '-threads', '1', '-filter_threads', '1', '-protocol_whitelist', 'file,pipe',
                             '-i', str(source), '-map', '0:a:0', '-vn', '-sn', '-dn', '-ar', '48000',
                             '-ac', '2', '-c:a', 'libvorbis', '-q:a', '4', '-threads', '1', str(temporary)],
@@ -10780,6 +10794,112 @@ def attach(binding, app, native):
     app.add_api_route('/termux/music/import', upload, methods=['POST'])
     return library
 SNAKE_DISPLAY_V025_FILE_12
+cat >"$repair_stage/snake_termux/piper_worker.py" <<'SNAKE_DISPLAY_V025_FILE_13'
+"""Loopback-only Piper with bounded CPU usage, run in the installed voice environment."""
+import argparse
+import hashlib
+import io
+import json
+from pathlib import Path
+import threading
+import wave
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+
+def load_voice(model):
+    import onnxruntime as ort
+    from piper import PiperVoice
+    from piper.config import PiperConfig
+    options = ort.SessionOptions()
+    options.intra_op_num_threads = 2
+    options.inter_op_num_threads = 1
+    options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
+    # Spinning workers compete with Godot/Qwen even between short requests.
+    options.add_session_config_entry('session.intra_op.allow_spinning', '0')
+    options.add_session_config_entry('session.inter_op.allow_spinning', '0')
+    config = json.loads(Path(str(model) + '.json').read_text())
+    return PiperVoice(config=PiperConfig.from_dict(config), session=ort.InferenceSession(
+        str(model), sess_options=options, providers=['CPUExecutionProvider']))
+
+
+def main():
+    from piper import SynthesisConfig
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model', required=True)
+    parser.add_argument('--port', type=int, default=8083)
+    parser.add_argument('--cache-dir', required=True)
+    args = parser.parse_args()
+    voice = load_voice(args.model)
+    lock = threading.Lock()
+    cache = Path(args.cache_dir)
+    cache.mkdir(parents=True, exist_ok=True)
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, *_args):
+            pass
+
+        def send_json(self, code, data):
+            raw = json.dumps(data).encode()
+            self.send_response(code)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', str(len(raw)))
+            self.end_headers()
+            self.wfile.write(raw)
+
+        def do_GET(self):
+            if self.path == '/health':
+                self.send_json(200, {'ready': True, 'model': 'Piper-pt_BR-local',
+                    'busy': lock.locked(), 'inference_threads': 2, 'worker_spinning': False})
+            else:
+                self.send_json(404, {'error': 'not found'})
+
+        def do_POST(self):
+            if self.path != '/synthesize':
+                return self.send_json(404, {'error': 'not found'})
+            try:
+                size = int(self.headers.get('Content-Length', '0'))
+                if not 1 <= size <= 4096:
+                    return self.send_json(413, {'error': 'request too large'})
+                text = json.loads(self.rfile.read(size)).get('text', '')
+                if not isinstance(text, str) or not text.strip() or len(text) > 400:
+                    return self.send_json(400, {'error': 'invalid text'})
+                if not lock.acquire(blocking=False):
+                    return self.send_json(409, {'error': 'busy'})
+                try:
+                    file = cache / (hashlib.sha256(text.encode()).hexdigest() + '.wav')
+                    raw = file.read_bytes() if file.exists() else b''
+                    if not (len(raw) >= 44 and raw[:4] == b'RIFF' and raw[8:12] == b'WAVE'
+                            and int.from_bytes(raw[4:8], 'little') + 8 == len(raw)):
+                        target = io.BytesIO()
+                        with wave.open(target, 'wb') as output:
+                            voice.synthesize_wav(text, output, syn_config=SynthesisConfig(
+                                length_scale=.96, noise_scale=.4, noise_w_scale=.28, volume=.85))
+                        raw = target.getvalue()
+                        temp = file.with_suffix('.tmp')
+                        temp.write_bytes(raw)
+                        temp.replace(file)
+                        files = sorted(cache.glob('*.wav'), key=lambda item: item.stat().st_mtime)
+                        for old in files[:-60]:
+                            old.unlink(missing_ok=True)
+                finally:
+                    lock.release()
+                self.send_response(200)
+                self.send_header('Content-Type', 'audio/wav')
+                self.send_header('Content-Length', str(len(raw)))
+                self.end_headers()
+                self.wfile.write(raw)
+            except (BrokenPipeError, ConnectionResetError):
+                pass
+            except Exception as exc:
+                self.send_json(500, {'error': type(exc).__name__})
+
+    print('Voz Piper local pronta em 127.0.0.1:' + str(args.port) + ' · CPU limitada a 2 threads', flush=True)
+    ThreadingHTTPServer(('127.0.0.1', args.port), Handler).serve_forever()
+
+
+if __name__ == '__main__':
+    main()
+SNAKE_DISPLAY_V025_FILE_13
 "$repair_python" - "$repair_stage" <<'SNAKE_CHECK_FILES'
 import ast, pathlib, sys
 for path in pathlib.Path(sys.argv[1]).rglob("*.py"):

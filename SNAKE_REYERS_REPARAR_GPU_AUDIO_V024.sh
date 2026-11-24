@@ -763,6 +763,14 @@ def real_sinks(entries: list[dict]) -> list[dict]:
     return [item for item in entries if item['name'] != 'auto_null' and 'null-sink' not in item['module']]
 
 
+def output_latency(env: dict) -> int:
+    try:
+        latency = int(env.get('PULSE_LATENCY_MSEC', '80'))
+    except (TypeError, ValueError):
+        latency = 80
+    return max(40, min(300, latency))
+
+
 def audio(base: dict) -> tuple[dict, dict]:
     env = dict(base)
     report = {'output_available': False, 'sink': None, 'audibility_confirmed': False, 'errors': []}
@@ -785,7 +793,7 @@ def audio(base: dict) -> tuple[dict, dict]:
                     # The official Termux module documents this workaround for
                     # AAudioStream_close() crashes when an idle sink resumes.
                     # Normal performance mode is also friendlier to Bluetooth.
-                    options = ['sink_name=snake_android_audio', 'no_close_hack=true', 'pm=0', 'latency=80']
+                    options = ['sink_name=snake_android_audio', 'no_close_hack=true', 'pm=0', 'latency=' + str(output_latency(env))]
                 result = run(['pactl', 'load-module', module, *options], env=env, timeout=3)
                 if result.returncode:
                     report['errors'].append(module + ': ' + result.stderr.strip()[:500])
@@ -850,7 +858,7 @@ def finalize_audio(base: dict, state: Path, device: dict, *, requested_sink: str
             retained = next((item for item in available if item['name'] == output['sink']), None)
             if played.returncode or retained is None:
                 raise ValueError((played.stderr or 'A saída de áudio desapareceu durante o teste PCM.').strip())
-            output.update(stream_preflight_ok=True, godot_latency_ms=80,
+            output.update(stream_preflight_ok=True, godot_latency_ms=output_latency(env),
                           message='Saída de áudio aceitou PCM antes de abrir o jogo; confirme se ouviu a fala.')
             if not requested_sink and not output.get('virtual_capture'):
                 # Do not bind Godot permanently to an ephemeral Android sink.
@@ -1106,7 +1114,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
   fetch('/termux/game').then(async response => {
     if (!response.ok) return;
     const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.style.marginTop = '14px';
-    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.2.9';
+    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.3.0';
     const message = document.createElement('p'); message.id = 'termuxGameStatus';
     const deviceMessage = document.createElement('p'); deviceMessage.id = 'termuxDeviceStatus';
     const start = document.createElement('button'); start.type = 'button'; start.textContent = 'Abrir jogo original';
@@ -1226,7 +1234,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
     musicBox.append(musicTitle, musicHelp, musicLabel, musicFile, sendMusic, musicMode, musicSelect, musicTracks, playMusic, nextMusic, pauseMusic, musicVolumeLabel, musicVolume, musicVolumeValue, musicMessage);
     const profileLabel = document.createElement('label'); profileLabel.htmlFor = 'termuxGraphicsProfile'; profileLabel.textContent = 'Qualidade da imagem · tela limpa em retrato';
     const profile = document.createElement('select'); profile.id = 'termuxGraphicsProfile';
-    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536']]) {
+    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536'], ['stable', 'Estável · 640 × 1136 · limite 30 FPS']]) {
       const option = document.createElement('option'); option.value = value; option.textContent = text; profile.append(option);
     }
     const saveProfile = document.createElement('button'); saveProfile.type = 'button'; saveProfile.id = 'termuxSaveProfile'; saveProfile.textContent = 'Salvar qualidade';
