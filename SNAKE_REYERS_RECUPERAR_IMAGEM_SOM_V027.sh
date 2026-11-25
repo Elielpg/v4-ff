@@ -30,7 +30,7 @@ repair_backup="$(mktemp -d "$repair_target/state/launcher-backups/private-audio-
 repair_stage="$(mktemp -d "$repair_target/.private-audio-v027.XXXXXX")"
 repair_started=0
 repair_complete=0
-repair_files=('start.sh' 'snake_termux/native.py' 'snake_termux/__main__.py' 'snake_termux/device_runtime.py' 'snake_termux/ui.js' 'install-termux.sh' 'snake_termux/presentation.py' 'assets/music/Neon Garden.ogg' 'assets/music/CREDITS.md' 'snake_termux/audio_service.py' 'snake_termux/integration.py' 'snake_termux/live_tuning.py' 'snake_termux/music_library.py' 'snake_termux/piper_worker.py')
+repair_files=('start.sh' 'snake_termux/native.py' 'snake_termux/__main__.py' 'snake_termux/device_runtime.py' 'snake_termux/ui.js' 'install-termux.sh' 'snake_termux/presentation.py' 'assets/music/Neon Garden.ogg' 'assets/music/CREDITS.md' 'snake_termux/audio_service.py' 'snake_termux/integration.py' 'snake_termux/live_tuning.py' 'snake_termux/music_library.py' 'snake_termux/piper_worker.py' 'snake_termux/voice.py' 'snake_termux/reuse_ai.py' 'snake_termux/cloud_ai.py' 'snake_termux/cloud_settings.py' 'snake_termux/cloud_ui.js')
 cleanup_repair() {
   if [[ "$repair_started" == 1 && "$repair_complete" != 1 ]]; then
     for relative in "${repair_files[@]}"; do
@@ -1114,7 +1114,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
   fetch('/termux/game').then(async response => {
     if (!response.ok) return;
     const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.style.marginTop = '14px';
-    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.3.0';
+    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.3.1';
     const message = document.createElement('p'); message.id = 'termuxGameStatus';
     const deviceMessage = document.createElement('p'); deviceMessage.id = 'termuxDeviceStatus';
     const start = document.createElement('button'); start.type = 'button'; start.textContent = 'Abrir jogo original';
@@ -10342,7 +10342,7 @@ class LocalBinding:
             try:
                 result = tts_service.synthesize_for_job(text)
             except Exception as exc:
-                raise HTTPException(status_code=503, detail='Falha na síntese local: ' + str(exc)) from exc
+                raise HTTPException(status_code=503, detail='Falha na geração de voz: ' + str(exc)) from exc
             return FileResponse(result['audio_path'], media_type='audio/wav', headers={'Cache-Control': 'no-store'})
 
         @app.middleware('http')
@@ -10354,6 +10354,8 @@ class LocalBinding:
             if request.url.path == '/' and 'text/html' in response.headers.get('content-type', ''):
                 body = b''.join([chunk async for chunk in response.body_iterator])
                 marker = b'<script src="/termux/ui.js?v=1"></script>'
+                if hasattr(self, 'cloud_api'):
+                    marker += b'<script src="/termux/cloud-ui.js?v=31"></script>'
                 body = body.replace(b'</body>', marker + b'</body>')
                 headers = dict(response.headers)
                 headers.pop('content-length', None)
@@ -10366,6 +10368,12 @@ def install(app) -> LocalBinding:
     if existing:
         return existing
     binding = LocalBinding()
+    try:
+        from .cloud_settings import install as install_cloud
+    except ImportError:
+        pass  # Earlier partial repairs keep local-only behavior.
+    else:
+        install_cloud(binding, app)
     binding.install_hooks()
     binding.install_routes(app)
     try:
@@ -10900,6 +10908,949 @@ def main():
 if __name__ == '__main__':
     main()
 SNAKE_DISPLAY_V025_FILE_13
+cat >"$repair_stage/snake_termux/voice.py" <<'SNAKE_DISPLAY_V025_FILE_14'
+from __future__ import annotations
+
+import io
+import json
+import re
+import threading
+import unicodedata
+import urllib.error
+import urllib.request
+import uuid
+import wave
+from pathlib import Path
+
+from .client import LocalServiceError, loopback_opener, valid_port
+
+
+def voice_chunks(text: str, max_chars: int = 150) -> list[str]:
+    # Preserve Brazilian spelling, R/L and punctuation. XTTS-specific phonetic
+    # substitutions from the original application do not suit Piper.
+    text = re.sub(r'\s+', ' ', unicodedata.normalize('NFC', str(text))).strip()
+    if len(text) > 2000:
+        raise ValueError('Fala longa demais; use até 2000 caracteres.')
+    limit = max(30, min(150, int(max_chars)))
+    chunks, current = [], ''
+    for word in text.split():
+        if len(word) > limit:
+            if current:
+                chunks.append(current)
+                current = ''
+            chunks.extend(word[i:i + limit] for i in range(0, len(word), limit))
+        elif len(current) + len(word) + bool(current) > limit:
+            chunks.append(current)
+            current = word
+        else:
+            current += (' ' if current else '') + word
+    if current:
+        chunks.append(current)
+    return chunks
+
+
+class PiperClient:
+    def __init__(self, port: int):
+        self.port = valid_port(port)
+        self.base = f'http://127.0.0.1:{self.port}'
+        self.opener = loopback_opener()
+        self.lock = threading.Lock()
+        self.ready = False
+
+    def health(self) -> dict:
+        try:
+            with self.opener.open(self.base + '/health', timeout=2) as response:
+                data = json.loads(response.read(8192))
+            # Avoid accidentally selecting the much slower cloning service
+            # merely because it happens to occupy the old voice port.
+            model = str(data.get('model') or '')
+            self.ready = data.get('ready') is True and 'piper' in model.lower()
+            return {'ready': self.ready, 'port': self.port, 'model': model,
+                    'message': 'Piper local disponível.' if self.ready else 'Esta porta não anunciou um Piper pronto. Confira 8082 ou 8083.'}
+        except (OSError, ValueError, TypeError, AttributeError) as exc:
+            self.ready = False
+            return {'ready': False, 'port': self.port, 'message': 'Piper local indisponível. Inicie o serviço de voz já instalado.'}
+
+    def wav(self, text: str) -> bytes:
+        if not self.ready and not self.health()['ready']:
+            raise LocalServiceError('Piper local indisponível; confira a porta da voz no painel.')
+        request = urllib.request.Request(self.base + '/synthesize', data=json.dumps({'text': text}, ensure_ascii=False).encode(), headers={'Content-Type': 'application/json'})
+        if not self.lock.acquire(timeout=2):
+            raise LocalServiceError('A voz local está ocupada. Aguarde a fala atual.')
+        try:
+            try:
+                with self.opener.open(request, timeout=25) as response:
+                    raw = response.read(8_000_001)
+            except urllib.error.HTTPError as exc:
+                raise LocalServiceError(f'Piper respondeu HTTP {exc.code}.') from exc
+            except OSError as exc:
+                self.ready = False
+                raise LocalServiceError('Piper não respondeu dentro do prazo.') from exc
+            if len(raw) > 8_000_000 or raw[:4] != b'RIFF' or raw[8:12] != b'WAVE':
+                raise LocalServiceError('A voz local não devolveu um WAV válido.')
+            try:
+                with wave.open(io.BytesIO(raw), 'rb') as reader:
+                    frames = reader.getnframes()
+                    if not 8000 <= reader.getframerate() <= 96000 or reader.getnchannels() not in (1, 2) or not 0 < frames <= reader.getframerate() * 60:
+                        raise ValueError('Parâmetros de áudio inválidos.')
+                    actual = reader.readframes(frames)
+                    if len(actual) != frames * reader.getnchannels() * reader.getsampwidth():
+                        raise ValueError('Áudio truncado.')
+            except (wave.Error, EOFError, ValueError) as exc:
+                raise LocalServiceError('A voz local devolveu um WAV incompleto ou incompatível.') from exc
+            return raw
+        finally:
+            self.lock.release()
+
+    def synthesize(self, text: str, output_dir: Path) -> dict:
+        return prepare_speech(text, output_dir, self.wav, 'piper-local')
+
+
+def prepare_speech(text: str, output_dir: Path, make_wav, provider: str) -> dict:
+    from cobrinha_server.services.audio_timeline import build_audio_timeline_payload, write_audio_timeline_json
+    chunks = voice_chunks(text)
+    if not chunks:
+        raise ValueError('Texto vazio para síntese.')
+    buffers, params = [], None
+    for chunk in chunks:
+        with wave.open(io.BytesIO(make_wav(chunk)), 'rb') as reader:
+            current = reader.getparams()
+            signature = (current.nchannels, current.sampwidth, current.framerate, current.comptype)
+            if params and signature != (params.nchannels, params.sampwidth, params.framerate, params.comptype):
+                raise LocalServiceError('Piper mudou o formato do áudio durante a fala.')
+            params = current
+            buffers.append(reader.readframes(reader.getnframes()))
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output = output_dir / f'speech_{uuid.uuid4().hex}.wav'
+    temporary = output.with_suffix('.part')
+    timeline = output.with_suffix('.json')
+    try:
+        with wave.open(str(temporary), 'wb') as writer:
+            writer.setparams(params)
+            writer.writeframes(b''.join(buffers))
+        temporary.replace(output)
+        segments = write_audio_timeline_json(output, timeline)
+        return {'audio_path': str(output.resolve()), 'timeline_path': str(timeline.resolve()),
+                'timeline': build_audio_timeline_payload(output, segments), 'voice_path': '', 'chunks': chunks,
+                'voice_provider': provider}
+    except Exception:
+        temporary.unlink(missing_ok=True)
+        output.unlink(missing_ok=True)
+        timeline.unlink(missing_ok=True)
+        raise
+SNAKE_DISPLAY_V025_FILE_14
+cat >"$repair_stage/snake_termux/reuse_ai.py" <<'SNAKE_DISPLAY_V025_FILE_15'
+"""Reuse installed Qwen/Piper; no model download and no voice cloning."""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import signal
+import socket
+import subprocess
+import threading
+import time
+import urllib.request
+from pathlib import Path
+
+from .client import LocalQwen, loopback_opener, valid_port
+from .voice import PiperClient
+
+
+def occupied(port: int) -> bool:
+    try:
+        with socket.create_connection(('127.0.0.1', port), timeout=.5):
+            return True
+    except OSError:
+        return False
+
+
+def installed_paths(root: Path, manifest: dict) -> tuple[Path, Path, Path]:
+    root = root.resolve()
+    binary = root / 'llama.cpp/build/bin/llama-server'
+    text = Path(manifest.get('textModel') or '').expanduser().resolve()
+    voice = Path(manifest.get('voiceModel') or '').expanduser().resolve()
+    for path in (binary, text, voice):
+        if not path.is_relative_to(root) or not path.is_file():
+            raise ValueError('A instalação anterior não contém o modelo/serviço esperado: ' + path.name)
+    if voice.suffix != '.onnx' or not Path(str(voice) + '.json').is_file():
+        raise ValueError('Falta a voz Piper .onnx e sua configuração. O clonador não será utilizado.')
+    return binary, text, voice
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--port', type=valid_port, default=9393)
+    parser.add_argument('--state', type=Path, required=True)
+    parser.add_argument('--root', type=Path, default=Path(os.environ.get('BEN10_LOCAL_ROOT', str(Path.home() / '.local/share/ben10-local-ai'))))
+    args = parser.parse_args()
+    args.state.mkdir(parents=True, exist_ok=True)
+    stopping = threading.Event()
+    for signum in (signal.SIGTERM, signal.SIGINT):
+        signal.signal(signum, lambda *_: stopping.set())
+    children = []
+    status_file = args.state / 'ai-services.json'
+
+    def record(**data):
+        payload = {'updated_at': time.time(), 'automatic_restarts': 0, **data}
+        temporary = status_file.with_suffix('.part')
+        temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
+        temporary.replace(status_file)
+
+    def api(path, payload=None):
+        allowed = {'/termux/local-ai', '/termux/voice', '/api/settings/openai'}
+        if path not in allowed:
+            raise ValueError('Rota de configuração inválida.')
+        data = None if payload is None else json.dumps(payload).encode()
+        request = urllib.request.Request(f'http://127.0.0.1:{args.port}' + path, data=data, headers={'Content-Type': 'application/json'})
+        with loopback_opener().open(request, timeout=3) as response:
+            return json.loads(response.read(64000))
+
+    def launch(command, name):
+        file = (args.state / 'logs' / name).open('ab', buffering=0)
+        try:
+            child = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=file, stderr=subprocess.STDOUT, start_new_session=True)
+        finally:
+            file.close()
+        children.append(child)
+        return child
+
+    def ready(check, child, label):
+        for _ in range(120):
+            if stopping.is_set():
+                raise InterruptedError('Encerrado pelo usuário.')
+            if child.poll() is not None:
+                raise RuntimeError(label + ' encerrou com código ' + str(child.returncode) + '. Confira os logs.')
+            if check()['ready']:
+                return
+            stopping.wait(1)
+        raise RuntimeError(label + ' não ficou pronto dentro do prazo; sem reinício automático.')
+
+    try:
+        (args.state / 'logs').mkdir(exist_ok=True)
+        record(state='waiting-for-panel')
+        for _ in range(120):
+            if stopping.is_set():
+                return
+            try:
+                settings = api('/termux/local-ai')
+                voice_settings = api('/termux/voice')
+                break
+            except OSError:
+                stopping.wait(.5)
+        else:
+            raise RuntimeError('O painel não ficou disponível para configurar a IA.')
+        text_enabled = settings['enabled'] and settings.get('provider', 'local') == 'local'
+        text_port = valid_port(settings['local_port'])
+        voice_port = valid_port(voice_settings['port'])
+        text_client = LocalQwen(text_port)
+        # Disabling AI replies must not mute instant greetings or game speech.
+        text_ok = not text_enabled or text_client.health()['ready']
+        voice_ok = PiperClient(voice_port).health()['ready'] if voice_settings['provider'] == 'piper-local' else True
+        manifest = None
+        if not text_ok or not voice_ok:
+            try:
+                manifest = json.loads((args.root / 'install.json').read_text())
+            except (OSError, ValueError) as exc:
+                raise RuntimeError('Instalação local anterior não localizada. Inicie seus serviços existentes ou configure suas portas no painel.') from exc
+            binary, model, voice = installed_paths(args.root, manifest)
+        if not text_ok:
+            if occupied(text_port):
+                raise RuntimeError('A porta do Qwen está ocupada por outro serviço. Nenhum processo foi encerrado.')
+            record(state='loading-qwen')
+            command = [str(binary), '--model', str(model), '--alias', 'ben-classico-local', '--host', '127.0.0.1', '--port', str(text_port), '--ctx-size', '2048', '--threads', '3', '--threads-batch', '3', '--batch-size', '128', '--ubatch-size', '128', '--parallel', '1', '--threads-http', '2', '--no-webui', '--reasoning', 'off']
+            ready(text_client.health, launch(command, 'qwen.log'), 'Qwen local')
+        if not voice_ok:
+            # A still-running cloned voice may own an old port. Leave it alone.
+            for candidate in dict.fromkeys((voice_port, 8083, 8082)):
+                if PiperClient(candidate).health()['ready']:
+                    voice_port, voice_ok = candidate, True
+                    break
+                if not occupied(candidate):
+                    voice_port = candidate
+                    break
+            else:
+                raise RuntimeError('As portas de voz estão ocupadas. Selecione outra porta no painel.')
+            if not voice_ok:
+                record(state='loading-piper')
+                relative = voice.relative_to(args.root.resolve()).as_posix()
+                worker_dir = Path(__file__).resolve().parent
+                command = ['proot-distro', 'login', '--bind', str(args.root.resolve()) + ':/snake-local', '--bind', str(worker_dir) + ':/snake-worker', 'ben10-ai', '--', '/opt/ben10-voice/bin/python', '/snake-worker/piper_worker.py', '--model', '/snake-local/' + relative, '--cache-dir', '/snake-local/snake-piper-cache', '--port', str(voice_port)]
+                ready(PiperClient(voice_port).health, launch(command, 'piper.log'), 'Piper local')
+        if text_enabled:
+            api('/api/settings/openai', {'enabled': True, 'provider': 'local', 'local_port': text_port, 'model': settings['model']})
+        if voice_settings['provider'] == 'piper-local':
+            api('/termux/voice', {'provider': 'piper-local', 'port': voice_port})
+        record(state='ready', text_enabled=text_enabled, text_port=text_port, voice_port=voice_port, owned_pids=[p.pid for p in children])
+        print('IA e voz configuradas. Serviços locais são iniciados somente quando selecionados.', flush=True)
+        while not stopping.wait(1):
+            for child in children:
+                if child.poll() is not None:
+                    raise RuntimeError('Um serviço local encerrou com código ' + str(child.returncode) + '. O painel e o jogo continuam.')
+    except InterruptedError:
+        pass
+    except Exception as exc:
+        record(state='error', message=str(exc))
+        print('IA local: ' + str(exc), flush=True)
+    finally:
+        for child in children:
+            if child.poll() is None:
+                try:
+                    os.killpg(child.pid, signal.SIGTERM)
+                    child.wait(timeout=5)
+                except (OSError, subprocess.TimeoutExpired):
+                    try:
+                        os.killpg(child.pid, signal.SIGKILL)
+                        child.wait(timeout=5)
+                    except OSError:
+                        pass
+
+
+if __name__ == '__main__':
+    main()
+SNAKE_DISPLAY_V025_FILE_15
+cat >"$repair_stage/snake_termux/cloud_ai.py" <<'SNAKE_DISPLAY_V025_FILE_16'
+"""Opt-in cloud replies and speech. Fixed hosts, private keys, bounded requests."""
+from __future__ import annotations
+
+from collections import defaultdict, deque
+import hashlib
+import io
+import os
+import json
+import re
+import threading
+import time
+import urllib.error
+import urllib.request
+import uuid
+import wave
+from pathlib import Path
+
+from .client import LocalServiceError, NoRedirects
+
+OPENAI = 'https://api.openai.com/v1'
+GEMINI = 'https://generativelanguage.googleapis.com/v1beta'
+VOICES = ('cedar', 'marin', 'coral', 'ash', 'alloy', 'echo', 'fable', 'onyx', 'nova', 'sage', 'shimmer', 'verse', 'ballad')
+STYLES = {
+    'clear': 'Voz natural, acolhedora e bem-humorada, com dicção nítida e ritmo de conversa.',
+    'snake': 'Personagem original de cobra brincalhona, com nasalidade leve e humor. Priorize a clareza; não troque R por L nem altere fonemas.',
+    'energetic': 'Personagem animado de live, expressivo e divertido, com energia e dicção clara, sem gritar.',
+}
+
+
+def model_name(value):
+    if not isinstance(value, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._:-]{0,99}', value):
+        raise ValueError('Nome de modelo inválido.')
+    return value
+
+
+def api_key(value):
+    if not isinstance(value, str) or not 20 <= len(value.strip()) <= 512 or any(c.isspace() or ord(c) < 33 for c in value.strip()):
+        raise ValueError('Chave inválida. Cole somente a chave de API, sem espaços.')
+    return value.strip()
+
+
+class APIError(LocalServiceError):
+    def __init__(self, message, *, status=0, code='unavailable', retry=0, project=False):
+        super().__init__(message)
+        self.status, self.code, self.retry, self.project = status, code, retry, project
+
+
+def classify(status, body, retry_header=''):
+    """Never return the provider's error text, which could echo a credential."""
+    content = json.dumps(body).lower()
+    delay = 60
+    try:
+        delay = max(1, min(86400, int(float(retry_header))))
+    except (TypeError, ValueError):
+        pass
+    for detail in (body.get('error', {}).get('details', []) if isinstance(body.get('error'), dict) else []):
+        if not isinstance(detail, dict): continue
+        match = re.fullmatch(r'(\d+(?:\.\d+)?)s', str(detail.get('retryDelay', '')))
+        if match:
+            delay = max(1, min(86400, int(float(match[1])) + 1))
+    if status == 401 or 'api_key_invalid' in content or 'api key not valid' in content:
+        return APIError('Chave recusada. Confira ou substitua a chave no painel.', status=status, code='invalid_key')
+    if status == 429:
+        daily = any(t in content for t in ('perday', 'per_day', 'insufficient_quota', 'billing_hard_limit'))
+        return APIError('Cota esgotada ou limite de requisições atingido. Confira o projeto e aguarde o intervalo da API.',
+                        status=status, code='quota' if daily else 'rate_limit', retry=max(delay, 3600) if daily else delay, project=True)
+    if status == 403:
+        return APIError('Chave/projeto sem permissão para este modelo. Confira as restrições e a disponibilidade na sua conta.', status=status, code='permission', project=any(term in content for term in ('service_disabled', 'billing_disabled')))
+    if status in (400, 404):
+        return APIError('Modelo ou configuração indisponível para essa chave. Confira o nome do modelo e o projeto.', status=status, code='model_unavailable', project=True)
+    return APIError('O serviço de IA está indisponível. Tente novamente mais tarde.', status=status, code='unavailable', retry=30)
+
+
+class CloudAPI:
+    def __init__(self, raw, state_file):
+        self.raw, self.state_file = raw, state_file
+        self.opener = urllib.request.build_opener(NoRedirects())
+        self.lock = threading.RLock()
+        self.key_states = {}
+        self.project_cooldowns = {}
+        self.provider_cooldowns = {}
+        self.health_file = self.state_file.with_name('termux-cloud-health.json')
+        try:
+            saved = json.loads(self.health_file.read_text())
+            now = time.time()
+            for item in saved.get('projects', []):
+                if now < item['until'] <= now + 86400:
+                    self.project_cooldowns[(item['project'], item['model'])] = item['until']
+            for item in saved.get('keys', []):
+                self.key_states[(item['id'], item['model'])] = item['state']
+        except (OSError, ValueError, KeyError, TypeError):
+            pass
+        self.calls = defaultdict(deque)
+        self.diagnostics = {p: {'ready': None, 'requests': 0, 'answered': 0, 'failed': 0, 'last_error': '', 'latency_ms': None} for p in ('openai', 'gemini', 'speech')}
+        self.catalogs = {}
+        self.voice_lock = threading.Lock()
+        self.voice_ready = False
+
+    def persist_health(self):
+        # Only generated diagnostics and IDs are stored here, never key values.
+        with self.lock:
+            self.health_file.parent.mkdir(parents=True, exist_ok=True)
+            data = {'projects': [{'project': project, 'model': model, 'until': until}
+                                for (project, model), until in self.project_cooldowns.items() if until > time.time()],
+                    'keys': [{'id': key, 'model': model, 'state': state} for (key, model), state in self.key_states.items()]}
+            temporary = self.health_file.with_suffix('.tmp')
+            temporary.write_text(json.dumps(data, ensure_ascii=False))
+            os.chmod(temporary, 0o600)
+            temporary.replace(self.health_file)
+
+    def request(self, provider, path, payload, key, timeout=18, limit=1_000_000, binary=False):
+        if (provider == 'openai' and path not in ('/responses', '/audio/speech')) or (provider == 'gemini' and path != '/models' and not re.fullmatch(r'/models/[A-Za-z0-9._:-]+:generateContent', path)):
+            raise ValueError('Rota da API inválida.')
+        if provider not in ('openai', 'gemini'):
+            raise ValueError('Provedor inválido.')
+        headers = {'Content-Type': 'application/json', **({'Authorization': 'Bearer ' + key} if provider == 'openai' else {'x-goog-api-key': key})}
+        req = urllib.request.Request((OPENAI if provider == 'openai' else GEMINI) + path,
+             data=None if payload is None else json.dumps(payload, ensure_ascii=False).encode(), headers=headers, method='GET' if payload is None else 'POST')
+        try:
+            with self.opener.open(req, timeout=max(1, min(25, timeout))) as response:
+                data = response.read(limit + 1)
+                if len(data) > limit:
+                    raise APIError('Resposta da API excedeu o limite de tamanho.', code='invalid_response')
+                if binary:
+                    if str(response.headers.get('Content-Type', '')).startswith(('application/json', 'text/')):
+                        raise APIError('A API não devolveu áudio.', code='invalid_audio')
+                    return data
+            result = json.loads(data)
+            if not isinstance(result, dict):
+                raise ValueError('object expected')
+            return result
+        except urllib.error.HTTPError as exc:
+            try:
+                body = json.loads(exc.read(8192))
+                if not isinstance(body, dict): body = {}
+            except (ValueError, OSError): body = {}
+            raise classify(exc.code, body, exc.headers.get('Retry-After', '')) from None
+        except APIError:
+            raise
+        except (urllib.error.URLError, TimeoutError, OSError):
+            raise APIError('Não foi possível alcançar a API. Confira a internet do celular.', code='network', retry=15) from None
+        except (ValueError, UnicodeDecodeError):
+            raise APIError('A API devolveu uma resposta inválida.', code='invalid_response') from None
+
+    def reserve(self, bucket):
+        with self.lock:
+            now = time.monotonic()
+            if self.provider_cooldowns.get(bucket, 0) > time.time():
+                raise APIError('A API está aguardando liberação de cota. Confira o painel e o faturamento.', code='cooldown')
+            queue = self.calls[bucket]
+            while queue and now - queue[0] >= 60: queue.popleft()
+            if len(queue) >= 20:
+                raise APIError('Limite local de 20 chamadas por minuto atingido. Aguarde a fila.', code='local_limit', retry=60)
+            queue.append(now)
+
+    def entries(self):
+        return self.raw().get('termux_gemini_keys', [])
+
+    def keys_public(self, model=None):
+        model = model or self.raw().get('termux_gemini_model', 'auto')
+        result = []
+        with self.lock:
+            for entry in self.entries():
+                state = dict(self.key_states.get((entry['id'], model), {}))
+                until = max(state.get('retry_at', 0), self.project_cooldowns.get((entry['project'], model), 0))
+                invalid = self.key_states.get((entry['id'], '*'), {}).get('state') == 'invalid_key'
+                result.append({'id': entry['id'], 'label': entry['label'], 'project': entry['project'],
+                    'state': 'invalid_key' if invalid else ('cooldown' if until > time.time() else state.get('state', 'untested')),
+                    'retry_at': until, 'last_error': state.get('last_error', ''), 'model': model, 'resolved_model': state.get('resolved_model', '')})
+        return result
+
+    def gemini_model(self, entry, selected):
+        if selected != 'auto': return selected
+        cached = self.catalogs.get(entry['id'])
+        if cached and time.monotonic() - cached[0] < 300: return cached[1]
+        data = self.request('gemini', '/models', None, entry['value'], timeout=5)
+        names = [item.get('name', '').removeprefix('models/') for item in data.get('models', [])
+                 if 'generateContent' in item.get('supportedGenerationMethods', [])]
+        eligible = [name for name in names if name.startswith('gemini-') and 'flash' in name
+                    and not any(word in name for word in ('tts', 'image', 'live', 'audio', 'robotics'))]
+        stable = [name for name in eligible if 'preview' not in name and 'experimental' not in name]
+        choices = stable or eligible
+        if not choices: raise APIError('Não foi encontrado um modelo Flash de texto. Informe um modelo disponível na sua conta.', code='model_unavailable')
+        choices.sort(key=lambda name: ('lite' in name, [int(x) for x in re.findall(r'\d+', name)], name), reverse=True)
+        model = model_name(choices[0])
+        self.catalogs[entry['id']] = (time.monotonic(), model)
+        return model
+
+    def gemini_call(self, prompt, identity, model, *, only_id=None, check=False):
+        entries = list(self.entries())
+        if only_id: entries = [e for e in entries if e['id'] == only_id]
+        if not entries:
+            raise APIError('Adicione uma chave Gemini no painel.', code='missing_key')
+        now = time.time()
+        with self.lock:
+            usable = [e for e in entries if self.key_states.get((e['id'], '*'), {}).get('state') != 'invalid_key'
+                      and self.key_states.get((e['id'], model), {}).get('retry_at', 0) <= now
+                      and self.project_cooldowns.get((e['project'], model), 0) <= now]
+        if not usable:
+            raise APIError('As chaves estão recusadas ou aguardando liberação da cota. Consulte o estado no painel.', code='no_available_key')
+        started = time.monotonic()
+        last = None
+        # At most two attempts; no round-robin through exhausted project keys.
+        for entry in usable[:1 if check else 2]:
+            with self.lock:
+                if self.project_cooldowns.get((entry['project'], model), 0) > time.time(): continue
+            try:
+                self.reserve('gemini:' + entry['project'])
+                payload = {'systemInstruction': {'parts': [{'text': identity}]},
+                    'contents': [{'role': 'user', 'parts': [{'text': prompt}]}],
+                    'generationConfig': {'temperature': .55, 'maxOutputTokens': 32 if check else 180}}
+                if model in ('gemini-2.5-flash-lite', 'gemini-2.5-flash'):
+                    payload['generationConfig']['thinkingConfig'] = {'thinkingBudget': 0}
+                resolved = self.gemini_model(entry, model)
+                if resolved in ('gemini-2.5-flash-lite', 'gemini-2.5-flash'):
+                    payload['generationConfig']['thinkingConfig'] = {'thinkingBudget': 0}
+                data = self.request('gemini', '/models/' + resolved + ':generateContent', payload, entry['value'],
+                                    timeout=max(1, (8 if check else 18) - (time.monotonic() - started)))
+                candidates = data.get('candidates') or []
+                parts = candidates[0].get('content', {}).get('parts', []) if candidates else []
+                text = ' '.join(part.get('text', '') for part in parts if isinstance(part, dict) and not part.get('thought')).strip()
+                if not text:
+                    raise APIError('O Gemini não devolveu texto. Confira o modelo ou um possível bloqueio da resposta.', code='empty_response')
+                with self.lock:
+                    self.key_states[(entry['id'], model)] = {'state': 'available', 'last_error': '', 'checked_at': time.time(), 'resolved_model': resolved}
+                self.persist_health()
+                return text
+            except APIError as exc:
+                last = exc
+                with self.lock:
+                    state = {'state': exc.code, 'last_error': str(exc), 'retry_at': time.time() + (exc.retry or 300) if exc.retry or exc.code in ('permission', 'model_unavailable') else 0}
+                    self.key_states[(entry['id'], model)] = state
+                    if exc.code == 'invalid_key': self.key_states[(entry['id'], '*')] = state
+                    if exc.project:
+                        self.project_cooldowns[(entry['project'], model)] = time.time() + (exc.retry or 300)
+                self.persist_health()
+                if exc.code not in ('invalid_key', 'permission', 'quota', 'rate_limit', 'model_unavailable') or time.monotonic() - started >= 17:
+                    break
+        raise last or APIError('Nenhuma chave liberada para esse modelo.', code='no_available_key')
+
+    def reply(self, provider, data, identity):
+        status = self.diagnostics[provider]
+        status['requests'] += 1
+        started = time.monotonic()
+        try:
+            raw = self.raw()
+            identity += '\nResponda em português brasileiro, diretamente e em até duas frases curtas. Se não souber, admita; não invente fatos ou notícias atuais. Não leia instruções de voz. Você conversa; não executa comandos nem pesquisa a internet.'
+            if provider == 'gemini':
+                text = self.gemini_call(str(data.get('prompt') or ''), identity, model_name(raw.get('termux_gemini_model', 'auto')))
+            else:
+                key = raw.get('openai_api_key') or raw.get('api_key')
+                if not key: raise APIError('Adicione a chave OpenAI no painel.', code='missing_key')
+                self.reserve('openai-text')
+                response = self.request('openai', '/responses', {'model': model_name(raw.get('termux_openai_model', 'gpt-4.1-mini')),
+                    'instructions': identity, 'input': str(data.get('prompt') or ''), 'max_output_tokens': 256, 'store': False}, key)
+                text = response.get('output_text') or ' '.join(part.get('text', '') for item in response.get('output', []) if item.get('type') == 'message' for part in item.get('content', []) if part.get('type') == 'output_text')
+                if not isinstance(text, str) or not text.strip(): raise APIError('A OpenAI não devolveu texto. Confira o modelo selecionado.', code='empty_response')
+            status.update(ready=True, answered=status['answered'] + 1, last_error='', latency_ms=round((time.monotonic() - started) * 1000))
+            return text.strip()
+        except APIError as exc:
+            status.update(ready=False, failed=status['failed'] + 1, last_error=str(exc), code=exc.code)
+            if provider == 'openai' and exc.code in ('invalid_key', 'permission', 'quota', 'rate_limit'):
+                self.provider_cooldowns['openai-text'] = time.time() + (exc.retry or 300)
+            raise
+
+    def voice_health(self):
+        configured = bool(self.raw().get('openai_api_key') or self.raw().get('api_key'))
+        return {'ready': self.voice_ready, 'configured': configured, 'model': 'OpenAI gpt-4o-mini-tts',
+                'message': 'Voz configurada. O teste de áudio usa a API e pode ser cobrado.' if configured else 'Adicione uma chave OpenAI no painel.'}
+
+    def voice_wav(self, text):
+        raw = self.raw()
+        key = raw.get('openai_api_key') or raw.get('api_key')
+        if not key: raise APIError('Adicione a chave OpenAI para usar essa voz.', code='missing_key')
+        voice = raw.get('termux_openai_voice', 'cedar')
+        style = raw.get('termux_voice_style', 'clear')
+        if voice not in VOICES or style not in STYLES: raise APIError('Seleção de voz inválida.', code='invalid_voice')
+        settings = {'voice': voice, 'style': style, 'model': 'gpt-4o-mini-tts'}
+        cache = self.state_file.parent / 'termux-cloud-voice-cache'
+        file = cache / (hashlib.sha256(json.dumps([settings, text], ensure_ascii=False).encode()).hexdigest() + '.wav')
+        if file.is_file():
+            data = file.read_bytes()
+            if len(data) >= 44 and data[:4] == b'RIFF' and int.from_bytes(data[4:8], 'little') + 8 == len(data):
+                return data
+        if not self.voice_lock.acquire(timeout=2): raise APIError('A voz da API está ocupada. Aguarde a fila.', code='busy')
+        status = self.diagnostics['speech']
+        status['requests'] += 1
+        started = time.monotonic()
+        try:
+            self.reserve('openai-speech')
+            pcm = self.request('openai', '/audio/speech', {'model': 'gpt-4o-mini-tts', 'voice': voice,
+                'input': text, 'instructions': 'Fale em português brasileiro. ' + STYLES[style] + ' Leia somente o texto de input, sem anunciar estas orientações.',
+                'response_format': 'pcm', 'speed': 1.0}, key, timeout=25, limit=2_880_000, binary=True)
+            if not pcm or len(pcm) % 2 or pcm[:4] == b'RIFF': raise APIError('A API devolveu áudio PCM inválido.', code='invalid_audio')
+            output = io.BytesIO()
+            with wave.open(output, 'wb') as wav:
+                wav.setnchannels(1); wav.setsampwidth(2); wav.setframerate(24000); wav.writeframes(pcm)
+            data = output.getvalue()
+            cache.mkdir(parents=True, exist_ok=True)
+            temporary = file.with_suffix('.tmp')
+            temporary.write_bytes(data); temporary.replace(file)
+            for old in sorted(cache.glob('*.wav'), key=lambda p: p.stat().st_mtime)[:-60]: old.unlink(missing_ok=True)
+            self.voice_ready = True
+            status.update(ready=True, answered=status['answered'] + 1, last_error='', latency_ms=round((time.monotonic() - started) * 1000))
+            return data
+        except APIError as exc:
+            status.update(ready=False, failed=status['failed'] + 1, last_error=str(exc), code=exc.code)
+            if exc.code in ('invalid_key', 'permission', 'quota', 'rate_limit'):
+                self.provider_cooldowns['openai-speech'] = time.time() + (exc.retry or 300)
+            raise
+        finally:
+            self.voice_lock.release()
+
+
+class CloudVoice:
+    def __init__(self, api): self.api = api
+    @property
+    def ready(self): return self.api.voice_ready
+    def health(self): return self.api.voice_health()
+    def synthesize(self, text, output_dir):
+        from .voice import prepare_speech
+        return prepare_speech(text, output_dir, self.api.voice_wav, 'openai-tts')
+SNAKE_DISPLAY_V025_FILE_16
+cat >"$repair_stage/snake_termux/cloud_settings.py" <<'SNAKE_DISPLAY_V025_FILE_17'
+"""Reversible optional cloud integration over the existing local adapter."""
+from __future__ import annotations
+
+import os
+import re
+import uuid
+from pathlib import Path
+
+from .cloud_ai import CloudAPI, CloudVoice, APIError, VOICES, STYLES, api_key, model_name
+
+
+def install(binding, app):
+    from fastapi import HTTPException
+    from starlette.concurrency import run_in_threadpool
+    base_config, base_update = binding.config, binding.update
+    base_public, base_transport = binding.public_status, binding.transport
+    base_voice_config, base_voice = binding.voice_config, binding.local_voice
+    api = CloudAPI(binding.settings._raw, binding.settings.SOCIAL_TEXT_AI_CONFIG_FILE)
+    voice = CloudVoice(api)
+    binding.cloud_api = api
+
+    def save(raw):
+        binding.settings.write_json_atomic(binding.settings.SOCIAL_TEXT_AI_CONFIG_FILE, raw)
+        os.chmod(binding.settings.SOCIAL_TEXT_AI_CONFIG_FILE, 0o600)
+
+    def provider():
+        value = binding.settings._raw().get('termux_response_provider', 'local')
+        return value if value in ('local', 'openai', 'gemini') else 'local'
+
+    def config():
+        local = base_config()
+        selected = provider()
+        if selected == 'local': return local
+        raw = binding.settings._raw()
+        key_present = bool(raw.get('openai_api_key') or raw.get('api_key')) if selected == 'openai' else bool(api.entries())
+        return {**local, 'provider': selected,
+                'model': raw.get('termux_openai_model', 'gpt-4.1-mini') if selected == 'openai' else raw.get('termux_gemini_model', 'auto'),
+                'api_key_present': key_present, 'auto_external_call': local['enabled'] and key_present, 'auto_local_call': False}
+
+    def public():
+        selected = provider()
+        status = base_public()  # Existing local diagnostics remain available.
+        status.update(config())
+        raw = binding.settings._raw()
+        status.update(requires_api_key=selected != 'local',
+            openai_key_present=bool(raw.get('openai_api_key') or raw.get('api_key')),
+            openai_model=raw.get('termux_openai_model', 'gpt-4.1-mini'),
+            gemini_model=raw.get('termux_gemini_model', 'auto'),
+            local_model=raw.get('model', 'auto') if raw.get('provider') == 'local' else raw.get('local_model', 'auto'),
+            cloud_status={key: dict(value) for key, value in api.diagnostics.items()},
+            gemini_keys=api.keys_public(), cloud_requires_internet=True,
+            billing_note='ChatGPT e API têm cobranças separadas. Gemini gratuito depende do modelo, da conta e da cota disponível.')
+        return status
+
+    def update(payload):
+        raw = binding.settings._raw()
+        selected = payload.get('provider', provider())
+        if selected not in ('local', 'openai', 'gemini'):
+            raise ValueError('Escolha Qwen local, Gemini ou OpenAI.')
+        for key in ('enabled', 'clear_key'):
+            if key in payload and type(payload[key]) is not bool:
+                raise ValueError('Estado inválido: ' + key)
+        if payload.get('api_key'):
+            raw['openai_api_key'] = api_key(payload['api_key'])
+            raw.pop('api_key', None)
+        if payload.get('clear_key'):
+            raw.pop('openai_api_key', None); raw.pop('api_key', None)
+        if 'gemini_keys' in payload:
+            additions = payload['gemini_keys']
+            if not isinstance(additions, list) or len(additions) > 10:
+                raise ValueError('Adicione até dez chaves Gemini.')
+            entries = list(raw.get('termux_gemini_keys', []))
+            for addition in additions:
+                if not isinstance(addition, dict): raise ValueError('Entrada de chave Gemini inválida.')
+                value = api_key(addition.get('key'))
+                project = str(addition.get('project') or 'default').strip()
+                if not re.fullmatch(r'[A-Za-z0-9._-]{1,60}', project):
+                    raise ValueError('Use um nome simples para o grupo de projeto, sem espaços.')
+                if any(entry['value'] == value for entry in entries): continue
+                entries.append({'id': uuid.uuid4().hex, 'label': 'Gemini ' + str(len(entries) + 1) + ' · …' + value[-4:], 'project': project, 'value': value})
+            if len(entries) > 10: raise ValueError('A biblioteca aceita até dez chaves Gemini.')
+            raw['termux_gemini_keys'] = entries
+        if 'remove_gemini_key' in payload:
+            remove = payload['remove_gemini_key']
+            if not isinstance(remove, str): raise ValueError('ID de chave inválido.')
+            raw['termux_gemini_keys'] = [entry for entry in raw.get('termux_gemini_keys', []) if entry['id'] != remove]
+        if selected == 'openai' and 'model' in payload and 'openai_model' not in payload:
+            raw['termux_openai_model'] = model_name(payload['model'])
+        if selected == 'gemini' and 'model' in payload and 'gemini_model' not in payload:
+            raw['termux_gemini_model'] = model_name(payload['model'])
+        if 'openai_model' in payload: raw['termux_openai_model'] = model_name(payload['openai_model'])
+        if 'gemini_model' in payload: raw['termux_gemini_model'] = model_name(payload['gemini_model'])
+        raw['termux_response_provider'] = selected  # Only explicit save opts into cloud calls.
+        # Keep legacy key/provider history intact. Local model remains independent.
+        enabled = False if payload.get('clear_key') and selected == 'openai' else payload.get('enabled', config()['enabled'])
+        if selected == 'local':
+            from .client import valid_model, valid_port
+            raw['model'] = valid_model(payload.get('model') or (raw.get('model') if raw.get('provider') == 'local' else raw.get('local_model')) or 'auto')
+            raw['provider'] = 'local'
+            raw['local_port'] = valid_port(payload.get('local_port', config()['local_port']))
+        raw['enabled'] = enabled
+        if enabled and selected == 'openai' and not (raw.get('openai_api_key') or raw.get('api_key')):
+            raise ValueError('Adicione uma chave OpenAI antes de ativar essa opção.')
+        if enabled and selected == 'gemini' and not raw.get('termux_gemini_keys'):
+            raise ValueError('Adicione pelo menos uma chave Gemini antes de ativar essa opção.')
+        previous_key = binding.settings._raw().get('openai_api_key') or binding.settings._raw().get('api_key')
+        save(raw)
+        if previous_key != (raw.get('openai_api_key') or raw.get('api_key')):
+            api.provider_cooldowns.clear()
+            api.voice_ready = False
+            for name in ('openai', 'speech'):
+                api.diagnostics[name].update(ready=None, last_error='', code='')
+        return public()
+
+    def transport(data):
+        selected = provider()
+        if selected == 'local': return base_transport(data)
+        identity = binding.ai.CHAT_IDENTITY_PROMPT + '\nO público te apelidou de Cofra do Afismo. Preserve a identidade original e responda com humor sem ofender o espectador.'
+        return api.reply(selected, data, identity)
+
+    def voice_config():
+        raw = binding.settings._raw()
+        if raw.get('termux_cloud_voice_enabled') is True:
+            return {**base_voice_config(), 'provider': 'openai', 'voice': raw.get('termux_openai_voice', 'cedar'),
+                    'style': raw.get('termux_voice_style', 'clear'), 'model': 'gpt-4o-mini-tts', 'ai_generated': True}
+        return base_voice_config()
+
+    def local_voice():
+        return voice if voice_config()['provider'] == 'openai' else base_voice()
+
+    binding.config, binding.public_status, binding.update = config, public, update
+    binding.transport, binding.voice_config, binding.local_voice = transport, voice_config, local_voice
+
+    @app.get('/termux/cloud-ui.js')
+    def cloud_ui():
+        from fastapi.responses import FileResponse
+        return FileResponse(Path(__file__).with_name('cloud_ui.js'), media_type='application/javascript', headers={'Cache-Control': 'no-store'})
+
+    @app.get('/termux/cloud/settings')
+    def status():
+        return public()
+
+    @app.post('/termux/cloud/settings')
+    def settings(payload: dict):
+        try: return update(payload)
+        except ValueError as exc: raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post('/termux/ai/test')
+    async def test(payload: dict):
+        question = str(payload.get('text') or '').strip()
+        if not question or len(question) > 180:
+            raise HTTPException(status_code=400, detail='Teste: até 180 caracteres.')
+        if not config()['enabled']: raise HTTPException(status_code=409, detail='Ative o provedor de respostas primeiro.')
+        answer = await run_in_threadpool(binding.ai.generate_chat_reply, display_name='Teste', comment=question, user_key='operator-cloud-test')
+        selected = provider()
+        diagnostics = binding.local_client().diagnostics if selected == 'local' else api.diagnostics[selected]
+        if not answer: raise HTTPException(status_code=503, detail=diagnostics.get('last_error') or 'A IA não devolveu resposta.')
+        return {'ok': True, 'provider': selected, 'text': answer, 'diagnostics': dict(diagnostics)}
+
+    @app.post('/termux/gemini/check')
+    async def check(payload: dict):
+        key_id = payload.get('id')
+        if not isinstance(key_id, str) or not any(e['id'] == key_id for e in api.entries()):
+            raise HTTPException(status_code=400, detail='Selecione uma chave cadastrada.')
+        try:
+            await run_in_threadpool(api.gemini_call, 'Responda apenas OK.', 'Verificação de disponibilidade. Responda OK.',
+                                    model_name(binding.settings._raw().get('termux_gemini_model', 'auto')), only_id=key_id, check=True)
+            return {'ok': True, 'keys': api.keys_public(), 'note': 'A chave respondeu agora; o teste não informa saldo futuro e consome cota.'}
+        except APIError as exc:
+            return {'ok': False, 'keys': api.keys_public(), 'error': str(exc), 'code': exc.code}
+
+    @app.post('/termux/cloud/voice')
+    def voice_settings(payload: dict):
+        selected = payload.get('provider', 'piper-local')
+        if selected not in ('openai', 'piper-local', 'xtts'):
+            raise HTTPException(status_code=400, detail='Escolha Piper, OpenAI ou XTTS.')
+        try:
+            from .client import valid_port
+            port = valid_port(payload.get('port', base_voice_config()['port']))
+            voice_name = payload.get('voice', binding.settings._raw().get('termux_openai_voice', 'cedar'))
+            style = payload.get('style', binding.settings._raw().get('termux_voice_style', 'clear'))
+            if voice_name not in VOICES or style not in STYLES: raise ValueError('Voz ou estilo inválido.')
+            raw = binding.settings._raw()
+            if selected == 'openai' and not (raw.get('openai_api_key') or raw.get('api_key')):
+                raise ValueError('Salve uma chave OpenAI no painel antes de selecionar essa voz.')
+            raw.update(termux_cloud_voice_enabled=selected == 'openai', voice_provider=selected if selected != 'openai' else 'piper-local',
+                       voice_local_port=port, termux_openai_voice=voice_name, termux_voice_style=style)
+            save(raw)
+            return voice_config()
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+SNAKE_DISPLAY_V025_FILE_17
+cat >"$repair_stage/snake_termux/cloud_ui.js" <<'SNAKE_DISPLAY_V025_FILE_18'
+(async function () {
+  'use strict';
+  const old = document.getElementById('openaiStatus')?.closest('section');
+  if (!old) return;
+  async function request(path, payload) {
+    const response = await fetch(path, payload === undefined ? {} : {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.detail || body.error || 'Não foi possível concluir.');
+    return body;
+  }
+  let state;
+  try {state = await request('/termux/cloud/settings');} catch (_) {return;}
+  const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.id = 'cloudControls';
+  const heading = document.createElement('h2'); heading.textContent = 'Respostas e voz · IA local ou na nuvem';
+  const note = document.createElement('p'); note.textContent = 'Gemini e OpenAI dependem de internet. ChatGPT não inclui créditos da API. Gemini pode ter cota gratuita; não há garantia de gratuidade para todo modelo/projeto. A voz é gerada por IA.';
+  function field(tag, id, labelText) {
+    const label = document.createElement('label'); label.htmlFor = id; label.textContent = labelText;
+    const input = document.createElement(tag); input.id = id;
+    card.append(label, input); return input;
+  }
+  function choices(input, values) {for (const [value, title] of values) {const option = document.createElement('option'); option.value = value; option.textContent = title; input.append(option);}}
+  function button(id, text, action) {
+    const element = document.createElement('button'); element.id = id; element.type = 'button'; element.textContent = text;
+    element.addEventListener('click', async () => {element.disabled = true; try {await action();} catch (error) {message.textContent = error.message;} finally {element.disabled = false;}});
+    card.append(element); return element;
+  }
+  card.append(heading, note);
+  const brain = field('select', 'cloudBrain', 'Quem responde ao chat');
+  choices(brain, [['local', 'Qwen local · sem chave'], ['gemini', 'Gemini · API com cota por projeto'], ['openai', 'OpenAI · API cobrada separadamente']]);
+  const enabled = field('input', 'cloudEnabled', 'Ativar respostas por IA'); enabled.type = 'checkbox'; enabled.style.width = 'auto';
+  const localModel = field('input', 'cloudLocalModel', 'Modelo Qwen · auto para detectar');
+  const localPort = field('input', 'cloudLocalPort', 'Porta do Qwen local'); localPort.type = 'number'; localPort.min = '1024'; localPort.max = '65535';
+  const openaiModel = field('input', 'cloudOpenaiModel', 'Modelo OpenAI para respostas'); openaiModel.placeholder = 'gpt-4.1-mini';
+  const geminiModel = field('input', 'cloudGeminiModel', 'Modelo Gemini · auto escolhe um Flash de texto anunciado pela API'); geminiModel.placeholder = 'auto';
+  const apiKey = field('input', 'cloudApiKey', 'Nova chave OpenAI · compartilhada pelas respostas e pela voz'); apiKey.type = 'password'; apiKey.autocomplete = 'new-password'; apiKey.spellcheck = false;
+  const keyStatus = document.createElement('small'); keyStatus.id = 'cloudKeyStatus'; card.append(keyStatus);
+  const geminiKeys = field('textarea', 'cloudGeminiKeys', 'Adicionar chaves Gemini · uma por linha'); geminiKeys.rows = 3; geminiKeys.spellcheck = false; geminiKeys.autocomplete = 'off'; geminiKeys.style.width = '100%';
+  geminiKeys.placeholder = 'Cole uma chave por linha. Para projetos diferentes: nome-projeto | chave';
+  const help = document.createElement('p'); help.textContent = 'Chaves do mesmo projeto compartilham os limites. Sem grupo informado, todas são tratadas como o mesmo projeto. Não há consulta de saldo: os testes verificam disponibilidade e consomem cota.'; card.append(help);
+  const links = document.createElement('p');
+  for (const [text, href] of [['Criar chave OpenAI', 'https://platform.openai.com/api-keys'], ['Configurar faturamento OpenAI', 'https://platform.openai.com/settings/organization/billing/overview'], ['Criar chave Gemini', 'https://aistudio.google.com/apikey']]) {
+    const a = document.createElement('a'); a.textContent = text; a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; links.append(a, document.createElement('br'));
+  }
+  card.append(links);
+  const message = document.createElement('p'); message.id = 'cloudStatus'; message.setAttribute('role', 'status');
+  function render(body) {
+    state = body; brain.value = body.provider; enabled.checked = body.enabled;
+    localModel.value = body.local_model || 'auto'; localPort.value = body.local_port;
+    openaiModel.value = body.openai_model; geminiModel.value = body.gemini_model;
+    keyStatus.textContent = body.openai_key_present ? 'Chave OpenAI salva no servidor; seu valor não é devolvido ao painel.' : 'Nenhuma chave OpenAI salva.';
+    renderKeys(body.gemini_keys || []);
+  }
+  async function save() {
+    const additions = geminiKeys.value.split(/\r?\n/).map(x => x.trim()).filter(Boolean).map(line => {
+      const parts = line.split('|').map(x => x.trim());
+      return parts.length === 1 ? {key: parts[0], project: 'default'} : {key: parts[1], project: parts[0]};
+    });
+    const payload = {provider: brain.value, enabled: enabled.checked, model: localModel.value || 'auto', local_port: Number(localPort.value), openai_model: openaiModel.value || 'gpt-4.1-mini', gemini_model: geminiModel.value || 'auto'};
+    if (apiKey.value.trim()) payload.api_key = apiKey.value.trim();
+    if (additions.length) payload.gemini_keys = additions;
+    const body = await request('/termux/cloud/settings', payload);
+    apiKey.value = ''; geminiKeys.value = ''; render(body);
+    message.textContent = 'Configuração salva. Nenhuma chamada de IA foi feita ao salvar.';
+    return body;
+  }
+  button('cloudSave', 'Salvar IA e chaves', save);
+  button('cloudDisable', 'Desativar respostas por IA', async () => {enabled.checked = false; await save();});
+  button('cloudRemoveOpenai', 'Remover chave OpenAI salva', async () => {render(await request('/termux/cloud/settings', {clear_key: true})); message.textContent = 'Chave removida desta instalação. A revogação da chave é feita na conta OpenAI.';});
+  button('cloudLocalDetect', 'Detectar Qwen local', async () => {if (brain.value !== 'local') throw new Error('Selecione Qwen local para usar esta verificação.'); await save(); const b = await request('/termux/local-ai/detect', {}); message.textContent = b.ready ? 'Qwen local conectado.' : (b.message || 'Qwen local indisponível.');});
+  const keyRows = document.createElement('div'); keyRows.id = 'cloudGeminiRows'; card.append(keyRows);
+  const keyLabels = {untested: 'Ainda não testada', available: 'Respondeu ao teste', invalid_key: 'Chave recusada', cooldown: 'Aguardando cota / intervalo', quota: 'Cota esgotada', rate_limit: 'Limite temporário', permission: 'Sem permissão', model_unavailable: 'Modelo indisponível'};
+  function renderKeys(keys) {
+    if (!keyRows) return;
+    keyRows.replaceChildren();
+    for (const key of keys) {
+      const row = document.createElement('div'); row.style.cssText = 'border-top:1px solid #33444b;padding:10px 0;overflow-wrap:anywhere';
+      const text = document.createElement('p'); text.textContent = key.label + ' · ' + key.project + ' · ' + (keyLabels[key.state] || key.state) + (key.resolved_model ? ' · ' + key.resolved_model : '');
+      if (key.retry_at > Date.now() / 1000) text.textContent += ' · aguarde ' + Math.ceil(key.retry_at - Date.now() / 1000) + ' s';
+      const check = document.createElement('button'); check.type = 'button'; check.textContent = 'Verificar esta chave';
+      check.addEventListener('click', async () => {check.disabled = true; try {const b = await request('/termux/gemini/check', {id: key.id}); renderKeys(b.keys); message.textContent = b.ok ? b.note : b.error;} catch (error) {message.textContent = error.message;} finally {check.disabled = false;}});
+      const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Remover';
+      remove.addEventListener('click', async () => {try {const payload = {remove_gemini_key: key.id}; if (state.provider === 'gemini' && state.gemini_keys.length === 1) payload.enabled = false; render(await request('/termux/cloud/settings', payload));} catch (error) {message.textContent = error.message;}});
+      row.append(text, check, remove); keyRows.append(row);
+    }
+  }
+  button('cloudGeminiCheckAll', 'Verificar chaves Gemini · usa cota', async () => {
+    const ids = (state.gemini_keys || []).map(key => key.id); let failures = 0;
+    for (let i = 0; i < ids.length; i++) {
+      message.textContent = 'Verificando ' + (i + 1) + '/' + ids.length + '…';
+      const b = await request('/termux/gemini/check', {id: ids[i]}); renderKeys(b.keys); if (!b.ok) failures++;
+    }
+    message.textContent = ids.length ? 'Verificação concluída. Falhas/indisponíveis: ' + failures + '. Isso não consulta saldo em dinheiro.' : 'Salve pelo menos uma chave Gemini primeiro.';
+  });
+  const question = field('input', 'cloudQuestion', 'Pergunta de teste para a IA selecionada'); question.maxLength = 180; question.placeholder = 'Por que o céu é azul?';
+  button('cloudAsk', 'Testar resposta · API pode consumir cota', async () => {await save(); message.textContent = 'Aguardando a IA…'; const b = await request('/termux/ai/test', {text: question.value}); message.textContent = b.text;});
+  const voiceProvider = field('select', 'cloudVoiceProvider', 'Voz da cobra · independente da IA de respostas');
+  choices(voiceProvider, [['piper-local', 'Piper local · voz já instalada'], ['openai', 'OpenAI · voz pela API paga'], ['xtts', 'XTTS original · instalação compatível']]);
+  const voicePort = field('input', 'cloudVoicePort', 'Porta do Piper local'); voicePort.type = 'number'; voicePort.value = '8083';
+  const voiceName = field('select', 'cloudVoiceName', 'Voz OpenAI');
+  choices(voiceName, ['cedar', 'marin', 'coral', 'ash', 'alloy', 'echo', 'fable', 'onyx', 'nova', 'sage', 'shimmer', 'verse', 'ballad'].map(x => [x, x]));
+  const style = field('select', 'cloudVoiceStyle', 'Jeito de falar · voz OpenAI');
+  choices(style, [['clear', 'Natural e clara'], ['snake', 'Cobra fanha leve · sem trocar R por L'], ['energetic', 'Animada e expressiva']]);
+  async function saveVoice() {
+    const result = await request('/termux/cloud/voice', {provider: voiceProvider.value, port: Number(voicePort.value), voice: voiceName.value, style: style.value});
+    message.textContent = 'Voz salva. Salvar não gera áudio nem faz cobrança.'; return result;
+  }
+  button('cloudVoiceSave', 'Salvar voz', saveVoice);
+  button('cloudVoiceDetect', 'Verificar motor de voz · sem gerar fala', async () => {await saveVoice(); if (voiceProvider.value === 'xtts') {message.textContent = 'XTTS original selecionado. Use o teste para conferir sua instalação e referência.'; return;} const b = await request('/termux/voice/detect', {}); message.textContent = b.message || 'Confira o teste de voz.';});
+  const player = document.createElement('audio'); player.id = 'cloudVoicePlayer'; player.controls = true; player.preload = 'none'; let audioURL;
+  button('cloudVoiceTest', 'Ouvir teste · OpenAI pode cobrar', async () => {
+    await saveVoice(); message.textContent = 'Gerando o teste de voz…';
+    const response = await fetch('/termux/voice/test', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text: 'Olá, pessoal! Eu sou a Cofra do Afismo. Manda sua pergunta que eu respondo!'})});
+    if (!response.ok) {const b = await response.json(); throw new Error(b.detail || 'Falha na voz.');}
+    if (audioURL) URL.revokeObjectURL(audioURL); audioURL = URL.createObjectURL(await response.blob()); player.src = audioURL;
+    message.textContent = 'Áudio pronto. Use o player para comparar a voz.'; try {await player.play();} catch (_) {}
+  });
+  card.append(player, message);
+  render(state);
+  const voiceState = await request('/termux/voice'); voiceProvider.value = voiceState.provider; voicePort.value = voiceState.port; voiceName.value = voiceState.voice || 'cedar'; style.value = voiceState.style || 'clear';
+  old.before(card); old.hidden = true;
+  setInterval(async () => {try {const s = await request('/termux/cloud/settings'); const d = s.cloud_status[s.provider]; if (voiceProvider.value === 'openai' && s.cloud_status.speech?.last_error) message.textContent = s.cloud_status.speech.last_error; else if (d?.last_error) message.textContent = d.last_error;} catch (_) {}}, 10000);
+})();
+SNAKE_DISPLAY_V025_FILE_18
 "$repair_python" - "$repair_stage" <<'SNAKE_CHECK_FILES'
 import ast, pathlib, sys
 for path in pathlib.Path(sys.argv[1]).rglob("*.py"):
