@@ -243,6 +243,7 @@ class NativeGame:
         self.started_at = 0.0
         self.last_exit_code = None
         self.device_report = {}
+        self.observed_renderer = None
         self.lock = threading.RLock()
         self.renderer = os.environ.get('SNAKE_RENDERER', 'gl_compatibility')
         native_command(self.godot, self.pack, [], workdir=self.state_dir, renderer=self.renderer)
@@ -279,7 +280,15 @@ class NativeGame:
             if self.process and self.log_path.exists():
                 with self.log_path.open('rb') as stream:
                     stream.seek(self.log_offset)
-                    output = stream.read(32768).decode('utf-8', errors='replace')
+                    startup = stream.read(8192).decode('utf-8', errors='replace')
+                    stream.seek(max(self.log_offset, self.log_path.stat().st_size - 16384))
+                    output = startup + '\n' + stream.read(16384).decode('utf-8', errors='replace')
+                match = re.search(r'Using Device:\s*(.+)', startup)
+                if match: self.observed_renderer = match[1].strip()
+                fps_matches = re.findall(r'(?:Project\s+)?FPS:\s*(\d+(?:\.\d+)?)', output, flags=re.I)
+            else:
+                fps_matches = []
+            if self.process and self.log_path.exists():
                 if 'falling back to the dummy driver' in output.lower():
                     audio_runtime = {'state': 'dummy', 'driver': 'Dummy',
                                      'message': 'Jogo sem som: Godot iniciou com driver Dummy. Feche e abra a janela após preparar o áudio Android.'}
@@ -291,6 +300,9 @@ class NativeGame:
                     'godot': str(self.godot), 'renderer': self.renderer, 'original_verified': self.integrity['verified'],
                     'device': self.device_report,
                     'audio_runtime': audio_runtime,
+                    'performance': {'fps': float(fps_matches[-1]) if fps_matches else None,
+                        'observed_renderer': self.observed_renderer,
+                        'software_renderer': any(word in (self.observed_renderer or '').lower() for word in ('llvmpipe','softpipe','lavapipe','swrast'))},
                     'automatic_restarts': 0, 'android_validation': 'pending'}
 
     def start(self) -> dict:
@@ -330,7 +342,7 @@ class NativeGame:
                 args.extend(['--max-fps', str(graphics['max_fps'])])
             if self.device_report.get('audio', {}).get('godot_latency_ms'):
                 args.extend(['--audio-output-latency', str(self.device_report['audio']['godot_latency_ms'])])
-            args.extend(['--', '--cobrinha-live'])
+            args.extend(['--print-fps', '--', '--cobrinha-live'])
             output = self.device_report.get('audio', {})
             audio_driver = 'PulseAudio' if output.get('output_available') else ('Dummy' if 'output_available' in output else None)
             self.audio_driver = audio_driver
@@ -346,6 +358,7 @@ class NativeGame:
                 if self.audio_service:
                     self.audio_service.stop()
                 raise
+            self.observed_renderer = None
             self.started_at = time.time()
             return self.status()
 

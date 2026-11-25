@@ -30,7 +30,7 @@ repair_backup="$(mktemp -d "$repair_target/state/launcher-backups/stable-playbac
 repair_stage="$(mktemp -d "$repair_target/.stable-playback-v030.XXXXXX")"
 repair_started=0
 repair_complete=0
-repair_files=('start.sh' 'snake_termux/native.py' 'snake_termux/__main__.py' 'snake_termux/device_runtime.py' 'snake_termux/ui.js' 'install-termux.sh' 'snake_termux/presentation.py' 'assets/music/Neon Garden.ogg' 'assets/music/CREDITS.md' 'snake_termux/audio_service.py' 'snake_termux/integration.py' 'snake_termux/live_tuning.py' 'snake_termux/music_library.py' 'snake_termux/piper_worker.py' 'snake_termux/voice.py' 'snake_termux/reuse_ai.py' 'snake_termux/cloud_ai.py' 'snake_termux/cloud_settings.py' 'snake_termux/cloud_ui.js')
+repair_files=('start.sh' 'snake_termux/native.py' 'snake_termux/__main__.py' 'snake_termux/device_runtime.py' 'snake_termux/ui.js' 'install-termux.sh' 'snake_termux/presentation.py' 'assets/music/Neon Garden.ogg' 'assets/music/CREDITS.md' 'snake_termux/audio_service.py' 'snake_termux/integration.py' 'snake_termux/live_tuning.py' 'snake_termux/music_library.py' 'snake_termux/piper_worker.py' 'snake_termux/voice.py' 'snake_termux/reuse_ai.py' 'snake_termux/cloud_ai.py' 'snake_termux/cloud_settings.py' 'snake_termux/cloud_ui.js' 'snake_termux/live_load.py' 'snake_termux/speech_names.py' 'snake_termux/director.py' 'snake_termux/director.html')
 cleanup_repair() {
   if [[ "$repair_started" == 1 && "$repair_complete" != 1 ]]; then
     for relative in "${repair_files[@]}"; do
@@ -268,6 +268,7 @@ class NativeGame:
         self.started_at = 0.0
         self.last_exit_code = None
         self.device_report = {}
+        self.observed_renderer = None
         self.lock = threading.RLock()
         self.renderer = os.environ.get('SNAKE_RENDERER', 'gl_compatibility')
         native_command(self.godot, self.pack, [], workdir=self.state_dir, renderer=self.renderer)
@@ -304,7 +305,15 @@ class NativeGame:
             if self.process and self.log_path.exists():
                 with self.log_path.open('rb') as stream:
                     stream.seek(self.log_offset)
-                    output = stream.read(32768).decode('utf-8', errors='replace')
+                    startup = stream.read(8192).decode('utf-8', errors='replace')
+                    stream.seek(max(self.log_offset, self.log_path.stat().st_size - 16384))
+                    output = startup + '\n' + stream.read(16384).decode('utf-8', errors='replace')
+                match = re.search(r'Using Device:\s*(.+)', startup)
+                if match: self.observed_renderer = match[1].strip()
+                fps_matches = re.findall(r'(?:Project\s+)?FPS:\s*(\d+(?:\.\d+)?)', output, flags=re.I)
+            else:
+                fps_matches = []
+            if self.process and self.log_path.exists():
                 if 'falling back to the dummy driver' in output.lower():
                     audio_runtime = {'state': 'dummy', 'driver': 'Dummy',
                                      'message': 'Jogo sem som: Godot iniciou com driver Dummy. Feche e abra a janela após preparar o áudio Android.'}
@@ -316,6 +325,9 @@ class NativeGame:
                     'godot': str(self.godot), 'renderer': self.renderer, 'original_verified': self.integrity['verified'],
                     'device': self.device_report,
                     'audio_runtime': audio_runtime,
+                    'performance': {'fps': float(fps_matches[-1]) if fps_matches else None,
+                        'observed_renderer': self.observed_renderer,
+                        'software_renderer': any(word in (self.observed_renderer or '').lower() for word in ('llvmpipe','softpipe','lavapipe','swrast'))},
                     'automatic_restarts': 0, 'android_validation': 'pending'}
 
     def start(self) -> dict:
@@ -355,7 +367,7 @@ class NativeGame:
                 args.extend(['--max-fps', str(graphics['max_fps'])])
             if self.device_report.get('audio', {}).get('godot_latency_ms'):
                 args.extend(['--audio-output-latency', str(self.device_report['audio']['godot_latency_ms'])])
-            args.extend(['--', '--cobrinha-live'])
+            args.extend(['--print-fps', '--', '--cobrinha-live'])
             output = self.device_report.get('audio', {})
             audio_driver = 'PulseAudio' if output.get('output_available') else ('Dummy' if 'output_available' in output else None)
             self.audio_driver = audio_driver
@@ -371,6 +383,7 @@ class NativeGame:
                 if self.audio_service:
                     self.audio_service.stop()
                 raise
+            self.observed_renderer = None
             self.started_at = time.time()
             return self.status()
 
@@ -1114,7 +1127,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
   fetch('/termux/game').then(async response => {
     if (!response.ok) return;
     const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.style.marginTop = '14px';
-    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.3.1';
+    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.3.2';
     const message = document.createElement('p'); message.id = 'termuxGameStatus';
     const deviceMessage = document.createElement('p'); deviceMessage.id = 'termuxDeviceStatus';
     const start = document.createElement('button'); start.type = 'button'; start.textContent = 'Abrir jogo original';
@@ -1124,6 +1137,8 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
       message.textContent = body.running ? (body.bridge_connected ? 'Janela em execução · conectada ao servidor.' : 'Janela em execução · aguardando conexão com o servidor.') : 'Janela parada. Última saída: ' + (body.last_exit_code ?? 'nenhuma') + '. Logs: ' + body.log;
       const gpu = body.device?.graphics, output = body.device?.audio, display = body.device?.display;
       deviceMessage.textContent = gpu ? (gpu.hardware_verified ? 'GPU confirmada: ' + gpu.renderer : gpu.message) + ' · ' + gpu.resolution + ' · limite ' + gpu.max_fps + ' FPS. ' + (display?.message || output?.message || '') : '';
+      if (body.performance?.fps != null) deviceMessage.textContent += ' FPS medido: ' + body.performance.fps + '.';
+      if (body.performance?.software_renderer) deviceMessage.textContent += ' ⚠ O jogo está usando renderização por CPU: ' + body.performance.observed_renderer + '.';
       if (body.audio_runtime?.state === 'dummy') {
         deviceMessage.textContent += ' ⚠ ' + body.audio_runtime.message;
         deviceMessage.style.color = '#ffba6b';
@@ -1234,7 +1249,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
     musicBox.append(musicTitle, musicHelp, musicLabel, musicFile, sendMusic, musicMode, musicSelect, musicTracks, playMusic, nextMusic, pauseMusic, musicVolumeLabel, musicVolume, musicVolumeValue, musicMessage);
     const profileLabel = document.createElement('label'); profileLabel.htmlFor = 'termuxGraphicsProfile'; profileLabel.textContent = 'Qualidade da imagem · tela limpa em retrato';
     const profile = document.createElement('select'); profile.id = 'termuxGraphicsProfile';
-    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536'], ['stable', 'Estável · 640 × 1136 · limite 30 FPS']]) {
+    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536'], ['stable', 'Estável · 640 × 1136 · limite 30 FPS'], ['clear', '720p · limite 45 FPS'], ['quality30', 'Mais nítido · 864 × 1536 · limite 30 FPS']]) {
       const option = document.createElement('option'); option.value = value; option.textContent = text; profile.append(option);
     }
     const saveProfile = document.createElement('button'); saveProfile.type = 'button'; saveProfile.id = 'termuxSaveProfile'; saveProfile.textContent = 'Salvar qualidade';
@@ -1266,6 +1281,29 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
       catch (error) {pacingMessage.textContent = error.message;} finally {pacingSave.disabled = false;}
     });
     pacing.append(pacingTitle, pacingMode, pacingSave, pacingMessage); card.append(pacing);
+    const loadBox = document.createElement('fieldset'); loadBox.hidden = true;
+    const loadTitle = document.createElement('legend'); loadTitle.textContent = 'LIVE movimentada · fila e nomes';
+    const loadToggleLabel = document.createElement('label'); const loadToggle = document.createElement('input'); loadToggle.type = 'checkbox'; loadToggle.id = 'termuxBusyLive'; loadToggle.style.width = 'auto';
+    loadToggleLabel.append(loadToggle, ' Preparar uma resposta adiantada e priorizar perguntas recentes');
+    const loadSave = document.createElement('button'); loadSave.type = 'button'; loadSave.id = 'termuxLoadSave'; loadSave.textContent = 'Salvar modo da LIVE';
+    const loadMessage = document.createElement('p'); loadMessage.id = 'termuxLoadStatus';
+    fetch('/termux/live-load').then(async r => {if (!r.ok) return; const b = await r.json(); loadToggle.checked = b.settings.busy_live; loadMessage.textContent = b.note; loadBox.hidden = false;}).catch(() => {});
+    loadSave.onclick = async () => {try {const r = await fetch('/termux/live-load', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({busy_live:loadToggle.checked})}); const b = await r.json(); if(!r.ok)throw new Error(b.detail);loadMessage.textContent='Modo salvo. '+b.note;}catch(e){loadMessage.textContent=e.message;}};
+    const nameLabel = document.createElement('label'); nameLabel.htmlFor = 'termuxNameRaw'; nameLabel.textContent = 'Nome que está sendo soletrado';
+    const nameRaw = document.createElement('input'); nameRaw.id = 'termuxNameRaw'; nameRaw.placeholder = 'Ex.: G U S T A V O'; nameRaw.maxLength = 100;
+    const namePreview = document.createElement('button'); namePreview.type = 'button'; namePreview.id = 'termuxNamePreview'; namePreview.textContent = 'Conferir nome falado · sem gerar áudio';
+    const userLabel = document.createElement('label'); userLabel.htmlFor = 'termuxNameUser'; userLabel.textContent = '@ do usuário para uma pronúncia personalizada';
+    const nameUser = document.createElement('input'); nameUser.id = 'termuxNameUser'; nameUser.placeholder = '@gustavo123';
+    const aliasLabel = document.createElement('label'); aliasLabel.htmlFor = 'termuxNameAlias'; aliasLabel.textContent = 'Como falar';
+    const nameAlias = document.createElement('input'); nameAlias.id = 'termuxNameAlias'; nameAlias.placeholder = 'Gustavo';
+    const aliasSave = document.createElement('button'); aliasSave.type = 'button'; aliasSave.id = 'termuxNameSave'; aliasSave.textContent = 'Salvar pronúncia para esse usuário';
+    const nameMessage = document.createElement('p'); nameMessage.id = 'termuxNameStatus';
+    async function nameRequest(save) {try {const p={name:nameRaw.value};if(save){p.username=nameUser.value;p.alias=nameAlias.value;}const r=await fetch('/termux/spoken-name',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});const b=await r.json();if(!r.ok)throw new Error(b.detail);nameMessage.textContent=(b.saved?'Pronúncia salva: ':'Nome falado: ')+b.spoken+'. Nome, foto e ranking permanecem iguais.';}catch(e){nameMessage.textContent=e.message;}}
+    namePreview.onclick=()=>nameRequest(false);aliasSave.onclick=()=>nameRequest(true);
+    const director = document.createElement('a'); director.href='/termux/director'; director.target='_blank'; director.rel='noopener'; director.id='termuxDirector'; director.textContent='Abrir painel do operador · espectadores e FPS'; director.style.display='block'; director.style.padding='14px 0';
+    const directorNote=document.createElement('small');directorNote.textContent='Contador fora do jogo. Captura da tela inteira do celular pode mostrar o navegador; captura somente do jogo é necessária para separá-lo.';
+    loadBox.append(loadTitle,loadToggleLabel,loadSave,loadMessage,nameLabel,nameRaw,namePreview,userLabel,nameUser,aliasLabel,nameAlias,aliasSave,nameMessage,director,directorNote);
+    card.append(loadBox);
     status.closest('section').before(card);
     await refresh(); setInterval(() => refresh().catch(() => {}), 5000);
   }).catch(() => {});
@@ -1309,7 +1347,7 @@ from pathlib import Path
 from .device_runtime import atomic_json
 
 ROOT = Path(__file__).resolve().parents[1]
-PROFILES = {'balanced': ('720x1280', 60), 'light': ('640x1136', 60), 'sharp': ('864x1536', 60), 'live': ('640x1136', 45), 'stable': ('640x1136', 30)}
+PROFILES = {'balanced': ('720x1280', 60), 'light': ('640x1136', 60), 'sharp': ('864x1536', 60), 'live': ('640x1136', 45), 'stable': ('640x1136', 30), 'clear': ('720x1280', 45), 'quality30': ('864x1536', 30)}
 TRACK = ROOT / 'assets/music/Neon Garden.ogg'
 # Filled from the reproducibly generated, original audio in tools/create_music.py.
 TRACK_SHA256 = '482b4e4afbce75d1b810f1b981a0529ef4fb9fe211d6b8656e5e78530ac243f7'
@@ -1339,7 +1377,7 @@ def save_settings(state: Path, payload: dict) -> dict:
         raise ValueError('Opção de exibição desconhecida.')
     if 'profile' in payload:
         if not isinstance(payload['profile'], str) or payload['profile'] not in PROFILES:
-            raise ValueError('Escolha balanced, light, sharp, live ou stable.')
+            raise ValueError('Escolha um perfil de qualidade disponível no painel.')
         current['profile'] = payload['profile']
     if 'clean_display' in payload:
         if not isinstance(payload['clean_display'], bool):
@@ -10382,6 +10420,18 @@ def install(app) -> LocalBinding:
         pass  # Optional in older partial repairs.
     else:
         install_tuning(binding, app)
+    try:
+        from .live_load import install as install_load
+    except ImportError:
+        pass
+    else:
+        install_load(binding, app)
+    try:
+        from .director import install as install_director
+    except ImportError:
+        pass
+    else:
+        install_director(binding, app)
     app.state.snake_termux_binding = binding
     return binding
 SNAKE_DISPLAY_V025_FILE_10
@@ -11178,10 +11228,12 @@ def main():
                 worker_dir = Path(__file__).resolve().parent
                 command = ['proot-distro', 'login', '--bind', str(args.root.resolve()) + ':/snake-local', '--bind', str(worker_dir) + ':/snake-worker', 'ben10-ai', '--', '/opt/ben10-voice/bin/python', '/snake-worker/piper_worker.py', '--model', '/snake-local/' + relative, '--cache-dir', '/snake-local/snake-piper-cache', '--port', str(voice_port)]
                 ready(PiperClient(voice_port).health, launch(command, 'piper.log'), 'Piper local')
-        if text_enabled:
-            api('/api/settings/openai', {'enabled': True, 'provider': 'local', 'local_port': text_port, 'model': settings['model']})
-        if voice_settings['provider'] == 'piper-local':
-            api('/termux/voice', {'provider': 'piper-local', 'port': voice_port})
+        # Never write a stale initial provider after Qwen has finished loading.
+        # The operator may already have selected Gemini/OpenAI in the panel.
+        if voice_settings['provider'] == 'piper-local' and voice_port != voice_settings['port']:
+            current_voice = api('/termux/voice')
+            if current_voice['provider'] == 'piper-local' and current_voice['port'] == voice_settings['port']:
+                api('/termux/voice', {'provider': 'piper-local', 'port': voice_port})
         record(state='ready', text_enabled=text_enabled, text_port=text_port, voice_port=voice_port, owned_pids=[p.pid for p in children])
         print('IA e voz configuradas. Serviços locais são iniciados somente quando selecionados.', flush=True)
         while not stopping.wait(1):
@@ -11224,6 +11276,7 @@ import threading
 import time
 import urllib.error
 import urllib.request
+import urllib.parse
 import uuid
 import wave
 from pathlib import Path
@@ -11279,7 +11332,13 @@ def classify(status, body, retry_header=''):
                         status=status, code='quota' if daily else 'rate_limit', retry=max(delay, 3600) if daily else delay, project=True)
     if status == 403:
         return APIError('Chave/projeto sem permissão para este modelo. Confira as restrições e a disponibilidade na sua conta.', status=status, code='permission', project=any(term in content for term in ('service_disabled', 'billing_disabled')))
-    if status in (400, 404):
+    if status == 400:
+        if 'billing' in content or 'billing_not_enabled' in content:
+            return APIError('Google exige configuração de faturamento para esse modelo/projeto. Não é uma chave inválida; confira um modelo elegível à faixa gratuita no AI Studio.', status=status, code='billing_required', project=True)
+        if 'location' in content or 'region' in content or 'country' in content:
+            return APIError('Gemini indisponível para a localização dessa conta/conexão. Confira a elegibilidade no Google AI Studio.', status=status, code='region_unavailable', project=True)
+        return APIError('Gemini recusou a configuração da geração. Confira o modelo e os parâmetros.', status=status, code='invalid_request')
+    if status == 404:
         return APIError('Modelo ou configuração indisponível para essa chave. Confira o nome do modelo e o projeto.', status=status, code='model_unavailable', project=True)
     return APIError('O serviço de IA está indisponível. Tente novamente mais tarde.', status=status, code='unavailable', retry=30)
 
@@ -11301,6 +11360,14 @@ class CloudAPI:
                     self.project_cooldowns[(item['project'], item['model'])] = item['until']
             for item in saved.get('keys', []):
                 self.key_states[(item['id'], item['model'])] = item['state']
+            if saved.get('version', 1) < 2:
+                # V031 grouped all 400 errors as unavailable models. Re-evaluate
+                # that configuration error; never clear a genuine quota/401.
+                for entry in self.entries():
+                    for (key, model), state in list(self.key_states.items()):
+                        if key == entry['id'] and state.get('state') == 'model_unavailable':
+                            self.key_states.pop((key, model), None)
+                            self.project_cooldowns.pop((entry['project'], model), None)
         except (OSError, ValueError, KeyError, TypeError):
             pass
         self.calls = defaultdict(deque)
@@ -11310,10 +11377,16 @@ class CloudAPI:
         self.voice_ready = False
 
     def persist_health(self):
+        try:
+            self._persist_health()
+        except OSError:
+            self.diagnostics['gemini']['storage_warning'] = 'Não foi possível salvar o diagnóstico; a resposta foi preservada.'
+
+    def _persist_health(self):
         # Only generated diagnostics and IDs are stored here, never key values.
         with self.lock:
             self.health_file.parent.mkdir(parents=True, exist_ok=True)
-            data = {'projects': [{'project': project, 'model': model, 'until': until}
+            data = {'version': 2, 'projects': [{'project': project, 'model': model, 'until': until}
                                 for (project, model), until in self.project_cooldowns.items() if until > time.time()],
                     'keys': [{'id': key, 'model': model, 'state': state} for (key, model), state in self.key_states.items()]}
             temporary = self.health_file.with_suffix('.tmp')
@@ -11321,13 +11394,18 @@ class CloudAPI:
             os.chmod(temporary, 0o600)
             temporary.replace(self.health_file)
 
-    def request(self, provider, path, payload, key, timeout=18, limit=1_000_000, binary=False):
+    def request(self, provider, path, payload, key, timeout=18, limit=1_000_000, binary=False, query=None):
         if (provider == 'openai' and path not in ('/responses', '/audio/speech')) or (provider == 'gemini' and path != '/models' and not re.fullmatch(r'/models/[A-Za-z0-9._:-]+:generateContent', path)):
             raise ValueError('Rota da API inválida.')
         if provider not in ('openai', 'gemini'):
             raise ValueError('Provedor inválido.')
         headers = {'Content-Type': 'application/json', **({'Authorization': 'Bearer ' + key} if provider == 'openai' else {'x-goog-api-key': key})}
-        req = urllib.request.Request((OPENAI if provider == 'openai' else GEMINI) + path,
+        suffix = ''
+        if query:
+            if provider != 'gemini' or path != '/models' or set(query) - {'pageSize', 'pageToken'}:
+                raise ValueError('Consulta de catálogo inválida.')
+            suffix = '?' + urllib.parse.urlencode(query)
+        req = urllib.request.Request((OPENAI if provider == 'openai' else GEMINI) + path + suffix,
              data=None if payload is None else json.dumps(payload, ensure_ascii=False).encode(), headers=headers, method='GET' if payload is None else 'POST')
         try:
             with self.opener.open(req, timeout=max(1, min(25, timeout))) as response:
@@ -11379,77 +11457,105 @@ class CloudAPI:
                 invalid = self.key_states.get((entry['id'], '*'), {}).get('state') == 'invalid_key'
                 result.append({'id': entry['id'], 'label': entry['label'], 'project': entry['project'],
                     'state': 'invalid_key' if invalid else ('cooldown' if until > time.time() else state.get('state', 'untested')),
-                    'retry_at': until, 'last_error': state.get('last_error', ''), 'model': model, 'resolved_model': state.get('resolved_model', '')})
+                    'retry_at': until, 'last_error': state.get('last_error', ''), 'model': model, 'resolved_model': state.get('resolved_model', ''), 'http_status': state.get('http_status', 0), 'code': state.get('state', '')})
         return result
 
-    def gemini_model(self, entry, selected):
-        if selected != 'auto': return selected
+    def gemini_models(self, entry, selected):
+        if selected != 'auto': return [selected]
         cached = self.catalogs.get(entry['id'])
-        if cached and time.monotonic() - cached[0] < 300: return cached[1]
-        data = self.request('gemini', '/models', None, entry['value'], timeout=5)
-        names = [item.get('name', '').removeprefix('models/') for item in data.get('models', [])
-                 if 'generateContent' in item.get('supportedGenerationMethods', [])]
+        if cached and time.monotonic() - cached[0] < 300: return list(cached[1])
+        names, token = [], ''
+        started = time.monotonic()
+        for _ in range(3):
+            query = {'pageSize': 100}
+            if token: query['pageToken'] = token
+            data = self.request('gemini', '/models', None, entry['value'], timeout=max(1, 7 - (time.monotonic() - started)), query=query)
+            names.extend(item.get('name', '').removeprefix('models/') for item in data.get('models', [])
+                         if isinstance(item, dict) and 'generateContent' in item.get('supportedGenerationMethods', []))
+            token = str(data.get('nextPageToken') or '')
+            if not token or time.monotonic() - started >= 6: break
         eligible = [name for name in names if name.startswith('gemini-') and 'flash' in name
                     and not any(word in name for word in ('tts', 'image', 'live', 'audio', 'robotics'))]
         stable = [name for name in eligible if 'preview' not in name and 'experimental' not in name]
         choices = stable or eligible
-        if not choices: raise APIError('Não foi encontrado um modelo Flash de texto. Informe um modelo disponível na sua conta.', code='model_unavailable')
+        if not choices: raise APIError('O catálogo não anunciou um Flash de texto. Informe no painel um modelo disponível para sua conta.', code='model_unavailable')
         choices.sort(key=lambda name: ('lite' in name, [int(x) for x in re.findall(r'\d+', name)], name), reverse=True)
-        model = model_name(choices[0])
-        self.catalogs[entry['id']] = (time.monotonic(), model)
-        return model
+        choices = list(dict.fromkeys(model_name(name) for name in choices))
+        known = self.key_states.get((entry['id'], 'auto'), {}).get('resolved_model')
+        if known in choices: choices.remove(known); choices.insert(0, known)
+        self.catalogs[entry['id']] = (time.monotonic(), list(choices))
+        return choices
+
+    def gemini_model(self, entry, selected):
+        return self.gemini_models(entry, selected)[0]
 
     def gemini_call(self, prompt, identity, model, *, only_id=None, check=False):
         entries = list(self.entries())
         if only_id: entries = [e for e in entries if e['id'] == only_id]
-        if not entries:
-            raise APIError('Adicione uma chave Gemini no painel.', code='missing_key')
+        if not entries: raise APIError('Adicione uma chave Gemini no painel.', code='missing_key')
         now = time.time()
         with self.lock:
             usable = [e for e in entries if self.key_states.get((e['id'], '*'), {}).get('state') != 'invalid_key'
                       and self.key_states.get((e['id'], model), {}).get('retry_at', 0) <= now
                       and self.project_cooldowns.get((e['project'], model), 0) <= now]
-        if not usable:
-            raise APIError('As chaves estão recusadas ou aguardando liberação da cota. Consulte o estado no painel.', code='no_available_key')
-        started = time.monotonic()
-        last = None
-        # At most two attempts; no round-robin through exhausted project keys.
+        if not usable: raise APIError('As chaves estão recusadas ou aguardando cota. Consulte o código e o prazo no painel.', code='no_available_key')
+        started, attempts, last = time.monotonic(), 0, None
         for entry in usable[:1 if check else 2]:
-            with self.lock:
-                if self.project_cooldowns.get((entry['project'], model), 0) > time.time(): continue
+            if self.project_cooldowns.get((entry['project'], model), 0) > time.time(): continue
+            resolved = ''
             try:
-                self.reserve('gemini:' + entry['project'])
-                payload = {'systemInstruction': {'parts': [{'text': identity}]},
-                    'contents': [{'role': 'user', 'parts': [{'text': prompt}]}],
-                    'generationConfig': {'temperature': .55, 'maxOutputTokens': 32 if check else 180}}
-                if model in ('gemini-2.5-flash-lite', 'gemini-2.5-flash'):
-                    payload['generationConfig']['thinkingConfig'] = {'thinkingBudget': 0}
-                resolved = self.gemini_model(entry, model)
-                if resolved in ('gemini-2.5-flash-lite', 'gemini-2.5-flash'):
-                    payload['generationConfig']['thinkingConfig'] = {'thinkingBudget': 0}
-                data = self.request('gemini', '/models/' + resolved + ':generateContent', payload, entry['value'],
-                                    timeout=max(1, (8 if check else 18) - (time.monotonic() - started)))
-                candidates = data.get('candidates') or []
-                parts = candidates[0].get('content', {}).get('parts', []) if candidates else []
-                text = ' '.join(part.get('text', '') for part in parts if isinstance(part, dict) and not part.get('thought')).strip()
-                if not text:
-                    raise APIError('O Gemini não devolveu texto. Confira o modelo ou um possível bloqueio da resposta.', code='empty_response')
-                with self.lock:
-                    self.key_states[(entry['id'], model)] = {'state': 'available', 'last_error': '', 'checked_at': time.time(), 'resolved_model': resolved}
-                self.persist_health()
-                return text
+                models = self.gemini_models(entry, model)
+                for resolved in models[:2]:
+                    if attempts >= 3 or time.monotonic() - started >= 17: break
+                    payload = {'systemInstruction': {'parts': [{'text': identity}]},
+                        'contents': [{'role': 'user', 'parts': [{'text': prompt}]}],
+                        'generationConfig': {'temperature': .55, 'maxOutputTokens': 192 if check else 384}}
+                    if resolved in ('gemini-2.5-flash-lite', 'gemini-2.5-flash'):
+                        payload['generationConfig']['thinkingConfig'] = {'thinkingBudget': 0}
+                    elif re.match(r'gemini-[3-9](?:\.|-)', resolved):
+                        payload['generationConfig']['thinkingConfig'] = {'thinkingLevel': 'MINIMAL'}
+                    for compatibility in range(2):
+                        self.reserve('gemini:' + entry['project']); attempts += 1
+                        try:
+                            data = self.request('gemini', '/models/' + resolved + ':generateContent', payload, entry['value'],
+                                                timeout=max(1, 18 - (time.monotonic() - started)))
+                            break
+                        except APIError as exc:
+                            last = exc
+                            if exc.code == 'invalid_request' and compatibility == 0 and attempts < 3 and time.monotonic() - started < 16:
+                                # Retry this model once without optional controls;
+                                # not a new key and not an attempt to bypass quota.
+                                payload['generationConfig'].pop('thinkingConfig', None)
+                                payload['generationConfig'].pop('temperature', None)
+                                continue
+                            if exc.code == 'model_unavailable' and model == 'auto':
+                                data = None; break
+                            raise
+                    if data is None: continue
+                    candidates = data.get('candidates') or []
+                    candidate = candidates[0] if candidates and isinstance(candidates[0], dict) else {}
+                    parts = candidate.get('content', {}).get('parts', [])
+                    text = ' '.join(part.get('text', '') for part in parts if isinstance(part, dict) and not part.get('thought') and isinstance(part.get('text', ''), str)).strip()
+                    if not text:
+                        finish = str(candidate.get('finishReason') or '')
+                        message = 'Gemini consumiu o limite antes de devolver texto. Teste um Flash Lite ou outro modelo disponível.' if finish == 'MAX_TOKENS' else 'Gemini não devolveu texto; houve bloqueio da resposta ou incompatibilidade do modelo.'
+                        raise APIError(message, code='output_budget' if finish == 'MAX_TOKENS' else 'empty_response')
+                    with self.lock:
+                        self.key_states[(entry['id'], model)] = {'state': 'available', 'last_error': '', 'checked_at': time.time(), 'resolved_model': resolved, 'http_status': 200}
+                        self.catalogs[entry['id']] = (time.monotonic(), [resolved] + [m for m in models if m != resolved])
+                    self.persist_health()
+                    return text
+                raise last or APIError('Nenhum modelo respondeu dentro do prazo. Confira o modelo no painel.', code='model_unavailable')
             except APIError as exc:
                 last = exc
                 with self.lock:
-                    state = {'state': exc.code, 'last_error': str(exc), 'retry_at': time.time() + (exc.retry or 300) if exc.retry or exc.code in ('permission', 'model_unavailable') else 0}
-                    self.key_states[(entry['id'], model)] = state
-                    if exc.code == 'invalid_key': self.key_states[(entry['id'], '*')] = state
-                    if exc.project:
-                        self.project_cooldowns[(entry['project'], model)] = time.time() + (exc.retry or 300)
+                    until = time.time() + (exc.retry or 300) if exc.retry or exc.code in ('permission', 'model_unavailable', 'billing_required', 'region_unavailable') else 0
+                    self.key_states[(entry['id'], model)] = {'state': exc.code, 'last_error': str(exc), 'retry_at': until, 'http_status': exc.status, 'resolved_model': resolved}
+                    if exc.code == 'invalid_key': self.key_states[(entry['id'], '*')] = self.key_states[(entry['id'], model)]
+                    if exc.project: self.project_cooldowns[(entry['project'], model)] = time.time() + (exc.retry or 300)
                 self.persist_health()
-                if exc.code not in ('invalid_key', 'permission', 'quota', 'rate_limit', 'model_unavailable') or time.monotonic() - started >= 17:
-                    break
-        raise last or APIError('Nenhuma chave liberada para esse modelo.', code='no_available_key')
+                if exc.code not in ('invalid_key', 'permission', 'quota', 'rate_limit', 'model_unavailable') or time.monotonic() - started >= 17 or attempts >= 3: break
+        raise last or APIError('Nenhuma chave disponível para esse modelo.', code='no_available_key')
 
     def reply(self, provider, data, identity):
         status = self.diagnostics[provider]
@@ -11688,8 +11794,11 @@ def install(binding, app):
         if not question or len(question) > 180:
             raise HTTPException(status_code=400, detail='Teste: até 180 caracteres.')
         if not config()['enabled']: raise HTTPException(status_code=409, detail='Ative o provedor de respostas primeiro.')
-        answer = await run_in_threadpool(binding.ai.generate_chat_reply, display_name='Teste', comment=question, user_key='operator-cloud-test')
         selected = provider()
+        expected = payload.get('provider')
+        if expected is not None and expected != selected:
+            raise HTTPException(status_code=409, detail='O provedor ativo mudou. Confira IA ATIVA, salve a seleção e teste novamente.')
+        answer = await run_in_threadpool(binding.ai.generate_chat_reply, display_name='Teste', comment=question, user_key='operator-cloud-test')
         diagnostics = binding.local_client().diagnostics if selected == 'local' else api.diagnostics[selected]
         if not answer: raise HTTPException(status_code=503, detail=diagnostics.get('last_error') or 'A IA não devolveu resposta.')
         return {'ok': True, 'provider': selected, 'text': answer, 'diagnostics': dict(diagnostics)}
@@ -11704,7 +11813,7 @@ def install(binding, app):
                                     model_name(binding.settings._raw().get('termux_gemini_model', 'auto')), only_id=key_id, check=True)
             return {'ok': True, 'keys': api.keys_public(), 'note': 'A chave respondeu agora; o teste não informa saldo futuro e consome cota.'}
         except APIError as exc:
-            return {'ok': False, 'keys': api.keys_public(), 'error': str(exc), 'code': exc.code}
+            return {'ok': False, 'keys': api.keys_public(), 'error': str(exc), 'code': exc.code, 'http_status': exc.status}
 
     @app.post('/termux/cloud/voice')
     def voice_settings(payload: dict):
@@ -11742,6 +11851,7 @@ cat >"$repair_stage/snake_termux/cloud_ui.js" <<'SNAKE_DISPLAY_V025_FILE_18'
   try {state = await request('/termux/cloud/settings');} catch (_) {return;}
   const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.id = 'cloudControls';
   const heading = document.createElement('h2'); heading.textContent = 'Respostas e voz · IA local ou na nuvem';
+  const activeProvider = document.createElement('p'); activeProvider.id = 'cloudActiveProvider'; activeProvider.style.cssText = 'font-weight:bold;border-left:4px solid #c8ff72;padding:10px'; card.append(activeProvider);
   const note = document.createElement('p'); note.textContent = 'Gemini e OpenAI dependem de internet. ChatGPT não inclui créditos da API. Gemini pode ter cota gratuita; não há garantia de gratuidade para todo modelo/projeto. A voz é gerada por IA.';
   function field(tag, id, labelText) {
     const label = document.createElement('label'); label.htmlFor = id; label.textContent = labelText;
@@ -11774,11 +11884,14 @@ cat >"$repair_stage/snake_termux/cloud_ui.js" <<'SNAKE_DISPLAY_V025_FILE_18'
   card.append(links);
   const message = document.createElement('p'); message.id = 'cloudStatus'; message.setAttribute('role', 'status');
   function render(body) {
-    state = body; brain.value = body.provider; enabled.checked = body.enabled;
+    state = body; brain.value = body.provider; renderActive(body); enabled.checked = body.enabled;
     localModel.value = body.local_model || 'auto'; localPort.value = body.local_port;
     openaiModel.value = body.openai_model; geminiModel.value = body.gemini_model;
     keyStatus.textContent = body.openai_key_present ? 'Chave OpenAI salva no servidor; seu valor não é devolvido ao painel.' : 'Nenhuma chave OpenAI salva.';
     renderKeys(body.gemini_keys || []);
+  }
+  function renderActive(body) {
+    activeProvider.textContent = 'IA ATIVA: ' + ({local:'QWEN LOCAL',gemini:'GEMINI',openai:'OPENAI'}[body.provider] || body.provider) + (body.enabled ? '' : ' · DESATIVADA');
   }
   async function save() {
     const additions = geminiKeys.value.split(/\r?\n/).map(x => x.trim()).filter(Boolean).map(line => {
@@ -11798,13 +11911,13 @@ cat >"$repair_stage/snake_termux/cloud_ui.js" <<'SNAKE_DISPLAY_V025_FILE_18'
   button('cloudRemoveOpenai', 'Remover chave OpenAI salva', async () => {render(await request('/termux/cloud/settings', {clear_key: true})); message.textContent = 'Chave removida desta instalação. A revogação da chave é feita na conta OpenAI.';});
   button('cloudLocalDetect', 'Detectar Qwen local', async () => {if (brain.value !== 'local') throw new Error('Selecione Qwen local para usar esta verificação.'); await save(); const b = await request('/termux/local-ai/detect', {}); message.textContent = b.ready ? 'Qwen local conectado.' : (b.message || 'Qwen local indisponível.');});
   const keyRows = document.createElement('div'); keyRows.id = 'cloudGeminiRows'; card.append(keyRows);
-  const keyLabels = {untested: 'Ainda não testada', available: 'Respondeu ao teste', invalid_key: 'Chave recusada', cooldown: 'Aguardando cota / intervalo', quota: 'Cota esgotada', rate_limit: 'Limite temporário', permission: 'Sem permissão', model_unavailable: 'Modelo indisponível'};
+  const keyLabels = {untested: 'Ainda não testada', available: 'Respondeu ao teste', invalid_key: 'Chave recusada', cooldown: 'Aguardando cota / intervalo', quota: 'Cota esgotada', rate_limit: 'Limite temporário', permission: 'Sem permissão', model_unavailable: 'Modelo indisponível', invalid_request: 'Configuração recusada', output_budget: 'Modelo sem texto no limite', empty_response: 'Resposta vazia/bloqueada', billing_required: 'Modelo exige faturamento', region_unavailable: 'Conta/região indisponível'};
   function renderKeys(keys) {
     if (!keyRows) return;
     keyRows.replaceChildren();
     for (const key of keys) {
       const row = document.createElement('div'); row.style.cssText = 'border-top:1px solid #33444b;padding:10px 0;overflow-wrap:anywhere';
-      const text = document.createElement('p'); text.textContent = key.label + ' · ' + key.project + ' · ' + (keyLabels[key.state] || key.state) + (key.resolved_model ? ' · ' + key.resolved_model : '');
+      const text = document.createElement('p'); text.textContent = key.label + ' · ' + key.project + ' · ' + (keyLabels[key.state] || key.state) + (key.resolved_model ? ' · ' + key.resolved_model : '') + (key.http_status ? ' · HTTP ' + key.http_status : '') + (key.last_error ? ' · ' + key.last_error : '');
       if (key.retry_at > Date.now() / 1000) text.textContent += ' · aguarde ' + Math.ceil(key.retry_at - Date.now() / 1000) + ' s';
       const check = document.createElement('button'); check.type = 'button'; check.textContent = 'Verificar esta chave';
       check.addEventListener('click', async () => {check.disabled = true; try {const b = await request('/termux/gemini/check', {id: key.id}); renderKeys(b.keys); message.textContent = b.ok ? b.note : b.error;} catch (error) {message.textContent = error.message;} finally {check.disabled = false;}});
@@ -11813,6 +11926,7 @@ cat >"$repair_stage/snake_termux/cloud_ui.js" <<'SNAKE_DISPLAY_V025_FILE_18'
       row.append(text, check, remove); keyRows.append(row);
     }
   }
+  button('cloudUseGemini', 'Usar Gemini para responder · salvar seleção', async () => {brain.value = 'gemini'; enabled.checked = true; await save(); message.textContent = 'Gemini selecionado para as respostas. A voz permanece independente.';});
   button('cloudGeminiCheckAll', 'Verificar chaves Gemini · usa cota', async () => {
     const ids = (state.gemini_keys || []).map(key => key.id); let failures = 0;
     for (let i = 0; i < ids.length; i++) {
@@ -11822,7 +11936,7 @@ cat >"$repair_stage/snake_termux/cloud_ui.js" <<'SNAKE_DISPLAY_V025_FILE_18'
     message.textContent = ids.length ? 'Verificação concluída. Falhas/indisponíveis: ' + failures + '. Isso não consulta saldo em dinheiro.' : 'Salve pelo menos uma chave Gemini primeiro.';
   });
   const question = field('input', 'cloudQuestion', 'Pergunta de teste para a IA selecionada'); question.maxLength = 180; question.placeholder = 'Por que o céu é azul?';
-  button('cloudAsk', 'Testar resposta · API pode consumir cota', async () => {await save(); message.textContent = 'Aguardando a IA…'; const b = await request('/termux/ai/test', {text: question.value}); message.textContent = b.text;});
+  button('cloudAsk', 'Testar resposta · API pode consumir cota', async () => {await save(); message.textContent = 'Aguardando a IA…'; const b = await request('/termux/ai/test', {text: question.value, provider: brain.value}); message.textContent = b.text;});
   const voiceProvider = field('select', 'cloudVoiceProvider', 'Voz da cobra · independente da IA de respostas');
   choices(voiceProvider, [['piper-local', 'Piper local · voz já instalada'], ['openai', 'OpenAI · voz pela API paga'], ['xtts', 'XTTS original · instalação compatível']]);
   const voicePort = field('input', 'cloudVoicePort', 'Porta do Piper local'); voicePort.type = 'number'; voicePort.value = '8083';
@@ -11848,9 +11962,362 @@ cat >"$repair_stage/snake_termux/cloud_ui.js" <<'SNAKE_DISPLAY_V025_FILE_18'
   render(state);
   const voiceState = await request('/termux/voice'); voiceProvider.value = voiceState.provider; voicePort.value = voiceState.port; voiceName.value = voiceState.voice || 'cedar'; style.value = voiceState.style || 'clear';
   old.before(card); old.hidden = true;
-  setInterval(async () => {try {const s = await request('/termux/cloud/settings'); const d = s.cloud_status[s.provider]; if (voiceProvider.value === 'openai' && s.cloud_status.speech?.last_error) message.textContent = s.cloud_status.speech.last_error; else if (d?.last_error) message.textContent = d.last_error;} catch (_) {}}, 10000);
+  setInterval(async () => {if(document.hidden)return;try {const s = await request('/termux/cloud/settings'); renderActive(s); const d = s.cloud_status[s.provider]; if (voiceProvider.value === 'openai' && s.cloud_status.speech?.last_error) message.textContent = s.cloud_status.speech.last_error; else if (d?.last_error) message.textContent = d.last_error;} catch (_) {}}, 10000);
 })();
 SNAKE_DISPLAY_V025_FILE_18
+cat >"$repair_stage/snake_termux/live_load.py" <<'SNAKE_DISPLAY_V025_FILE_19'
+"""Bounded one-job lookahead and current-chat selection; original game actions stay in use."""
+from __future__ import annotations
+
+import contextvars
+import os
+import re
+import time
+
+from .speech_names import normalize_text, spoken_name
+
+_CONTEXT = contextvars.ContextVar('snake_live_prefetch', default=None)
+
+
+def install(binding, app):
+    from fastapi import HTTPException
+    from cobrinha_server.services import event_decision_worker as worker, live_events, speech_queue
+    from cobrinha_server.bridge.godot_bridge import godot_bridge
+
+    original_transport = binding.transport if hasattr(binding, 'transport') else None
+    original_gate = worker._speech_pipeline_can_accept_next
+    original_once = worker.process_once
+    original_activity = worker._send_spectator_activity
+    original_enqueue = worker.enqueue_text
+    original_prepare = speech_queue.prepare_pending_job
+    original_sort = live_events._sort_events
+    original_dedup = live_events._prune_comment_dedup
+    original_pop = live_events.pop_next_event
+    original_send = godot_bridge.send
+    metrics = {'prefetched': 0, 'expired_comments': 0, 'welcome_speech_coalesced': 0, 'spoken_names_cleaned': 0, 'dedup_entries_trimmed': 0, 'unavailable_notices_coalesced': 0}
+    last_welcome = [0.0]
+    last_unavailable = [0.0]
+
+    def transport(data):
+        try:
+            return original_transport(data)
+        except Exception:
+            record = _CONTEXT.get()
+            if record is not None: record['model_failed'] = True
+            raise
+
+    if original_transport is not None:
+        binding.transport = transport
+
+    def settings():
+        raw = binding.settings._raw()
+        return {'busy_live': raw.get('termux_busy_live', True) is True}
+
+    def busy():
+        return settings()['busy_live']
+
+    def gate():
+        if not busy() or binding.settings._raw().get('termux_reply_mode') == 'dialogue':
+            return original_gate()
+        if worker.song_runtime.singing_blocks_speech() or worker.godot_runtime_state.heart_me_band_music_showcase_active():
+            return False
+        state = worker.speech_queue_status()
+        if state.get('manual_sequence', {}).get('active') or state.get('active_pair') or state.get('pair_waiting_size'):
+            return False
+        if state.get('pending_size') or state.get('ready_size'):
+            return False
+        if worker.tts_worker_status().get('state') == 'preparing':
+            return False
+        if state.get('active'):
+            with live_events._LOCK:
+                events = live_events._read_state()
+            # Don't prepare welcome chatter into the one slot reserved for a question/gift.
+            return bool(events.get('comments') or events.get('gifts'))
+        return True
+
+    async def once():
+        record = {}
+        token = _CONTEXT.set(record)
+        try:
+            return await original_once()
+        finally:
+            _CONTEXT.reset(token)
+
+    async def activity(event, *, source):
+        record = _CONTEXT.get()
+        if busy() and record is not None and source == 'social_comment' and speech_queue.active_job():
+            avatar = await worker._cache_avatar_for_event(event)
+            message = worker.spectator_user_message({
+                'user_id': event.get('user_id'), 'username': event.get('username'),
+                'display_name': event.get('display_name'), 'avatar_url': event.get('avatar_url') or event.get('profile_image'),
+                'comment': event.get('text')}, avatar_path=avatar, source=source, preview=False)
+            message.setdefault('payload', {}).update(snake_color=worker._snake_color_for_user(worker._event_user_key(event)), slot_limit=16, activity_kind='comment')
+            record['deferred'] = message
+            return avatar
+        return await original_activity(event, source=source)
+
+    async def send(message):
+        if isinstance(message, dict) and message.get('type') == 'speech_ready':
+            payload = dict(message.get('payload') or {})
+            metadata = dict(payload.get('metadata') or {})
+            deferred = metadata.pop('_termux_deferred_spectator', None)
+            if deferred:
+                await original_send(deferred)
+                message = {**message, 'payload': {**payload, 'metadata': metadata}}
+        return await original_send(message)
+
+    def enqueue(text, **kwargs):
+        metadata = dict(kwargs.get('metadata') or {})
+        record = _CONTEXT.get()
+        event = record.get('event') if record else None
+        if event and event.get('kind') == 'system':
+            # Original system jobs omit identity fields; keep them for speech normalization.
+            metadata.update({key: event[key] for key in ('display_name', 'username', 'user_id') if event.get(key)})
+        if record and record.get('model_failed') and metadata.get('source') == 'social_comment':
+            if time.monotonic() - last_unavailable[0] < 20:
+                metrics['unavailable_notices_coalesced'] += 1
+                return {'id': '', 'suppressed': True, 'reason': 'model_unavailable_notice_coalesced'}
+            last_unavailable[0] = time.monotonic()
+            text = str(metadata.get('display_name') or 'Pessoal') + ', não consegui responder agora. Tenta de novo daqui a pouco?'
+        welcome = metadata.get('source') in ('welcome', 'tiktok_member') or (metadata.get('audio_role') == 'system' and re.match(r'(?i)^bem[ -]vind', str(text)))
+        if busy() and welcome:
+            if time.monotonic() - last_welcome[0] < 20:
+                metrics['welcome_speech_coalesced'] += 1
+                return {'id': '', 'suppressed': True, 'reason': 'welcome_speech_coalesced'}
+            last_welcome[0] = time.monotonic()
+            text = 'Bem-vindos, pessoal! Manda sua pergunta pra cobra!'
+        if record and record.get('deferred') and kwargs.get('actor', 'main') == 'main':
+            metadata['_termux_deferred_spectator'] = record['deferred']
+            metrics['prefetched'] += 1
+        return original_enqueue(text, **{**kwargs, 'metadata': metadata})
+
+    def sort_events(events):
+        result = original_sort(events)
+        if busy() and result and all(event.get('kind') == 'comment' for event in result):
+            now = time.time()
+            recent = [event for event in result if not live_events._event_created_at(event) or now - live_events._event_created_at(event) <= 18]
+            metrics['expired_comments'] += len(result) - len(recent)
+            def question(event):
+                text = str(event.get('text') or '').casefold().strip()
+                return '?' in text or bool(re.match(r'^(como|qual|quem|onde|quando|por que|porque|quanto|me explica|voce|você)\b', text))
+            return sorted(recent, key=lambda e: (-int(e.get('priority') or 0), -int(question(e)), -live_events._event_created_at(e)))
+        return result
+
+    def dedup(history, now):
+        result = original_dedup(history, now)
+        if busy() and len(result) > 512:
+            recent = sorted(result.items(), key=lambda pair: float(pair[1].get('created_at') or 0), reverse=True)[:512]
+            metrics['dedup_entries_trimmed'] += len(result) - 512
+            return dict(recent)
+        return result
+
+    def pop():
+        event = original_pop()
+        record = _CONTEXT.get()
+        if record is not None and event: record['event'] = event
+        return event
+
+    def prepare(job):
+        metadata = job.get('metadata') or {}
+        spoken = normalize_text(job.get('text'), metadata, binding.settings._raw().get('termux_spoken_aliases', {}))
+        if spoken != job.get('text'): metrics['spoken_names_cleaned'] += 1
+        prepared = original_prepare({**job, 'text': spoken})
+        return {**prepared, 'text': job.get('text', ''), 'spoken_text': spoken}
+
+    for original, replacement in ((original_gate, gate), (original_once, once), (original_activity, activity),
+            (original_enqueue, enqueue), (original_prepare, prepare), (original_sort, sort_events), (original_dedup, dedup), (original_pop, pop)):
+        binding.replace_aliases(original, replacement)
+    binding.replacements.append((godot_bridge, 'send', original_send))
+    godot_bridge.send = send
+
+    @app.get('/termux/live-load')
+    def status():
+        return {'settings': settings(), 'metrics': dict(metrics), 'lookahead_limit': 1,
+                'note': 'Prioriza perguntas recentes. Uma única voz não consegue ler todos os eventos de uma LIVE grande.'}
+
+    @app.post('/termux/live-load')
+    def save(payload: dict):
+        if set(payload) != {'busy_live'} or type(payload['busy_live']) is not bool:
+            raise HTTPException(status_code=400, detail='Informe busy_live como verdadeiro ou falso.')
+        raw = binding.settings._raw(); raw['termux_busy_live'] = payload['busy_live']
+        binding.settings.write_json_atomic(binding.settings.SOCIAL_TEXT_AI_CONFIG_FILE, raw)
+        os.chmod(binding.settings.SOCIAL_TEXT_AI_CONFIG_FILE, 0o600)
+        return status()
+
+    @app.post('/termux/spoken-name')
+    def name(payload: dict):
+        original = str(payload.get('name') or '').strip()
+        if len(original) > 100: raise HTTPException(status_code=400, detail='Use um nome de até 100 caracteres.')
+        if 'alias' in payload:
+            username = str(payload.get('username') or '').strip().lstrip('@').casefold()
+            if not re.fullmatch(r'[a-z0-9_.]{1,64}', username):
+                raise HTTPException(status_code=400, detail='Informe o @ do usuário, sem espaços.')
+            alias = spoken_name(payload.get('alias'))
+            raw = binding.settings._raw(); aliases = dict(raw.get('termux_spoken_aliases', {}))
+            if len(aliases) >= 200 and username not in aliases:
+                raise HTTPException(status_code=400, detail='Limite de 200 pronúncias personalizadas atingido.')
+            aliases[username] = alias; raw['termux_spoken_aliases'] = aliases
+            binding.settings.write_json_atomic(binding.settings.SOCIAL_TEXT_AI_CONFIG_FILE, raw)
+            os.chmod(binding.settings.SOCIAL_TEXT_AI_CONFIG_FILE, 0o600)
+            return {'original': original, 'spoken': alias, 'saved': True}
+        return {'original': original, 'spoken': spoken_name(original)}
+SNAKE_DISPLAY_V025_FILE_19
+cat >"$repair_stage/snake_termux/speech_names.py" <<'SNAKE_DISPLAY_V025_FILE_20'
+"""Pronounceable viewer names for speech, preserving identity in the scene/HUD."""
+from __future__ import annotations
+
+import re
+import unicodedata
+
+PREFIXES = {'dj', 'mc', 'sr', 'sra', 'dr', 'dra', 'user', 'usuario', 'ofc', 'oficial', 'exe', 'real'}
+
+
+def spoken_name(value, alias=''):
+    text = unicodedata.normalize('NFKC', str(alias or value or '')).strip().lstrip('@')
+    text = ''.join(c if c.isalpha() or c.isspace() else ' ' for c in text)
+    words = text.split()
+    # Stylized display names such as L I N E L must become a word, not initials.
+    if len(words) >= 3 and all(len(word) == 1 for word in words):
+        words = [''.join(words)]
+    for word in words:
+        word = word.strip()
+        plain = ''.join(c for c in unicodedata.normalize('NFD', word).casefold() if not unicodedata.combining(c))
+        if plain in PREFIXES or len(word) < 2 or len(word) > 22 or not re.search(r'[aeiouy]', plain):
+            continue
+        return word.capitalize() if word.isupper() or word.islower() else word
+    return 'amigo'
+
+
+def for_event(event, aliases=None):
+    aliases = aliases or {}
+    key = str(event.get('username') or event.get('user_id') or '').lstrip('@').casefold()
+    return spoken_name(event.get('display_name') or event.get('username'), aliases.get(key, ''))
+
+
+def normalize_text(text, metadata=None, aliases=None):
+    """Replace known identity strings, not ordinary numbers or the whole caption."""
+    metadata = metadata or {}
+    clean = unicodedata.normalize('NFKC', str(text or ''))
+    alias = for_event(metadata, aliases)
+    candidates = {str(metadata.get('display_name') or ''), str(metadata.get('username') or '')}
+    for original in sorted(candidates, key=len, reverse=True):
+        if not original: continue
+        normalized = unicodedata.normalize('NFKC', original).strip()
+        if not normalized: continue
+        clean = re.sub(r'(?<!\w)@?' + re.escape(normalized.lstrip('@')) + r'(?!\w)', alias, clean, flags=re.IGNORECASE)
+    return clean
+SNAKE_DISPLAY_V025_FILE_20
+cat >"$repair_stage/snake_termux/director.py" <<'SNAKE_DISPLAY_V025_FILE_21'
+"""Operator-only counters and rendering evidence; no extra 3D render or broadcast."""
+from __future__ import annotations
+
+import json
+import math
+import shutil
+import subprocess
+import threading
+import time
+from pathlib import Path
+
+
+def viewer_count(raw):
+    if isinstance(raw, str):
+        if len(raw) > 200_000: return None
+        try: raw = json.loads(raw)
+        except ValueError: return None
+    if not isinstance(raw, dict): return None
+    # roomUser.viewerCount is current audience. totalUser is not concurrent viewers.
+    for candidate in (raw, raw.get('data')):
+        if isinstance(candidate, dict):
+            value = candidate.get('viewerCount')
+            if isinstance(value, bool): continue
+            try:
+                count = int(value)
+                if str(value).strip() == str(count) and 0 <= count <= 100_000_000: return count
+            except (ValueError, TypeError): pass
+    return None
+
+
+class Audience:
+    def __init__(self):
+        self.count, self.at, self.username = None, 0, ''
+        self.lock = threading.RLock()
+
+    def update(self, raw, username):
+        count = viewer_count(raw)
+        if count is not None:
+            with self.lock: self.count, self.at, self.username = count, time.time(), username
+
+    def status(self, current, connected):
+        with self.lock:
+            same = self.username == current
+            age = time.time() - self.at if self.at else None
+            return {'count': self.count if same else None, 'updated_at': self.at if same else 0,
+                    'age_seconds': round(age, 1) if same and age is not None else None,
+                    'stale': not connected or not same or age is None or age > 30,
+                    'source': 'TikTok roomUser.viewerCount', 'sent_to_game': False}
+
+
+def install(binding, app):
+    from fastapi.responses import FileResponse
+    from cobrinha_server.services import tiktok_monitor
+    audience = Audience()
+    original_register = tiktok_monitor._register_handlers
+
+    def register(client, username):
+        original_register(client, username)
+        client.on('data-viewer', handler=lambda raw: audience.update(raw, username))
+    binding.replace_aliases(original_register, register)
+    existing = getattr(tiktok_monitor, '_CLIENT', None)
+    if existing is not None:
+        existing.on('data-viewer', handler=lambda raw: audience.update(raw, str(tiktok_monitor.status().get('username') or '')))
+    app.state.snake_audience = audience
+
+    @app.get('/termux/director')
+    def page():
+        return FileResponse(Path(__file__).with_name('director.html'), headers={'Cache-Control': 'no-store'}, media_type='text/html')
+
+    @app.get('/termux/director/status')
+    def status():
+        monitor = tiktok_monitor.status()
+        username = str(monitor.get('username') or '')
+        connected = bool(monitor.get('connected') and monitor.get('listening'))
+        game = getattr(app.state, 'snake_native_game', None)
+        state = game.status() if game is not None else {}
+        return {'username': username, 'connected': connected, 'audience': audience.status(username, connected),
+            'game': {'running': state.get('running', False), 'performance': state.get('performance', {}),
+                     'graphics': state.get('device', {}).get('graphics', {})},
+            'capture_note': 'Este painel não é desenhado no jogo. Capturar a tela inteira do celular pode incluí-lo ao abrir o navegador.',
+            'broadcast': {'protocols': ['RTMP', 'RTMPS'], 'started_by_this_panel': False,
+                'requires_tiktok_stream_key_access': True, 'recommended_capture': 'Aplicativo Android com MediaProjection e codificador H.264 por hardware; capturar somente o jogo quando disponível.',
+                'desktop_pipeline': 'O original usa GStreamer/NVENC para desktop. Isso não comprova transmissão acelerada no Termux.'}}
+
+    @app.post('/termux/director/encoder-check')
+    def encoders():
+        binary = shutil.which('ffmpeg')
+        if not binary:
+            return {'available': False, 'hardware_encoding_confirmed': False, 'message': 'FFmpeg não encontrado. Um aplicativo Android ainda pode usar MediaCodec.'}
+        try:
+            result = subprocess.run([binary, '-hide_banner', '-encoders'], capture_output=True, text=True, timeout=5)
+            names = [name for name in ('h264_mediacodec', 'h264_v4l2m2m', 'libx264') if name in result.stdout]
+            return {'available': result.returncode == 0, 'encoders': names, 'hardware_encoding_confirmed': False,
+                'message': 'Lista do FFmpeg, sem iniciar captura. Presença do encoder não confirma funcionamento no aparelho. Aplicativos Android podem usar MediaCodec independentemente desta lista.'}
+        except (OSError, subprocess.TimeoutExpired):
+            return {'available': False, 'hardware_encoding_confirmed': False, 'message': 'A consulta de encoders falhou. Nenhuma transmissão foi iniciada.'}
+SNAKE_DISPLAY_V025_FILE_21
+cat >"$repair_stage/snake_termux/director.html" <<'SNAKE_DISPLAY_V025_FILE_22'
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Operador · Snake</title>
+<style>body{margin:0;background:#071318;color:#e8f2ee;font:16px system-ui;padding:20px;max-width:640px}article{background:#11242b;border:1px solid #285152;border-radius:16px;padding:18px;margin:14px 0}h1{font-size:20px}strong#viewers{display:block;font-size:64px;color:#c8ff72}small{color:#aac6c0}button,a{display:inline-block;padding:12px;border:1px solid #447e70;border-radius:12px;background:#173c32;color:#c8ff72}p{line-height:1.5;overflow-wrap:anywhere}</style>
+<h1>Painel do operador</h1><small>Estatísticas separadas do jogo · sem uma segunda renderização 3D</small>
+<article><span>Espectadores simultâneos</span><strong id="viewers">—</strong><p id="room">Aguardando o monitor TikTok.</p><small id="age"></small></article>
+<article><b>Imagem do jogo</b><p id="fps">FPS medido: aguardando dado.</p><p id="gpu"></p><p id="profile"></p></article>
+<article><b>Transmissão RTMP/RTMPS</b><p>O TikTok precisa fornecer URL e chave. Um aplicativo Android com captura de tela e codificador por hardware é o caminho para avaliar no celular. RTMP sozinho não corrige travadas do jogo ou da rede.</p><button id="check">Consultar encoders do FFmpeg · sem transmitir</button><p id="encoder"></p></article>
+<article><b>Visibilidade na LIVE</b><p>Este painel não é enviado ao cenário. Se você capturar a tela inteira do celular e abrir o navegador, ele poderá aparecer na transmissão. Para separá-lo, use captura somente do aplicativo/janela do jogo, quando suportada, ou abra o painel em outro dispositivo com configuração de acesso apropriada.</p><a href="/">Voltar ao controle</a></article>
+<script>
+const by=id=>document.getElementById(id);async function refresh(){if(document.hidden)return;try{const r=await fetch('/termux/director/status');const s=await r.json();const a=s.audience;by('viewers').textContent=a.count===null?'—':a.count;by('room').textContent=(s.username?'@'+s.username:'Sem perfil conectado')+' · '+(s.connected?'monitor conectado':'monitor desconectado');by('age').textContent=a.count===null?'O TikTok ainda não informou o público atual.':(a.stale?'Último dado recebido · ':'Atualizado · ')+(a.age_seconds??0)+' s atrás';const p=s.game.performance;by('fps').textContent='FPS medido: '+(p.fps??'aguardando dado');by('gpu').textContent='Renderizador do jogo: '+(p.observed_renderer||'aguardando dado')+(p.software_renderer?' · SOFTWARE: pode sobrecarregar a CPU':'');const g=s.game.graphics;by('profile').textContent=g.resolution?g.resolution+' · limite configurado '+g.max_fps+' FPS':'Jogo ainda não iniciado.';}catch(e){by('room').textContent='Painel sem conexão com o servidor local.';}}
+by('check').onclick=async()=>{by('check').disabled=true;try{const r=await fetch('/termux/director/encoder-check',{method:'POST'});const s=await r.json();by('encoder').textContent=(s.encoders||[]).join(', ')+' · '+s.message;}finally{by('check').disabled=false;}};refresh();setInterval(refresh,2000);document.addEventListener('visibilitychange',refresh);
+</script></html>
+SNAKE_DISPLAY_V025_FILE_22
 "$repair_python" - "$repair_stage" <<'SNAKE_CHECK_FILES'
 import ast, pathlib, sys
 for path in pathlib.Path(sys.argv[1]).rglob("*.py"):

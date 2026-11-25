@@ -268,6 +268,7 @@ class NativeGame:
         self.started_at = 0.0
         self.last_exit_code = None
         self.device_report = {}
+        self.observed_renderer = None
         self.lock = threading.RLock()
         self.renderer = os.environ.get('SNAKE_RENDERER', 'gl_compatibility')
         native_command(self.godot, self.pack, [], workdir=self.state_dir, renderer=self.renderer)
@@ -304,7 +305,15 @@ class NativeGame:
             if self.process and self.log_path.exists():
                 with self.log_path.open('rb') as stream:
                     stream.seek(self.log_offset)
-                    output = stream.read(32768).decode('utf-8', errors='replace')
+                    startup = stream.read(8192).decode('utf-8', errors='replace')
+                    stream.seek(max(self.log_offset, self.log_path.stat().st_size - 16384))
+                    output = startup + '\n' + stream.read(16384).decode('utf-8', errors='replace')
+                match = re.search(r'Using Device:\s*(.+)', startup)
+                if match: self.observed_renderer = match[1].strip()
+                fps_matches = re.findall(r'(?:Project\s+)?FPS:\s*(\d+(?:\.\d+)?)', output, flags=re.I)
+            else:
+                fps_matches = []
+            if self.process and self.log_path.exists():
                 if 'falling back to the dummy driver' in output.lower():
                     audio_runtime = {'state': 'dummy', 'driver': 'Dummy',
                                      'message': 'Jogo sem som: Godot iniciou com driver Dummy. Feche e abra a janela após preparar o áudio Android.'}
@@ -316,6 +325,9 @@ class NativeGame:
                     'godot': str(self.godot), 'renderer': self.renderer, 'original_verified': self.integrity['verified'],
                     'device': self.device_report,
                     'audio_runtime': audio_runtime,
+                    'performance': {'fps': float(fps_matches[-1]) if fps_matches else None,
+                        'observed_renderer': self.observed_renderer,
+                        'software_renderer': any(word in (self.observed_renderer or '').lower() for word in ('llvmpipe','softpipe','lavapipe','swrast'))},
                     'automatic_restarts': 0, 'android_validation': 'pending'}
 
     def start(self) -> dict:
@@ -355,7 +367,7 @@ class NativeGame:
                 args.extend(['--max-fps', str(graphics['max_fps'])])
             if self.device_report.get('audio', {}).get('godot_latency_ms'):
                 args.extend(['--audio-output-latency', str(self.device_report['audio']['godot_latency_ms'])])
-            args.extend(['--', '--cobrinha-live'])
+            args.extend(['--print-fps', '--', '--cobrinha-live'])
             output = self.device_report.get('audio', {})
             audio_driver = 'PulseAudio' if output.get('output_available') else ('Dummy' if 'output_available' in output else None)
             self.audio_driver = audio_driver
@@ -371,6 +383,7 @@ class NativeGame:
                 if self.audio_service:
                     self.audio_service.stop()
                 raise
+            self.observed_renderer = None
             self.started_at = time.time()
             return self.status()
 
@@ -1114,7 +1127,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
   fetch('/termux/game').then(async response => {
     if (!response.ok) return;
     const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.style.marginTop = '14px';
-    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.3.1';
+    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.3.2';
     const message = document.createElement('p'); message.id = 'termuxGameStatus';
     const deviceMessage = document.createElement('p'); deviceMessage.id = 'termuxDeviceStatus';
     const start = document.createElement('button'); start.type = 'button'; start.textContent = 'Abrir jogo original';
@@ -1124,6 +1137,8 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
       message.textContent = body.running ? (body.bridge_connected ? 'Janela em execução · conectada ao servidor.' : 'Janela em execução · aguardando conexão com o servidor.') : 'Janela parada. Última saída: ' + (body.last_exit_code ?? 'nenhuma') + '. Logs: ' + body.log;
       const gpu = body.device?.graphics, output = body.device?.audio, display = body.device?.display;
       deviceMessage.textContent = gpu ? (gpu.hardware_verified ? 'GPU confirmada: ' + gpu.renderer : gpu.message) + ' · ' + gpu.resolution + ' · limite ' + gpu.max_fps + ' FPS. ' + (display?.message || output?.message || '') : '';
+      if (body.performance?.fps != null) deviceMessage.textContent += ' FPS medido: ' + body.performance.fps + '.';
+      if (body.performance?.software_renderer) deviceMessage.textContent += ' ⚠ O jogo está usando renderização por CPU: ' + body.performance.observed_renderer + '.';
       if (body.audio_runtime?.state === 'dummy') {
         deviceMessage.textContent += ' ⚠ ' + body.audio_runtime.message;
         deviceMessage.style.color = '#ffba6b';
@@ -1234,7 +1249,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
     musicBox.append(musicTitle, musicHelp, musicLabel, musicFile, sendMusic, musicMode, musicSelect, musicTracks, playMusic, nextMusic, pauseMusic, musicVolumeLabel, musicVolume, musicVolumeValue, musicMessage);
     const profileLabel = document.createElement('label'); profileLabel.htmlFor = 'termuxGraphicsProfile'; profileLabel.textContent = 'Qualidade da imagem · tela limpa em retrato';
     const profile = document.createElement('select'); profile.id = 'termuxGraphicsProfile';
-    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536'], ['stable', 'Estável · 640 × 1136 · limite 30 FPS']]) {
+    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536'], ['stable', 'Estável · 640 × 1136 · limite 30 FPS'], ['clear', '720p · limite 45 FPS'], ['quality30', 'Mais nítido · 864 × 1536 · limite 30 FPS']]) {
       const option = document.createElement('option'); option.value = value; option.textContent = text; profile.append(option);
     }
     const saveProfile = document.createElement('button'); saveProfile.type = 'button'; saveProfile.id = 'termuxSaveProfile'; saveProfile.textContent = 'Salvar qualidade';
@@ -1266,6 +1281,29 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
       catch (error) {pacingMessage.textContent = error.message;} finally {pacingSave.disabled = false;}
     });
     pacing.append(pacingTitle, pacingMode, pacingSave, pacingMessage); card.append(pacing);
+    const loadBox = document.createElement('fieldset'); loadBox.hidden = true;
+    const loadTitle = document.createElement('legend'); loadTitle.textContent = 'LIVE movimentada · fila e nomes';
+    const loadToggleLabel = document.createElement('label'); const loadToggle = document.createElement('input'); loadToggle.type = 'checkbox'; loadToggle.id = 'termuxBusyLive'; loadToggle.style.width = 'auto';
+    loadToggleLabel.append(loadToggle, ' Preparar uma resposta adiantada e priorizar perguntas recentes');
+    const loadSave = document.createElement('button'); loadSave.type = 'button'; loadSave.id = 'termuxLoadSave'; loadSave.textContent = 'Salvar modo da LIVE';
+    const loadMessage = document.createElement('p'); loadMessage.id = 'termuxLoadStatus';
+    fetch('/termux/live-load').then(async r => {if (!r.ok) return; const b = await r.json(); loadToggle.checked = b.settings.busy_live; loadMessage.textContent = b.note; loadBox.hidden = false;}).catch(() => {});
+    loadSave.onclick = async () => {try {const r = await fetch('/termux/live-load', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({busy_live:loadToggle.checked})}); const b = await r.json(); if(!r.ok)throw new Error(b.detail);loadMessage.textContent='Modo salvo. '+b.note;}catch(e){loadMessage.textContent=e.message;}};
+    const nameLabel = document.createElement('label'); nameLabel.htmlFor = 'termuxNameRaw'; nameLabel.textContent = 'Nome que está sendo soletrado';
+    const nameRaw = document.createElement('input'); nameRaw.id = 'termuxNameRaw'; nameRaw.placeholder = 'Ex.: G U S T A V O'; nameRaw.maxLength = 100;
+    const namePreview = document.createElement('button'); namePreview.type = 'button'; namePreview.id = 'termuxNamePreview'; namePreview.textContent = 'Conferir nome falado · sem gerar áudio';
+    const userLabel = document.createElement('label'); userLabel.htmlFor = 'termuxNameUser'; userLabel.textContent = '@ do usuário para uma pronúncia personalizada';
+    const nameUser = document.createElement('input'); nameUser.id = 'termuxNameUser'; nameUser.placeholder = '@gustavo123';
+    const aliasLabel = document.createElement('label'); aliasLabel.htmlFor = 'termuxNameAlias'; aliasLabel.textContent = 'Como falar';
+    const nameAlias = document.createElement('input'); nameAlias.id = 'termuxNameAlias'; nameAlias.placeholder = 'Gustavo';
+    const aliasSave = document.createElement('button'); aliasSave.type = 'button'; aliasSave.id = 'termuxNameSave'; aliasSave.textContent = 'Salvar pronúncia para esse usuário';
+    const nameMessage = document.createElement('p'); nameMessage.id = 'termuxNameStatus';
+    async function nameRequest(save) {try {const p={name:nameRaw.value};if(save){p.username=nameUser.value;p.alias=nameAlias.value;}const r=await fetch('/termux/spoken-name',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});const b=await r.json();if(!r.ok)throw new Error(b.detail);nameMessage.textContent=(b.saved?'Pronúncia salva: ':'Nome falado: ')+b.spoken+'. Nome, foto e ranking permanecem iguais.';}catch(e){nameMessage.textContent=e.message;}}
+    namePreview.onclick=()=>nameRequest(false);aliasSave.onclick=()=>nameRequest(true);
+    const director = document.createElement('a'); director.href='/termux/director'; director.target='_blank'; director.rel='noopener'; director.id='termuxDirector'; director.textContent='Abrir painel do operador · espectadores e FPS'; director.style.display='block'; director.style.padding='14px 0';
+    const directorNote=document.createElement('small');directorNote.textContent='Contador fora do jogo. Captura da tela inteira do celular pode mostrar o navegador; captura somente do jogo é necessária para separá-lo.';
+    loadBox.append(loadTitle,loadToggleLabel,loadSave,loadMessage,nameLabel,nameRaw,namePreview,userLabel,nameUser,aliasLabel,nameAlias,aliasSave,nameMessage,director,directorNote);
+    card.append(loadBox);
     status.closest('section').before(card);
     await refresh(); setInterval(() => refresh().catch(() => {}), 5000);
   }).catch(() => {});
