@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-26",
+  "scope": "Research, read-only investigator and secondary-wrapper FPS repair, not a new full game release",
+  "tests": {
+    "adapter_and_original_python": 295,
+    "original_python_preserved": 67,
+    "focused": 16,
+    "focused_overlap_with_adapter": 4
+  },
+  "wrapper_proof": {
+    "scope": "Actual own wrapper code before/after, child execution intercepted; not an Android benchmark or proof of the route used on the phone",
+    "result": {
+      "before": {
+        "selected_profile": "gt3_live",
+        "expected_max_fps": 30,
+        "actual_wrapper_max_fps_argument": 60,
+        "resolution": "540x960"
+      },
+      "after": {
+        "selected_profile": "gt3_live",
+        "expected_max_fps": 30,
+        "actual_wrapper_max_fps_argument": 30,
+        "resolution": "540x960"
+      }
+    }
+  },
+  "godot_headless": {
+    "scope": "Godot 4.7 Linux headless public Engine API; no GT3 rendering benchmark",
+    "control": {
+      "exit": 0,
+      "max_fps_values": [
+        30
+      ],
+      "steady_project_fps_values": [
+        30.0,
+        30.0,
+        30.0,
+        30.0,
+        30.0
+      ]
+    },
+    "original": {
+      "exit": 0,
+      "max_fps_values": [
+        30
+      ],
+      "scene_loaded": true
+    }
+  },
+  "collector_fixture": {
+    "ok": true,
+    "samples": 3,
+    "secret_canary_excluded": true,
+    "known_process_readable": true,
+    "scope": "Linux owned process + controlled HTTP fixture; not Android scheduling confirmation",
+    "output_bytes": 13540
+  },
+  "original_unchanged_files": 127,
+  "phone_origin_not_yet_received": true,
+  "physical_root_cause_confirmed": false,
+  "original_assets_or_private_code_included": false,
+  "credentials_included": false,
+  "apk_installed_or_replaced": false,
+  "fps_gain_claimed_for_repair": false
+}
