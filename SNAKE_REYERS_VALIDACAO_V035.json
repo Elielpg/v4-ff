@@ -1,0 +1,34 @@
+{
+  "version": "0.3.5",
+  "client_date": "2026-11-26",
+  "tests": {
+    "python": 304,
+    "original_python_included": 67,
+    "node": 3,
+    "repair_after_collector_payload": 1
+  },
+  "original_files_verified_unchanged": 127,
+  "original_game_included": false,
+  "private_assets_included": false,
+  "credentials_included": false,
+  "model_weights_included": false,
+  "providers_preserved": true,
+  "graphical_profile_preserved": true,
+  "real_qwen_4b_benchmark_linux": true,
+  "real_original_godot_and_piper_linux": true,
+  "camera_trajectory_changed": false,
+  "physical_gt3_validation": false,
+  "phone_latency_gain_claimed": false,
+  "gpu_npu_offload_added": false,
+  "public_broadcast_started": false,
+  "artifacts": {
+    "SNAKE_REYERS_TERMUX_0_2.zip": {
+      "bytes": 15727706,
+      "sha256": "1949712aa42fed085a79aa40c227889326ab9cfff8c0d570fd400b95d65c2208"
+    },
+    "SNAKE_REYERS_RESPOSTA_RAPIDA_V035.sh": {
+      "bytes": 1135209,
+      "sha256": "7712a542c50450726219cddaf685eeb7b7fb20ddc5ef95ecdecc5a6d6fa61299"
+    }
+  }
+}
