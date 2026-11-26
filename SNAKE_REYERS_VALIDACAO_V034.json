@@ -1,0 +1,43 @@
+{
+  "version": "0.3.4",
+  "client_date": "2026-11-25",
+  "artifacts": {
+    "SNAKE_REYERS_TERMUX_0_2.zip": {
+      "sha256": "d18c604289c5ae2f84ce58e9d41739a761202bd1c6e25f34ec341e66575dda7a",
+      "bytes": 14787437
+    },
+    "SNAKE_REYERS_GT3_STUDIO_V034.sh": {
+      "sha256": "6d6d54e91a8ca6a9a45f78eb434bdd935556e18ad422c2db5fe216664943c3aa",
+      "bytes": 1102229
+    },
+    "COFRA_STUDIO_BETA_0_1.apk": {
+      "sha256": "23c26cf904515979192cb0889c6fa3bad9565dcc69f3b3e2b55f11ee4f5da957",
+      "bytes": 49703
+    },
+    "COFRA_STUDIO_FONTES_0_1.zip": {
+      "sha256": "793f41fdcca33317cf9bf2031ad1922c9a54e0cb78e7c80abe5853892921278b",
+      "bytes": 35509
+    }
+  },
+  "tests": {
+    "python": 291,
+    "python_original": 67,
+    "node": 3,
+    "jvm_checks": 31,
+    "focused_afterward": 34
+  },
+  "original_files_verified_unchanged": 127,
+  "original_game_included": false,
+  "credentials_included": false,
+  "weights_included": false,
+  "native_original_piper_pcm_test": true,
+  "rtmp_loopback_receiver_test": true,
+  "vulkan_mobile_load_linux_software_only": true,
+  "android_apk_compile_signature": true,
+  "physical_gt3_validation": false,
+  "gpu_npu_llm_offload_added": false,
+  "gt3_performance_gain_claimed": false,
+  "public_broadcast_started": false,
+  "voice_provider_preserved": true,
+  "initial_preset_applied_once": true
+}

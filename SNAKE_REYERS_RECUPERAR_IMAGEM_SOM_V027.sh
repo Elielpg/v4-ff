@@ -30,7 +30,7 @@ repair_backup="$(mktemp -d "$repair_target/state/launcher-backups/private-audio-
 repair_stage="$(mktemp -d "$repair_target/.private-audio-v027.XXXXXX")"
 repair_started=0
 repair_complete=0
-repair_files=('start.sh' 'snake_termux/native.py' 'snake_termux/__main__.py' 'snake_termux/device_runtime.py' 'snake_termux/ui.js' 'install-termux.sh' 'snake_termux/presentation.py' 'assets/music/Neon Garden.ogg' 'assets/music/CREDITS.md' 'snake_termux/audio_service.py' 'snake_termux/integration.py' 'snake_termux/live_tuning.py' 'snake_termux/music_library.py' 'snake_termux/piper_worker.py' 'snake_termux/voice.py' 'snake_termux/reuse_ai.py' 'snake_termux/cloud_ai.py' 'snake_termux/cloud_settings.py' 'snake_termux/cloud_ui.js' 'snake_termux/live_load.py' 'snake_termux/speech_names.py' 'snake_termux/director.py' 'snake_termux/director.html' 'snake_termux/client.py' 'snake_termux/local_social.py')
+repair_files=('start.sh' 'snake_termux/native.py' 'snake_termux/__main__.py' 'snake_termux/device_runtime.py' 'snake_termux/ui.js' 'install-termux.sh' 'snake_termux/presentation.py' 'assets/music/Neon Garden.ogg' 'assets/music/CREDITS.md' 'snake_termux/audio_service.py' 'snake_termux/integration.py' 'snake_termux/live_tuning.py' 'snake_termux/music_library.py' 'snake_termux/piper_worker.py' 'snake_termux/voice.py' 'snake_termux/reuse_ai.py' 'snake_termux/cloud_ai.py' 'snake_termux/cloud_settings.py' 'snake_termux/cloud_ui.js' 'snake_termux/live_load.py' 'snake_termux/speech_names.py' 'snake_termux/director.py' 'snake_termux/director.html' 'snake_termux/client.py' 'snake_termux/local_social.py' 'snake_termux/performance.py' 'snake_termux/studio_audio.py')
 cleanup_repair() {
   if [[ "$repair_started" == 1 && "$repair_complete" != 1 ]]; then
     for relative in "${repair_files[@]}"; do
@@ -236,6 +236,7 @@ def native_command(godot: Path, pack: Path, args: list[str], *, workdir: Path, r
         if value == '--screen':
             args[index + 1] = '0'
     defaults = ['--main-pack', str(pack), '--path', str(workdir), '--rendering-method', renderer]
+    if renderer == 'mobile': defaults.extend(['--rendering-driver', 'vulkan'])
     if '--headless' not in args:
         if '--display-driver' not in args:
             defaults += ['--display-driver', 'x11']
@@ -270,7 +271,12 @@ class NativeGame:
         self.device_report = {}
         self.observed_renderer = None
         self.lock = threading.RLock()
-        self.renderer = os.environ.get('SNAKE_RENDERER', 'gl_compatibility')
+        try:
+            from .performance import renderer_settings
+            configured = renderer_settings(self.state_dir)
+        except ImportError:
+            configured = 'gl_compatibility'
+        self.renderer = os.environ.get('SNAKE_RENDERER') or configured
         native_command(self.godot, self.pack, [], workdir=self.state_dir, renderer=self.renderer)
 
     def prepare_wrapper(self) -> Path:
@@ -308,7 +314,7 @@ class NativeGame:
                     startup = stream.read(8192).decode('utf-8', errors='replace')
                     stream.seek(max(self.log_offset, self.log_path.stat().st_size - 16384))
                     output = startup + '\n' + stream.read(16384).decode('utf-8', errors='replace')
-                match = re.search(r'Using Device:\s*(.+)', startup)
+                match = re.search(r'Using Device(?:\s*#\d+)?:\s*(.+)', startup)
                 if match: self.observed_renderer = match[1].strip()
                 fps_matches = re.findall(r'(?:Project\s+)?FPS:\s*(\d+(?:\.\d+)?)', output, flags=re.I)
             else:
@@ -361,6 +367,14 @@ class NativeGame:
             env['COBRINHA_LIVE_SERVER_URL'] = f'ws://127.0.0.1:{self.port}/ws/godot'
             env['COBRINHA_TERRAIN_EDITOR_FILE'] = str(self.project / 'server/private/cobrinha_terrain_editor.json')
             graphics = self.device_report.get('graphics', {})
+            try:
+                from .performance import renderer_settings
+                self.renderer = os.environ.get('SNAKE_RENDERER') or renderer_settings(self.state_dir)
+            except ImportError:
+                pass
+            if self.renderer == 'mobile' and env.get('PREFIX', '').startswith('/data/') and not graphics.get('hardware_verified'):
+                self.renderer = 'gl_compatibility'
+                graphics['renderer_fallback'] = 'Vulkan não iniciado: a GPU do aparelho não foi confirmada. OpenGL preservado.'
             full = self.device_report.get('display', {}).get('fullscreen', False)
             args = ['--fullscreen' if full else '--windowed', '--resolution', graphics.get('resolution', '720x1280')]
             if graphics.get('max_fps'):
@@ -410,6 +424,18 @@ def attach(binding, app, native: NativeGame, *, auto_start: bool = False):
     binding.replace_aliases(old_executable, wrapper)
     binding.replace_aliases(old_dir, wrapper.parent)
     app.state.snake_native_game = native
+    try:
+        from .performance import install as install_performance
+    except ImportError:
+        pass
+    else:
+        install_performance(app, native)
+    try:
+        from .studio_audio import install as install_studio_audio
+    except ImportError:
+        pass
+    else:
+        install_studio_audio(app, native)
 
     # Optional for older, version-only repairs. Music is installed before the
     # game's initial websocket handshake, only when its library is empty.
@@ -1127,7 +1153,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
   fetch('/termux/game').then(async response => {
     if (!response.ok) return;
     const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.style.marginTop = '14px';
-    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.3.3';
+    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.3.4';
     const message = document.createElement('p'); message.id = 'termuxGameStatus';
     const deviceMessage = document.createElement('p'); deviceMessage.id = 'termuxDeviceStatus';
     const start = document.createElement('button'); start.type = 'button'; start.textContent = 'Abrir jogo original';
@@ -1249,7 +1275,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
     musicBox.append(musicTitle, musicHelp, musicLabel, musicFile, sendMusic, musicMode, musicSelect, musicTracks, playMusic, nextMusic, pauseMusic, musicVolumeLabel, musicVolume, musicVolumeValue, musicMessage);
     const profileLabel = document.createElement('label'); profileLabel.htmlFor = 'termuxGraphicsProfile'; profileLabel.textContent = 'Qualidade da imagem · tela limpa em retrato';
     const profile = document.createElement('select'); profile.id = 'termuxGraphicsProfile';
-    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536'], ['stable', 'Estável · 640 × 1136 · limite 30 FPS'], ['clear', '720p · limite 45 FPS'], ['quality30', 'Mais nítido · 864 × 1536 · limite 30 FPS']]) {
+    for (const [value, text] of [['gt3_live', 'GT3 LIVE · 720 × 1280 · limite 30 FPS'], ['gt3_detail', 'GT3 nítido · 864 × 1536 · limite 30 FPS'], ['gt3_high', 'GT3 alta nitidez · 1072 × 1920 · limite 30 FPS'], ['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536'], ['stable', 'Estável · 640 × 1136 · limite 30 FPS'], ['clear', '720p · limite 45 FPS'], ['quality30', 'Mais nítido · 864 × 1536 · limite 30 FPS']]) {
       const option = document.createElement('option'); option.value = value; option.textContent = text; profile.append(option);
     }
     const saveProfile = document.createElement('button'); saveProfile.type = 'button'; saveProfile.id = 'termuxSaveProfile'; saveProfile.textContent = 'Salvar qualidade';
@@ -1304,6 +1330,32 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DISPLAY_V025_FILE_4'
     const directorNote=document.createElement('small');directorNote.textContent='Contador fora do jogo. Captura da tela inteira do celular pode mostrar o navegador; captura somente do jogo é necessária para separá-lo.';
     loadBox.append(loadTitle,loadToggleLabel,loadSave,loadMessage,nameLabel,nameRaw,namePreview,userLabel,nameUser,aliasLabel,nameAlias,aliasSave,nameMessage,director,directorNote);
     card.append(loadBox);
+    const perfBox=document.createElement('fieldset');perfBox.hidden=true;
+    const perfTitle=document.createElement('legend');perfTitle.textContent='GT3 · recursos e diagnóstico';
+    const perfNote=document.createElement('p');perfNote.textContent='RAM livre não mede o gargalo. O diagnóstico mostra FPS, memória e CPU dos processos próprios. 100% de CPU corresponde a um núcleo.';
+    const threadLabel=document.createElement('label');threadLabel.htmlFor='termuxTextThreads';threadLabel.textContent='Threads da IA local · aplica após reiniciar o iniciador';
+    const threads=document.createElement('select');threads.id='termuxTextThreads';for(const n of [1,2,3,4]){const o=document.createElement('option');o.value=n;o.textContent=n+' thread(s)';threads.append(o);}
+    const niceLabel=document.createElement('label');const nice=document.createElement('input');nice.type='checkbox';nice.style.width='auto';nice.id='termuxTextNice';niceLabel.append(nice,' Dar prioridade de CPU ao jogo e áudio quando concorrem com Qwen');
+    const perfSave=document.createElement('button');perfSave.type='button';perfSave.id='termuxPerfSave';perfSave.textContent='Salvar uso da IA';
+    const perfRead=document.createElement('button');perfRead.type='button';perfRead.id='termuxPerfRead';perfRead.textContent='Iniciar medição de 15 segundos';
+    const perfMessage=document.createElement('p');perfMessage.id='termuxPerfStatus';perfMessage.style.whiteSpace='pre-wrap';
+    async function perfRequest(path,payload){const r=await fetch(path,payload?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}:{});const b=await r.json();if(!r.ok)throw new Error(b.detail||'Diagnóstico indisponível.');return b;}
+    fetch('/termux/performance/settings').then(async r=>{if(!r.ok)return;const b=await r.json();threads.value=b.settings.text_threads;nice.checked=b.settings.text_nice>0;perfBox.hidden=false;}).catch(()=>{});
+    perfSave.onclick=async()=>{try{await perfRequest('/termux/performance/settings',{text_threads:Number(threads.value),text_batch_threads:Number(threads.value),text_nice:nice.checked?5:0});perfMessage.textContent='Salvo. Reinicie o iniciador para aplicar aos serviços que ele cria. Modelos, voz e serviços externos foram preservados.';}catch(e){perfMessage.textContent=e.message;}};
+    let perfSamples=[];
+    const perfDownload=document.createElement('button');perfDownload.type='button';perfDownload.id='termuxPerfDownload';perfDownload.textContent='Baixar diagnóstico GT3';perfDownload.disabled=true;
+    perfDownload.onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify({scope:'Medição durante uso; não comprova desempenho em outras cenas. CPU 100% = um núcleo. GPU = todo o aparelho.',samples:perfSamples},null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='COFRA_GT3_DIAGNOSTICO.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+    function showPerf(report){perfSamples=report.samples||[];const b=perfSamples.at(-1);perfDownload.disabled=!b;if(!b)return;perfMessage.textContent=(report.running?'Medindo…':'Medição encerrada.')+' '+perfSamples.length+'/6 · pode deixar o jogo visível no Termux:X11.\nFPS: '+(b.render.fps??'aguardando')+' · GPU: '+(b.render.observed_renderer||'aguardando')+'\n'+b.processes.map(p=>p.label+': CPU '+(p.cpu_percent_one_core??'primeira amostra')+'% · RAM '+p.rss_mb+' MB · '+p.threads+' threads · CPUs '+p.allowed_cpus).join('\n')+'\nMemória disponível: '+(b.system.available_memory_mb??'indisponível')+' MB'+(report.error?'\n'+report.error:'');}
+    perfRead.onclick=async()=>{perfRead.disabled=true;try{let report=await perfRequest('/termux/performance/record',{});perfMessage.textContent='Medição iniciada no servidor. Volte ao jogo durante 15 segundos e retorne ao painel.';while(report.running){await new Promise(resolve=>setTimeout(resolve,3000));report=await perfRequest('/termux/performance/record');showPerf(report);}}catch(e){perfMessage.textContent=e.message;}finally{perfRead.disabled=false;}};
+    fetch('/termux/performance/record').then(r=>r.json()).then(showPerf).catch(()=>{});
+    const engineSelect=document.createElement('select');engineSelect.id='termuxEngine';
+    for(const [value,label] of [['gl_compatibility','OpenGL / Zink · já confirmado no GT3'],['mobile','Vulkan direto / Mobile · TESTE no aparelho']]){const option=document.createElement('option');option.value=value;option.textContent=label;engineSelect.append(option);}
+    const engineSave=document.createElement('button');engineSave.type='button';engineSave.id='termuxEngineSave';engineSave.textContent='Salvar motor gráfico para a próxima abertura';
+    const engineNote=document.createElement('p');engineNote.textContent='Vulkan direto carregou o jogo original no teste Linux. Ganho, imagem e estabilidade no GT3 ainda precisam de teste. Se piorar ou fechar, volte para OpenGL e abra novamente. Não é aplicado automaticamente.';
+    fetch('/termux/game/engine').then(r=>r.json()).then(b=>{engineSelect.value=b.configured;}).catch(()=>{});
+    engineSave.onclick=async()=>{try{await perfRequest('/termux/game/engine',{renderer:engineSelect.value});perfMessage.textContent='Motor salvo. Feche e abra somente a janela do jogo para aplicar. A mudança é reversível pelo mesmo seletor.';}catch(e){perfMessage.textContent=e.message;}};
+    const studioHelp=document.createElement('p');studioHelp.textContent='Cofra Studio: rode o jogo aqui e transmita pelo aplicativo Android. A ponte de áudio envia somente o mixer do jogo para o app local; não altera o som que você ouve.';
+    perfBox.append(perfTitle,perfNote,threadLabel,threads,niceLabel,perfSave,perfRead,perfMessage,perfDownload,engineSelect,engineSave,engineNote,studioHelp);card.append(perfBox);
     status.closest('section').before(card);
     await refresh(); setInterval(() => refresh().catch(() => {}), 5000);
   }).catch(() => {});
@@ -1348,6 +1400,7 @@ from .device_runtime import atomic_json
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILES = {'balanced': ('720x1280', 60), 'light': ('640x1136', 60), 'sharp': ('864x1536', 60), 'live': ('640x1136', 45), 'stable': ('640x1136', 30), 'clear': ('720x1280', 45), 'quality30': ('864x1536', 30)}
+PROFILES.update(gt3_live=('720x1280', 30), gt3_detail=('864x1536', 30), gt3_high=('1072x1920', 30))
 TRACK = ROOT / 'assets/music/Neon Garden.ogg'
 # Filled from the reproducibly generated, original audio in tools/create_music.py.
 TRACK_SHA256 = '482b4e4afbce75d1b810f1b981a0529ef4fb9fe211d6b8656e5e78530ac243f7'
@@ -10886,12 +10939,14 @@ PROFILES = {
 }
 
 
-def load_voice(model):
+def load_voice(model, threads=2):
     import onnxruntime as ort
     from piper import PiperVoice
     from piper.config import PiperConfig
     options = ort.SessionOptions()
-    options.intra_op_num_threads = 2
+    if type(threads) is not int or threads not in (1, 2):
+        raise ValueError('Use uma ou duas threads de voz.')
+    options.intra_op_num_threads = threads
     options.inter_op_num_threads = 1
     options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
     # Spinning workers compete with Godot/Qwen even between short requests.
@@ -10908,8 +10963,9 @@ def main():
     parser.add_argument('--model', required=True)
     parser.add_argument('--port', type=int, default=8083)
     parser.add_argument('--cache-dir', required=True)
+    parser.add_argument('--threads', type=int, choices=(1, 2), default=2)
     args = parser.parse_args()
-    voice = load_voice(args.model)
+    voice = load_voice(args.model, args.threads)
     lock = threading.Lock()
     cache = Path(args.cache_dir)
     cache.mkdir(parents=True, exist_ok=True)
@@ -10929,8 +10985,8 @@ def main():
         def do_GET(self):
             if self.path == '/health':
                 self.send_json(200, {'ready': True, 'model': 'Piper-pt_BR-local',
-                    'busy': lock.locked(), 'inference_threads': 2, 'worker_spinning': False,
-                    'prosody_profiles': list(PROFILES), 'worker_version': '0.3.3'})
+                    'busy': lock.locked(), 'inference_threads': args.threads, 'worker_spinning': False,
+                    'prosody_profiles': list(PROFILES), 'worker_version': '0.3.4'})
             else:
                 self.send_json(404, {'error': 'not found'})
 
@@ -10979,7 +11035,7 @@ def main():
             except Exception as exc:
                 self.send_json(500, {'error': type(exc).__name__})
 
-    print('Voz Piper local pronta em 127.0.0.1:' + str(args.port) + ' · CPU limitada a 2 threads', flush=True)
+    print('Voz Piper local pronta em 127.0.0.1:' + str(args.port) + ' · CPU limitada a ' + str(args.threads) + ' threads', flush=True)
     ThreadingHTTPServer(('127.0.0.1', args.port), Handler).serve_forever()
 
 
@@ -11132,6 +11188,7 @@ import argparse
 import json
 import os
 import signal
+import shutil
 import socket
 import subprocess
 import threading
@@ -11170,6 +11227,11 @@ def main():
     parser.add_argument('--state', type=Path, required=True)
     parser.add_argument('--root', type=Path, default=Path(os.environ.get('BEN10_LOCAL_ROOT', str(Path.home() / '.local/share/ben10-local-ai'))))
     args = parser.parse_args()
+    try:
+        from .performance import inference_settings
+        resources = inference_settings(args.state)
+    except ImportError:
+        resources = {'text_threads': 3, 'text_batch_threads': 3, 'voice_threads': 2, 'text_nice': 0}
     args.state.mkdir(parents=True, exist_ok=True)
     stopping = threading.Event()
     for signum in (signal.SIGTERM, signal.SIGINT):
@@ -11244,7 +11306,9 @@ def main():
             if occupied(text_port):
                 raise RuntimeError('A porta do Qwen está ocupada por outro serviço. Nenhum processo foi encerrado.')
             record(state='loading-qwen')
-            command = [str(binary), '--model', str(model), '--alias', 'ben-classico-local', '--host', '127.0.0.1', '--port', str(text_port), '--ctx-size', '2048', '--threads', '3', '--threads-batch', '3', '--batch-size', '128', '--ubatch-size', '128', '--parallel', '1', '--threads-http', '2', '--no-webui', '--reasoning', 'off']
+            command = [str(binary), '--model', str(model), '--alias', 'ben-classico-local', '--host', '127.0.0.1', '--port', str(text_port), '--ctx-size', '2048', '--threads', str(resources['text_threads']), '--threads-batch', str(resources['text_batch_threads']), '--batch-size', '128', '--ubatch-size', '128', '--parallel', '1', '--threads-http', '2', '--no-webui', '--reasoning', 'off']
+            if resources['text_nice'] and shutil.which('nice'):
+                command = [shutil.which('nice'), '-n', str(resources['text_nice']), *command]
             ready(text_client.health, launch(command, 'qwen.log'), 'Qwen local')
         if not voice_ok:
             # A still-running cloned voice may own an old port. Leave it alone.
@@ -11261,7 +11325,7 @@ def main():
                 record(state='loading-piper')
                 relative = voice.relative_to(args.root.resolve()).as_posix()
                 worker_dir = Path(__file__).resolve().parent
-                command = ['proot-distro', 'login', '--bind', str(args.root.resolve()) + ':/snake-local', '--bind', str(worker_dir) + ':/snake-worker', 'ben10-ai', '--', '/opt/ben10-voice/bin/python', '/snake-worker/piper_worker.py', '--model', '/snake-local/' + relative, '--cache-dir', '/snake-local/snake-piper-cache', '--port', str(voice_port)]
+                command = ['proot-distro', 'login', '--bind', str(args.root.resolve()) + ':/snake-local', '--bind', str(worker_dir) + ':/snake-worker', 'ben10-ai', '--', '/opt/ben10-voice/bin/python', '/snake-worker/piper_worker.py', '--model', '/snake-local/' + relative, '--cache-dir', '/snake-local/snake-piper-cache', '--port', str(voice_port), '--threads', str(resources['voice_threads'])]
                 ready(PiperClient(voice_port).health, launch(command, 'piper.log'), 'Piper local')
         # Never write a stale initial provider after Qwen has finished loading.
         # The operator may already have selected Gemini/OpenAI in the panel.
@@ -11269,7 +11333,7 @@ def main():
             current_voice = api('/termux/voice')
             if current_voice['provider'] == 'piper-local' and current_voice['port'] == voice_settings['port']:
                 api('/termux/voice', {'provider': 'piper-local', 'port': voice_port})
-        record(state='ready', text_enabled=text_enabled, text_port=text_port, voice_port=voice_port, owned_pids=[p.pid for p in children])
+        record(state='ready', text_enabled=text_enabled, text_port=text_port, voice_port=voice_port, owned_pids=[p.pid for p in children], resource_settings=resources)
         print('IA e voz configuradas. Serviços locais são iniciados somente quando selecionados.', flush=True)
         while not stopping.wait(1):
             for child in children:
@@ -12779,6 +12843,364 @@ if __name__ == '__main__':
     parser.add_argument('--select-local', type=Path, required=True)
     print('Respostas selecionadas: Qwen local. Voz, chaves e porta preservadas. Projeto:', select_local(parser.parse_args().select_local))
 SNAKE_DISPLAY_V025_FILE_24
+cat >"$repair_stage/snake_termux/performance.py" <<'SNAKE_DISPLAY_V025_FILE_25'
+"""Read-only process measurements and bounded settings for owned AI children."""
+from __future__ import annotations
+
+import json
+import os
+import threading
+import time
+from pathlib import Path
+
+DEFAULTS = {'text_threads': 3, 'text_batch_threads': 3, 'voice_threads': 2, 'text_nice': 0}
+
+
+def inference_settings(state):
+    try:
+        data = json.loads((Path(state) / 'performance-config.json').read_text())
+    except (OSError, ValueError):
+        data = {}
+    if not isinstance(data, dict): data = {}
+    result = dict(DEFAULTS)
+    for key, maximum in (('text_threads', 4), ('text_batch_threads', 4), ('voice_threads', 2), ('text_nice', 10)):
+        value = data.get(key)
+        if type(value) is int and (0 if key == 'text_nice' else 1) <= value <= maximum:
+            result[key] = value
+    return result
+
+
+def proc_stat(path):
+    text = Path(path).read_text()
+    end = text.rindex(')'); fields = text[end + 2:].split()
+    return {'ticks': int(fields[11]) + int(fields[12]), 'rss_pages': int(fields[21]),
+            'threads': int(fields[17]), 'major_faults': int(fields[9]),
+            'ppid': int(fields[1]), 'start_ticks': int(fields[19]), 'name': text[text.index('(') + 1:end][:40]}
+
+
+class Sampler:
+    def __init__(self, proc=Path('/proc'), sysfs=Path('/sys')):
+        self.proc, self.sysfs = Path(proc), Path(sysfs)
+        self.previous = {}
+        self.lock = threading.RLock()
+        self.hz = os.sysconf('SC_CLK_TCK')
+        self.pages = os.sysconf('SC_PAGE_SIZE')
+
+    def process(self, pid, label, now):
+        root = self.proc / str(pid)
+        try:
+            # Measure only same-UID processes, never arbitrary requested PIDs.
+            if root.stat().st_uid != os.getuid(): return None
+            status = (root / 'status').read_text()
+            info = proc_stat(root / 'stat')
+            previous = self.previous.get(pid)
+            if previous and previous.get('start_ticks') != info['start_ticks']: previous = None
+            allowed = next((line.split(':', 1)[1].strip() for line in status.splitlines() if line.startswith('Cpus_allowed_list:')), None)
+            elapsed = now - previous['at'] if previous else 0
+            cpu = max(0, (info['ticks'] - previous['ticks']) / self.hz / elapsed * 100) if previous and elapsed > .1 else None
+            faults = max(0, info['major_faults'] - previous['major_faults']) if previous else None
+            tasks, hot = {}, []
+            for path in sorted((root / 'task').glob('*/stat'))[:128]:
+                try:
+                    tid = int(path.parent.name); value = proc_stat(path); tasks[tid] = value['ticks']
+                    before = previous.get('tasks', {}).get(tid) if previous else None
+                    if before is not None and elapsed > .1:
+                        hot.append({'name': value['name'], 'cpu_percent_one_core': round(max(0, value['ticks'] - before) / self.hz / elapsed * 100, 1)})
+                except (OSError, ValueError, IndexError): pass
+            self.previous[pid] = {'at': now, 'start_ticks': info['start_ticks'], 'ticks': info['ticks'], 'major_faults': info['major_faults'], 'tasks': tasks}
+            return {'label': label, 'pid': pid, 'cpu_percent_one_core': round(cpu, 1) if cpu is not None else None,
+                    'rss_mb': round(info['rss_pages'] * self.pages / 1048576, 1), 'threads': info['threads'],
+                    'allowed_cpus': allowed, 'major_faults_delta': faults,
+                    'hot_threads': sorted(hot, key=lambda x: x['cpu_percent_one_core'], reverse=True)[:3]}
+        except (OSError, ValueError, IndexError):
+            return None
+
+    def system(self):
+        result = {'available_memory_mb': None, 'gpu_busy_percent': None, 'gpu_busy_scope': 'system-wide, not game-only', 'temperatures': []}
+        try:
+            for line in (self.proc / 'meminfo').read_text().splitlines():
+                if line.startswith('MemAvailable:'): result['available_memory_mb'] = round(int(line.split()[1]) / 1024)
+        except (OSError, ValueError, IndexError): pass
+        try:
+            values = (self.sysfs / 'class/kgsl/kgsl-3d0/gpubusy').read_text().split()
+            busy, total = int(values[0]), int(values[1])
+            if total > 0 and 0 <= busy <= total: result['gpu_busy_percent'] = round(busy / total * 100, 1)
+        except (OSError, ValueError, IndexError): pass
+        for root in sorted((self.sysfs / 'class/thermal').glob('thermal_zone*'))[:80]:
+            try:
+                name = (root / 'type').read_text().strip()
+                if not any(x in name.lower() for x in ('cpu', 'gpu', 'soc', 'battery', 'skin')): continue
+                value = float((root / 'temp').read_text())
+                if value > 1000: value /= 1000
+                if 10 <= value <= 120: result['temperatures'].append({'sensor': name[:60], 'celsius': round(value, 1)})
+            except (OSError, ValueError): pass
+        return result
+
+    def sample(self, state, game):
+        with self.lock:
+            now = time.monotonic()
+            state = Path(state); status = game.status()
+            pids = [(status.get('pid'), 'jogo')]
+            try:
+                data = json.loads((state / 'ai-services.json').read_text())
+                for pid in data.get('owned_pids', []):
+                    if type(pid) is int and pid > 0:
+                        label = 'IA/voz própria'
+                        try:
+                            comm = (self.proc / str(pid) / 'comm').read_text().lower()
+                            label = 'Qwen próprio' if 'llama' in comm else label
+                        except OSError: pass
+                        pids.append((pid, label))
+                        # proot can be a launcher; include its actual owned workers.
+                        descendants = [pid]; visited = {pid}
+                        while descendants and len(visited) < 32:
+                            parent = descendants.pop(0)
+                            try:
+                                children = (self.proc / str(parent) / 'task' / str(parent) / 'children').read_text().split()
+                            except OSError:
+                                children = []
+                                for candidate in list(self.proc.glob('[0-9]*'))[:1024]:
+                                    try:
+                                        if candidate.stat().st_uid == os.getuid() and proc_stat(candidate / 'stat')['ppid'] == parent: children.append(candidate.name)
+                                    except (OSError, ValueError, IndexError): pass
+                            for child in children[:32]:
+                                if not child.isdigit(): continue
+                                child = int(child)
+                                if child in visited: continue
+                                visited.add(child); descendants.append(child)
+                                pids.append((child, label + ' / processo filho'))
+            except (OSError, ValueError, AttributeError): pass
+            values = []
+            seen = set()
+            for pid, label in pids:
+                if type(pid) is int and pid > 0 and pid not in seen:
+                    seen.add(pid); value = self.process(pid, label, now)
+                    if value: values.append(value)
+            self.previous = {pid: v for pid, v in self.previous.items() if pid in seen}
+            return {'measured_at': time.time(), 'processes': values, 'system': self.system(),
+                    'render': status.get('performance', {}), 'audio': status.get('audio_runtime', {}),
+                    'note': 'CPU 100% significa um núcleo ocupado. Valores ausentes indicam dado não permitido/disponível. GPU é do sistema inteiro.'}
+
+
+class Recorder:
+    """One bounded server-side recording continues when Chrome is backgrounded."""
+    def __init__(self, sampler, state, native, interval=3, count=6):
+        self.sampler, self.state, self.native = sampler, state, native
+        self.interval, self.count = interval, count
+        self.stop_event=threading.Event();self.lock=threading.RLock()
+        self.thread=None;self.report={'running':False,'samples':[]}
+
+    def status(self):
+        with self.lock:
+            return {**self.report,'samples':list(self.report['samples'])}
+
+    def start(self):
+        with self.lock:
+            if self.thread and self.thread.is_alive(): return self.status()
+            self.stop_event.clear();self.report={'running':True,'samples':[],'started_at':time.time()}
+            def run():
+                try:
+                    for index in range(self.count):
+                        if self.stop_event.is_set():break
+                        value=self.sampler.sample(self.state,self.native)
+                        with self.lock:self.report['samples'].append(value)
+                        if index<self.count-1 and self.stop_event.wait(self.interval):break
+                except Exception:
+                    with self.lock:self.report['error']='Leitura de desempenho interrompida; o jogo permanece independente.'
+                finally:
+                    with self.lock:self.report['running']=False;self.report['finished_at']=time.time()
+            self.thread=threading.Thread(target=run,name='snake-metrics',daemon=True);self.thread.start()
+            return self.status()
+
+    def stop(self):
+        self.stop_event.set()
+        if self.thread:self.thread.join(timeout=2)
+
+
+def install(app, native):
+    from fastapi import HTTPException
+    from .device_runtime import atomic_json
+    sampler = Sampler(); state = native.state_dir
+    recorder=Recorder(sampler,state,native)
+
+    @app.post('/termux/performance/record')
+    def start_recording(): return recorder.start()
+
+    @app.get('/termux/performance/record')
+    def read_recording(): return recorder.status()
+
+    app.add_event_handler('shutdown',recorder.stop)
+
+    @app.get('/termux/performance')
+    def metrics():
+        return sampler.sample(state, native)
+
+    @app.get('/termux/performance/settings')
+    def settings():
+        return {'settings': inference_settings(state), 'restart_required': True,
+                'scope': 'Apenas os serviços Qwen/Piper iniciados por este complemento. Serviços externos permanecem preservados.'}
+
+    @app.get('/termux/game/engine')
+    def engine():
+        return {'configured': renderer_settings(state), 'active': native.renderer,
+                'restart_required': True, 'direct_vulkan_device_validation': 'pending',
+                'note': 'OpenGL/Zink é a opção já confirmada no GT3. Vulkan Mobile é um teste reversível; não há ganho comprovado no aparelho.'}
+
+    @app.post('/termux/game/engine')
+    def save_engine(payload: dict):
+        if set(payload) != {'renderer'} or payload['renderer'] not in ('gl_compatibility','mobile'):
+            raise HTTPException(status_code=400, detail='Motor gráfico inválido.')
+        path=state/'render-config.json'
+        if path.exists() and not (state/'render-config-before-v034.json').exists():
+            (state/'render-config-before-v034.json').write_bytes(path.read_bytes())
+        atomic_json(path,payload)
+        return engine()
+
+    @app.post('/termux/performance/settings')
+    def save(payload: dict):
+        if not payload or set(payload) - set(DEFAULTS):
+            raise HTTPException(status_code=400, detail='Opções de recursos inválidas.')
+        for key, value in payload.items():
+            low = 0 if key == 'text_nice' else 1
+            high = 10 if key == 'text_nice' else (2 if key == 'voice_threads' else 4)
+            if type(value) is not int or not low <= value <= high:
+                raise HTTPException(status_code=400, detail='Número de threads/prioridade fora dos limites.')
+        current = inference_settings(state); current.update(payload)
+        path = state / 'performance-config.json'
+        if path.exists():
+            backup = state / 'performance-config-before-v034.json'
+            if not backup.exists(): backup.write_bytes(path.read_bytes())
+        atomic_json(path, current)
+        return settings()
+
+
+def renderer_settings(state):
+    try:
+        data=json.loads((Path(state)/'render-config.json').read_text())
+        return data['renderer'] if data.get('renderer') in ('gl_compatibility','mobile') else 'gl_compatibility'
+    except (OSError, ValueError, AttributeError, KeyError):
+        return 'gl_compatibility'
+SNAKE_DISPLAY_V025_FILE_25
+cat >"$repair_stage/snake_termux/studio_audio.py" <<'SNAKE_DISPLAY_V025_FILE_26'
+"""Explicit, loopback-only PCM relay from this game's existing PulseAudio mixer."""
+
+import asyncio
+import secrets
+import shutil
+import subprocess
+import threading
+import time
+import anyio
+
+
+def install(app, native):
+    from fastapi import HTTPException, Request
+    from fastapi.responses import StreamingResponse
+    from starlette.concurrency import run_in_threadpool
+    guard = threading.Lock()
+    state = {'tokens': {}, 'process': None, 'active': False, 'last_error': ''}
+
+    def local(request):
+        host = request.client.host if request.client else ''
+        if host not in ('127.0.0.1', '::1', 'localhost', 'testclient'):
+            raise HTTPException(status_code=403, detail='A ponte de áudio é somente local.')
+        origin = request.headers.get('origin', '')
+        if origin and origin not in ('http://127.0.0.1:9393', 'http://localhost:9393'):
+            raise HTTPException(status_code=403, detail='Origem não autorizada para áudio.')
+
+    def source():
+        if not native.status().get('running') or not native.audio_env:
+            raise HTTPException(status_code=409, detail='Abra o jogo com áudio antes de usar a ponte.')
+        env = dict(native.audio_env)
+        # Do not access the shared server if the game was opened with Dummy.
+        if native.audio_driver == 'Dummy' or not env.get('PULSE_SERVER'):
+            raise HTTPException(status_code=409, detail='O jogo não tem uma saída PulseAudio própria pronta.')
+        binary = shutil.which('parec', path=env.get('PATH'))
+        control = shutil.which('pactl', path=env.get('PATH'))
+        if not binary or not control:
+            raise HTTPException(status_code=503, detail='Falta parec/pactl do PulseAudio no Termux.')
+        sink = env.get('PULSE_SINK')
+        if not sink:
+            try:
+                result = subprocess.run([control, 'get-default-sink'], env=env, capture_output=True, text=True, timeout=2)
+                sink = result.stdout.strip() if result.returncode == 0 else ''
+            except (OSError, subprocess.TimeoutExpired):
+                sink = ''
+        if not sink or len(sink) > 240 or any(c.isspace() for c in sink):
+            raise HTTPException(status_code=503, detail='A saída do jogo não respondeu. Confira o áudio no painel.')
+        return binary, sink + '.monitor', env
+
+    def stop(process):
+        if process and process.poll() is None:
+            process.terminate()
+            try: process.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                process.kill(); process.wait(timeout=2)
+
+    @app.post('/termux/studio/audio/authorize')
+    async def authorize(request: Request):
+        local(request)
+        await run_in_threadpool(source)
+        with guard:
+            now = time.monotonic()
+            state['tokens'] = {key: expiry for key, expiry in state['tokens'].items() if expiry > now}
+            if state['active']:
+                raise HTTPException(status_code=409, detail='A ponte já está sendo usada por uma captura.')
+            if len(state['tokens']) >= 4:
+                raise HTTPException(status_code=429, detail='Aguarde expirar a autorização anterior.')
+            token = secrets.token_hex(32)
+            state['tokens'][token] = now + 30
+        return {'token': token, 'expires_in': 30, 'sample_rate': 48000, 'channels': 2,
+                'format': 's16le', 'source': 'Somente o mixer deste jogo; não captura outros aplicativos.'}
+
+    @app.get('/termux/studio/audio/status')
+    def status():
+        with guard:
+            return {'active': state['active'], 'last_error': state['last_error'], 'scope': 'mixer do jogo',
+                    'sample_rate': 48000, 'channels': 2, 'format': 's16le'}
+
+    @app.get('/termux/studio/audio/pcm')
+    async def pcm(request: Request):
+        local(request)
+        value = request.headers.get('authorization', '')
+        token = value[7:] if value.startswith('Bearer ') else ''
+        with guard:
+            expiry = state['tokens'].pop(token, 0)
+            if not token or expiry <= time.monotonic():
+                raise HTTPException(status_code=401, detail='Autorize uma nova sessão de áudio no aplicativo.')
+            if state['active']:
+                raise HTTPException(status_code=409, detail='A ponte já está ocupada.')
+            state['active'] = True
+        process = None
+        try:
+            binary, monitor, env = await run_in_threadpool(source)
+            process = subprocess.Popen([binary, '--raw', '--device=' + monitor, '--format=s16le', '--rate=48000', '--channels=2'],
+                env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=0)
+            with guard: state.update(process=process, last_error='')
+        except Exception:
+            with guard: state.update(active=False, process=None, last_error='Falha ao abrir o monitor de áudio do jogo.')
+            if process: await run_in_threadpool(stop, process)
+            raise
+
+        async def stream():
+            try:
+                while process.poll() is None:
+                    block = await asyncio.to_thread(process.stdout.read, 4096)
+                    if not block: break
+                    yield block
+            finally:
+                with anyio.CancelScope(shield=True):
+                    await asyncio.to_thread(stop, process)
+                    process.stdout.close()
+                    with guard: state.update(process=None, active=False)
+        return StreamingResponse(stream(), media_type='application/octet-stream', headers={
+            'Cache-Control': 'no-store', 'X-Cofra-PCM': 's16le;rate=48000;channels=2', 'X-Content-Type-Options': 'nosniff'})
+
+    @app.on_event('shutdown')
+    def shutdown():
+        with guard: process = state['process']
+        stop(process)
+SNAKE_DISPLAY_V025_FILE_26
 "$repair_python" - "$repair_stage" <<'SNAKE_CHECK_FILES'
 import ast, pathlib, sys
 for path in pathlib.Path(sys.argv[1]).rglob("*.py"):

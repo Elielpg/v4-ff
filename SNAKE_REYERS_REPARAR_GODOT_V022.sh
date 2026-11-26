@@ -211,6 +211,7 @@ def native_command(godot: Path, pack: Path, args: list[str], *, workdir: Path, r
         if value == '--screen':
             args[index + 1] = '0'
     defaults = ['--main-pack', str(pack), '--path', str(workdir), '--rendering-method', renderer]
+    if renderer == 'mobile': defaults.extend(['--rendering-driver', 'vulkan'])
     if '--headless' not in args:
         if '--display-driver' not in args:
             defaults += ['--display-driver', 'x11']
@@ -245,7 +246,12 @@ class NativeGame:
         self.device_report = {}
         self.observed_renderer = None
         self.lock = threading.RLock()
-        self.renderer = os.environ.get('SNAKE_RENDERER', 'gl_compatibility')
+        try:
+            from .performance import renderer_settings
+            configured = renderer_settings(self.state_dir)
+        except ImportError:
+            configured = 'gl_compatibility'
+        self.renderer = os.environ.get('SNAKE_RENDERER') or configured
         native_command(self.godot, self.pack, [], workdir=self.state_dir, renderer=self.renderer)
 
     def prepare_wrapper(self) -> Path:
@@ -283,7 +289,7 @@ class NativeGame:
                     startup = stream.read(8192).decode('utf-8', errors='replace')
                     stream.seek(max(self.log_offset, self.log_path.stat().st_size - 16384))
                     output = startup + '\n' + stream.read(16384).decode('utf-8', errors='replace')
-                match = re.search(r'Using Device:\s*(.+)', startup)
+                match = re.search(r'Using Device(?:\s*#\d+)?:\s*(.+)', startup)
                 if match: self.observed_renderer = match[1].strip()
                 fps_matches = re.findall(r'(?:Project\s+)?FPS:\s*(\d+(?:\.\d+)?)', output, flags=re.I)
             else:
@@ -336,6 +342,14 @@ class NativeGame:
             env['COBRINHA_LIVE_SERVER_URL'] = f'ws://127.0.0.1:{self.port}/ws/godot'
             env['COBRINHA_TERRAIN_EDITOR_FILE'] = str(self.project / 'server/private/cobrinha_terrain_editor.json')
             graphics = self.device_report.get('graphics', {})
+            try:
+                from .performance import renderer_settings
+                self.renderer = os.environ.get('SNAKE_RENDERER') or renderer_settings(self.state_dir)
+            except ImportError:
+                pass
+            if self.renderer == 'mobile' and env.get('PREFIX', '').startswith('/data/') and not graphics.get('hardware_verified'):
+                self.renderer = 'gl_compatibility'
+                graphics['renderer_fallback'] = 'Vulkan não iniciado: a GPU do aparelho não foi confirmada. OpenGL preservado.'
             full = self.device_report.get('display', {}).get('fullscreen', False)
             args = ['--fullscreen' if full else '--windowed', '--resolution', graphics.get('resolution', '720x1280')]
             if graphics.get('max_fps'):
@@ -385,6 +399,18 @@ def attach(binding, app, native: NativeGame, *, auto_start: bool = False):
     binding.replace_aliases(old_executable, wrapper)
     binding.replace_aliases(old_dir, wrapper.parent)
     app.state.snake_native_game = native
+    try:
+        from .performance import install as install_performance
+    except ImportError:
+        pass
+    else:
+        install_performance(app, native)
+    try:
+        from .studio_audio import install as install_studio_audio
+    except ImportError:
+        pass
+    else:
+        install_studio_audio(app, native)
 
     # Optional for older, version-only repairs. Music is installed before the
     # game's initial websocket handshake, only when its library is empty.

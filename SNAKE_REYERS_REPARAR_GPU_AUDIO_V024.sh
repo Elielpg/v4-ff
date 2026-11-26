@@ -236,6 +236,7 @@ def native_command(godot: Path, pack: Path, args: list[str], *, workdir: Path, r
         if value == '--screen':
             args[index + 1] = '0'
     defaults = ['--main-pack', str(pack), '--path', str(workdir), '--rendering-method', renderer]
+    if renderer == 'mobile': defaults.extend(['--rendering-driver', 'vulkan'])
     if '--headless' not in args:
         if '--display-driver' not in args:
             defaults += ['--display-driver', 'x11']
@@ -270,7 +271,12 @@ class NativeGame:
         self.device_report = {}
         self.observed_renderer = None
         self.lock = threading.RLock()
-        self.renderer = os.environ.get('SNAKE_RENDERER', 'gl_compatibility')
+        try:
+            from .performance import renderer_settings
+            configured = renderer_settings(self.state_dir)
+        except ImportError:
+            configured = 'gl_compatibility'
+        self.renderer = os.environ.get('SNAKE_RENDERER') or configured
         native_command(self.godot, self.pack, [], workdir=self.state_dir, renderer=self.renderer)
 
     def prepare_wrapper(self) -> Path:
@@ -308,7 +314,7 @@ class NativeGame:
                     startup = stream.read(8192).decode('utf-8', errors='replace')
                     stream.seek(max(self.log_offset, self.log_path.stat().st_size - 16384))
                     output = startup + '\n' + stream.read(16384).decode('utf-8', errors='replace')
-                match = re.search(r'Using Device:\s*(.+)', startup)
+                match = re.search(r'Using Device(?:\s*#\d+)?:\s*(.+)', startup)
                 if match: self.observed_renderer = match[1].strip()
                 fps_matches = re.findall(r'(?:Project\s+)?FPS:\s*(\d+(?:\.\d+)?)', output, flags=re.I)
             else:
@@ -361,6 +367,14 @@ class NativeGame:
             env['COBRINHA_LIVE_SERVER_URL'] = f'ws://127.0.0.1:{self.port}/ws/godot'
             env['COBRINHA_TERRAIN_EDITOR_FILE'] = str(self.project / 'server/private/cobrinha_terrain_editor.json')
             graphics = self.device_report.get('graphics', {})
+            try:
+                from .performance import renderer_settings
+                self.renderer = os.environ.get('SNAKE_RENDERER') or renderer_settings(self.state_dir)
+            except ImportError:
+                pass
+            if self.renderer == 'mobile' and env.get('PREFIX', '').startswith('/data/') and not graphics.get('hardware_verified'):
+                self.renderer = 'gl_compatibility'
+                graphics['renderer_fallback'] = 'Vulkan não iniciado: a GPU do aparelho não foi confirmada. OpenGL preservado.'
             full = self.device_report.get('display', {}).get('fullscreen', False)
             args = ['--fullscreen' if full else '--windowed', '--resolution', graphics.get('resolution', '720x1280')]
             if graphics.get('max_fps'):
@@ -410,6 +424,18 @@ def attach(binding, app, native: NativeGame, *, auto_start: bool = False):
     binding.replace_aliases(old_executable, wrapper)
     binding.replace_aliases(old_dir, wrapper.parent)
     app.state.snake_native_game = native
+    try:
+        from .performance import install as install_performance
+    except ImportError:
+        pass
+    else:
+        install_performance(app, native)
+    try:
+        from .studio_audio import install as install_studio_audio
+    except ImportError:
+        pass
+    else:
+        install_studio_audio(app, native)
 
     # Optional for older, version-only repairs. Music is installed before the
     # game's initial websocket handshake, only when its library is empty.
@@ -1127,7 +1153,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
   fetch('/termux/game').then(async response => {
     if (!response.ok) return;
     const card = document.createElement('section'); card.className = 'card termux-ai-card'; card.style.marginTop = '14px';
-    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.3.3';
+    const title = document.createElement('h2'); title.textContent = 'Jogo original · Termux 0.3.4';
     const message = document.createElement('p'); message.id = 'termuxGameStatus';
     const deviceMessage = document.createElement('p'); deviceMessage.id = 'termuxDeviceStatus';
     const start = document.createElement('button'); start.type = 'button'; start.textContent = 'Abrir jogo original';
@@ -1249,7 +1275,7 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
     musicBox.append(musicTitle, musicHelp, musicLabel, musicFile, sendMusic, musicMode, musicSelect, musicTracks, playMusic, nextMusic, pauseMusic, musicVolumeLabel, musicVolume, musicVolumeValue, musicMessage);
     const profileLabel = document.createElement('label'); profileLabel.htmlFor = 'termuxGraphicsProfile'; profileLabel.textContent = 'Qualidade da imagem · tela limpa em retrato';
     const profile = document.createElement('select'); profile.id = 'termuxGraphicsProfile';
-    for (const [value, text] of [['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536'], ['stable', 'Estável · 640 × 1136 · limite 30 FPS'], ['clear', '720p · limite 45 FPS'], ['quality30', 'Mais nítido · 864 × 1536 · limite 30 FPS']]) {
+    for (const [value, text] of [['gt3_live', 'GT3 LIVE · 720 × 1280 · limite 30 FPS'], ['gt3_detail', 'GT3 nítido · 864 × 1536 · limite 30 FPS'], ['gt3_high', 'GT3 alta nitidez · 1072 × 1920 · limite 30 FPS'], ['balanced', 'Equilibrado · 720 × 1280'], ['light', 'Leve · 640 × 1136'], ['live', 'Modo LIVE · 640 × 1136 · limite 45 FPS'], ['sharp', 'Mais nítido · 864 × 1536'], ['stable', 'Estável · 640 × 1136 · limite 30 FPS'], ['clear', '720p · limite 45 FPS'], ['quality30', 'Mais nítido · 864 × 1536 · limite 30 FPS']]) {
       const option = document.createElement('option'); option.value = value; option.textContent = text; profile.append(option);
     }
     const saveProfile = document.createElement('button'); saveProfile.type = 'button'; saveProfile.id = 'termuxSaveProfile'; saveProfile.textContent = 'Salvar qualidade';
@@ -1304,6 +1330,32 @@ cat >"$repair_stage/snake_termux/ui.js" <<'SNAKE_DEVICE_V024_FILE_4'
     const directorNote=document.createElement('small');directorNote.textContent='Contador fora do jogo. Captura da tela inteira do celular pode mostrar o navegador; captura somente do jogo é necessária para separá-lo.';
     loadBox.append(loadTitle,loadToggleLabel,loadSave,loadMessage,nameLabel,nameRaw,namePreview,userLabel,nameUser,aliasLabel,nameAlias,aliasSave,nameMessage,director,directorNote);
     card.append(loadBox);
+    const perfBox=document.createElement('fieldset');perfBox.hidden=true;
+    const perfTitle=document.createElement('legend');perfTitle.textContent='GT3 · recursos e diagnóstico';
+    const perfNote=document.createElement('p');perfNote.textContent='RAM livre não mede o gargalo. O diagnóstico mostra FPS, memória e CPU dos processos próprios. 100% de CPU corresponde a um núcleo.';
+    const threadLabel=document.createElement('label');threadLabel.htmlFor='termuxTextThreads';threadLabel.textContent='Threads da IA local · aplica após reiniciar o iniciador';
+    const threads=document.createElement('select');threads.id='termuxTextThreads';for(const n of [1,2,3,4]){const o=document.createElement('option');o.value=n;o.textContent=n+' thread(s)';threads.append(o);}
+    const niceLabel=document.createElement('label');const nice=document.createElement('input');nice.type='checkbox';nice.style.width='auto';nice.id='termuxTextNice';niceLabel.append(nice,' Dar prioridade de CPU ao jogo e áudio quando concorrem com Qwen');
+    const perfSave=document.createElement('button');perfSave.type='button';perfSave.id='termuxPerfSave';perfSave.textContent='Salvar uso da IA';
+    const perfRead=document.createElement('button');perfRead.type='button';perfRead.id='termuxPerfRead';perfRead.textContent='Iniciar medição de 15 segundos';
+    const perfMessage=document.createElement('p');perfMessage.id='termuxPerfStatus';perfMessage.style.whiteSpace='pre-wrap';
+    async function perfRequest(path,payload){const r=await fetch(path,payload?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}:{});const b=await r.json();if(!r.ok)throw new Error(b.detail||'Diagnóstico indisponível.');return b;}
+    fetch('/termux/performance/settings').then(async r=>{if(!r.ok)return;const b=await r.json();threads.value=b.settings.text_threads;nice.checked=b.settings.text_nice>0;perfBox.hidden=false;}).catch(()=>{});
+    perfSave.onclick=async()=>{try{await perfRequest('/termux/performance/settings',{text_threads:Number(threads.value),text_batch_threads:Number(threads.value),text_nice:nice.checked?5:0});perfMessage.textContent='Salvo. Reinicie o iniciador para aplicar aos serviços que ele cria. Modelos, voz e serviços externos foram preservados.';}catch(e){perfMessage.textContent=e.message;}};
+    let perfSamples=[];
+    const perfDownload=document.createElement('button');perfDownload.type='button';perfDownload.id='termuxPerfDownload';perfDownload.textContent='Baixar diagnóstico GT3';perfDownload.disabled=true;
+    perfDownload.onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify({scope:'Medição durante uso; não comprova desempenho em outras cenas. CPU 100% = um núcleo. GPU = todo o aparelho.',samples:perfSamples},null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='COFRA_GT3_DIAGNOSTICO.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+    function showPerf(report){perfSamples=report.samples||[];const b=perfSamples.at(-1);perfDownload.disabled=!b;if(!b)return;perfMessage.textContent=(report.running?'Medindo…':'Medição encerrada.')+' '+perfSamples.length+'/6 · pode deixar o jogo visível no Termux:X11.\nFPS: '+(b.render.fps??'aguardando')+' · GPU: '+(b.render.observed_renderer||'aguardando')+'\n'+b.processes.map(p=>p.label+': CPU '+(p.cpu_percent_one_core??'primeira amostra')+'% · RAM '+p.rss_mb+' MB · '+p.threads+' threads · CPUs '+p.allowed_cpus).join('\n')+'\nMemória disponível: '+(b.system.available_memory_mb??'indisponível')+' MB'+(report.error?'\n'+report.error:'');}
+    perfRead.onclick=async()=>{perfRead.disabled=true;try{let report=await perfRequest('/termux/performance/record',{});perfMessage.textContent='Medição iniciada no servidor. Volte ao jogo durante 15 segundos e retorne ao painel.';while(report.running){await new Promise(resolve=>setTimeout(resolve,3000));report=await perfRequest('/termux/performance/record');showPerf(report);}}catch(e){perfMessage.textContent=e.message;}finally{perfRead.disabled=false;}};
+    fetch('/termux/performance/record').then(r=>r.json()).then(showPerf).catch(()=>{});
+    const engineSelect=document.createElement('select');engineSelect.id='termuxEngine';
+    for(const [value,label] of [['gl_compatibility','OpenGL / Zink · já confirmado no GT3'],['mobile','Vulkan direto / Mobile · TESTE no aparelho']]){const option=document.createElement('option');option.value=value;option.textContent=label;engineSelect.append(option);}
+    const engineSave=document.createElement('button');engineSave.type='button';engineSave.id='termuxEngineSave';engineSave.textContent='Salvar motor gráfico para a próxima abertura';
+    const engineNote=document.createElement('p');engineNote.textContent='Vulkan direto carregou o jogo original no teste Linux. Ganho, imagem e estabilidade no GT3 ainda precisam de teste. Se piorar ou fechar, volte para OpenGL e abra novamente. Não é aplicado automaticamente.';
+    fetch('/termux/game/engine').then(r=>r.json()).then(b=>{engineSelect.value=b.configured;}).catch(()=>{});
+    engineSave.onclick=async()=>{try{await perfRequest('/termux/game/engine',{renderer:engineSelect.value});perfMessage.textContent='Motor salvo. Feche e abra somente a janela do jogo para aplicar. A mudança é reversível pelo mesmo seletor.';}catch(e){perfMessage.textContent=e.message;}};
+    const studioHelp=document.createElement('p');studioHelp.textContent='Cofra Studio: rode o jogo aqui e transmita pelo aplicativo Android. A ponte de áudio envia somente o mixer do jogo para o app local; não altera o som que você ouve.';
+    perfBox.append(perfTitle,perfNote,threadLabel,threads,niceLabel,perfSave,perfRead,perfMessage,perfDownload,engineSelect,engineSave,engineNote,studioHelp);card.append(perfBox);
     status.closest('section').before(card);
     await refresh(); setInterval(() => refresh().catch(() => {}), 5000);
   }).catch(() => {});

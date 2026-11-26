@@ -1,0 +1,15 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="br.cofra.studio" android:versionCode="1" android:versionName="0.1.0">
+ <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="35"/>
+ <uses-permission android:name="android.permission.INTERNET"/>
+ <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+ <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+ <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
+ <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
+ <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+ <uses-permission android:name="android.permission.WAKE_LOCK"/>
+ <queries><package android:name="com.termux"/><package android:name="com.termux.x11"/></queries>
+ <application android:label="Cofra Studio" android:icon="@drawable/icon" android:allowBackup="false" android:allowAudioPlaybackCapture="true" android:hardwareAccelerated="true" android:supportsRtl="true" android:theme="@android:style/Theme.Material.NoActionBar" android:networkSecurityConfig="@xml/network_security_config">
+  <activity android:name=".MainActivity" android:launchMode="singleTop" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity>
+  <service android:name=".CaptureService" android:exported="false" android:foregroundServiceType="mediaProjection|microphone"/>
+ </application>
+</manifest>
