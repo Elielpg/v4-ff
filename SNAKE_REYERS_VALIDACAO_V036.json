@@ -1,0 +1,40 @@
+{
+  "version": "0.3.6",
+  "client_date": "2026-11-26",
+  "tests": {
+    "python": 317,
+    "original_python_included": 67,
+    "node": 3,
+    "focused_after_gd_update": 14
+  },
+  "original_files_verified_unchanged": 127,
+  "original_game_included": false,
+  "private_assets_included": false,
+  "credentials_included": false,
+  "model_weights_included": false,
+  "providers_preserved": true,
+  "graphical_profile_preserved": true,
+  "qwen_integration_preserved": true,
+  "real_original_godot_and_piper_linux": true,
+  "camera_trajectory_changed": false,
+  "own_runtime_graphics_layer": true,
+  "decor_instances": 114,
+  "decor_batches": 5,
+  "real_godot_adaptive_control": true,
+  "original_pack_extracted_or_modified": false,
+  "first_graphics_setup_once": true,
+  "physical_gt3_validation": false,
+  "phone_latency_gain_claimed": false,
+  "gpu_npu_offload_added": false,
+  "public_broadcast_started": false,
+  "artifacts": {
+    "SNAKE_REYERS_TERMUX_0_2.zip": {
+      "bytes": 18250109,
+      "sha256": "6ba3d3982f42b99514ba69412d75ab704b79d660fc4664d40d7876af6f4cc8cd"
+    },
+    "SNAKE_REYERS_GRAFICOS_GT3_V036.sh": {
+      "bytes": 1163568,
+      "sha256": "7b9c663466ec3837c6580c776b8de6e4a0d6e26a3372d9b27805e004035ba7ee"
+    }
+  }
+}
