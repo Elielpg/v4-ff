@@ -1,0 +1,32 @@
+{
+  "output": "COBRA_PHONK_INFERNIA_V1.mp4",
+  "bytes": 26975304,
+  "sha256": "c01a9852d07fe3996e5ac18bfce1ac0c846058e6ed306f2792e6fa4fdea4c603",
+  "native_source_resolution": [
+    1080,
+    1920
+  ],
+  "resolution": [
+    1080,
+    1920
+  ],
+  "fps": 30,
+  "frames": 576,
+  "duration_seconds": 19.2,
+  "audio": {
+    "codec": "AAC",
+    "sample_rate": "48000",
+    "channels": 2,
+    "integrated_lufs": -14.1,
+    "true_peak_dbfs": -4.68
+  },
+  "full_decode_passed": true,
+  "sampled_render_change_mean": 32.99866227187332,
+  "max_scheduled_beat_error_seconds": 0.03320399999999957,
+  "beat_timing_scope": "Offline schedule vs movie frame clock; not device latency or a GT3 benchmark.",
+  "original_pack_distributed": false,
+  "production_game_files_modified": false,
+  "posted_to_tiktok": false,
+  "game_credit": "Snake Reyers — Thiago Reyes",
+  "music": "Artefxct — MONTAGEM INFERNIA [Slowed], supplied by the user"
+}
