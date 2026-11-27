@@ -1,0 +1,51 @@
+{
+  "version": "0.3.8",
+  "client_date": "2026-11-27",
+  "tests": {
+    "python": 347,
+    "original_python_included": 67,
+    "node": 3,
+    "real_godot_audio_checks": 24,
+    "browser_checks": 7
+  },
+  "original_files_verified_unchanged": 127,
+  "original_game_included": false,
+  "private_assets_included": false,
+  "credentials_included": false,
+  "model_weights_included": false,
+  "providers_preserved": true,
+  "graphical_profile_preserved": true,
+  "qwen_integration_preserved": true,
+  "real_original_godot_and_piper_linux": true,
+  "own_runtime_theme": true,
+  "travelling_lightning": true,
+  "soft_aura": true,
+  "reactive_floor": true,
+  "random_neon_colors": true,
+  "bounded_visual_caches": true,
+  "stress_seconds": 180,
+  "stress_created_models": 31816,
+  "stress_final_records": 2,
+  "phone_freeze_root_cause_confirmed": false,
+  "color_palette_per_track": true,
+  "automatic_music_bus_analysis": true,
+  "voice_bus_excluded": true,
+  "external_android_audio_capture": false,
+  "explicit_manual_bpm": true,
+  "hot_theme_toggle": true,
+  "original_pack_extracted_or_modified": false,
+  "camera_trajectory_changed": false,
+  "physical_gt3_validation": false,
+  "phone_performance_gain_claimed": false,
+  "public_broadcast_started": false,
+  "artifacts": {
+    "SNAKE_REYERS_TERMUX_0_2.zip": {
+      "bytes": 22882542,
+      "sha256": "254dd6061f3f3238dc87ead3bda6020e706a1b390317fe44934754f951a199b0"
+    },
+    "SNAKE_REYERS_NEON_FLUIDEZ_V038.sh": {
+      "bytes": 1209141,
+      "sha256": "f4d1c8b19bd0886dd5a2a10686770c146967a4b73b4c462ff3a9b01e1208a0b3"
+    }
+  }
+}
