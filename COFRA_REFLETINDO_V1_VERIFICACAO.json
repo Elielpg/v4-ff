@@ -1,0 +1,34 @@
+{
+  "file": "COFRA_REFLETINDO_V1.mp4",
+  "bytes": 27571145,
+  "sha256": "71d462e1b5fce7911c16377a58e7168e1ef444e08655e21856f581a513f7ec4d",
+  "duration": 21,
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "frames": 630,
+  "video_codec": "h264",
+  "audio_codec": "aac",
+  "native_capture": "540x960 at fixed 30 fps; edited/upscaled to 1080x1920",
+  "original_game": "Snake Reyers 0.1.9 by Thiago Reyes",
+  "new_graphics_layer": true,
+  "decode_errors": false,
+  "source_cue_correlations": [
+    0.9879221527280702,
+    0.9921997848687635,
+    0.9785738567541858,
+    0.9826176037627894,
+    0.9965597438071824
+  ],
+  "max_speech_offset_seconds": 0.00502,
+  "music": {
+    "title": "Motionless Land",
+    "artist": "Josh Woodward",
+    "license": "CC BY 3.0",
+    "license_url": "https://creativecommons.org/licenses/by/3.0/",
+    "source_url": "http://freemusicarchive.org/music/Josh_Woodward/Ashes/JoshWoodward-Ashes-12-MotionlessLand",
+    "language": "English vocals confirmed by ASR; manually selected title"
+  },
+  "voice": "Piper pt_BR-faber-medium, generated original lines, not cloned",
+  "public_tiktok_posted": false
+}
