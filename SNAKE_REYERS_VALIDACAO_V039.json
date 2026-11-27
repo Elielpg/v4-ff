@@ -1,0 +1,56 @@
+{
+  "version": "0.3.9",
+  "client_date": "2026-11-27",
+  "tests": {
+    "python": 354,
+    "original_python_included": 67,
+    "node": 3,
+    "real_godot_audio_checks": 30,
+    "browser_checks": 8
+  },
+  "original_files_verified_unchanged": 127,
+  "original_game_included": false,
+  "private_assets_included": false,
+  "credentials_included": false,
+  "model_weights_included": false,
+  "providers_preserved": true,
+  "graphical_profile_preserved": true,
+  "qwen_integration_preserved": true,
+  "real_original_godot_and_piper_linux": true,
+  "own_runtime_theme": true,
+  "travelling_lightning": true,
+  "soft_aura": true,
+  "reactive_floor": true,
+  "random_neon_colors": true,
+  "bounded_visual_caches": true,
+  "stress_seconds": 5,
+  "stress_created_models": 3808,
+  "stress_final_records": 4,
+  "original_game_sustain_seconds": 360,
+  "stable_scaling": true,
+  "gpu_texture_readbacks_disabled": true,
+  "chrome_style": true,
+  "independent_stall_diagnostic_test": true,
+  "phone_freeze_root_cause_confirmed": false,
+  "color_palette_per_track": true,
+  "automatic_music_bus_analysis": true,
+  "voice_bus_excluded": true,
+  "external_android_audio_capture": false,
+  "explicit_manual_bpm": true,
+  "hot_theme_toggle": true,
+  "original_pack_extracted_or_modified": false,
+  "camera_trajectory_changed": false,
+  "physical_gt3_validation": false,
+  "phone_performance_gain_claimed": false,
+  "public_broadcast_started": false,
+  "artifacts": {
+    "SNAKE_REYERS_TERMUX_0_2.zip": {
+      "bytes": 24256596,
+      "sha256": "86c5b816ce3bd60c57effadcca77d366966f13ae7914705f2e26c6e6a07016e0"
+    },
+    "SNAKE_REYERS_CHROME_ESTAVEL_V039.sh": {
+      "bytes": 1216934,
+      "sha256": "c7c0a21696ab5311a7679e5798f2a680d8c4d8ff8239127952fa67eeb8c8ae46"
+    }
+  }
+}
