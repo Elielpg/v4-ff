@@ -1,0 +1,42 @@
+{
+  "version": "0.3.7",
+  "client_date": "2026-11-27",
+  "tests": {
+    "python": 337,
+    "original_python_included": 67,
+    "node": 3,
+    "real_godot_audio_checks": 12,
+    "browser_checks": 5
+  },
+  "original_files_verified_unchanged": 127,
+  "original_game_included": false,
+  "private_assets_included": false,
+  "credentials_included": false,
+  "model_weights_included": false,
+  "providers_preserved": true,
+  "graphical_profile_preserved": true,
+  "qwen_integration_preserved": true,
+  "real_original_godot_and_piper_linux": true,
+  "own_runtime_theme": true,
+  "color_palette_per_track": true,
+  "automatic_music_bus_analysis": true,
+  "voice_bus_excluded": true,
+  "external_android_audio_capture": false,
+  "explicit_manual_bpm": true,
+  "hot_theme_toggle": true,
+  "original_pack_extracted_or_modified": false,
+  "camera_trajectory_changed": false,
+  "physical_gt3_validation": false,
+  "phone_performance_gain_claimed": false,
+  "public_broadcast_started": false,
+  "artifacts": {
+    "SNAKE_REYERS_TERMUX_0_2.zip": {
+      "bytes": 21287528,
+      "sha256": "c06dcf1f5c45cd33d7fbcbfbd00016698e5dd3e45f2ef98f89ad62d7c2a4e20e"
+    },
+    "SNAKE_REYERS_PHONK_V037.sh": {
+      "bytes": 1194765,
+      "sha256": "cef636bacd424a734a61086e5e92106511e0621bbc2da26bbbe034feaf08cd8c"
+    }
+  }
+}
