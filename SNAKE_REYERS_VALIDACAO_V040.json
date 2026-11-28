@@ -1,0 +1,53 @@
+{
+  "version": "0.4.0",
+  "client_date": "2026-11-27",
+  "tests": {
+    "adapter_python": 303,
+    "original_python": 67,
+    "node": 3,
+    "browser_checks": 6,
+    "native_piper_speeches_finished": 6,
+    "synthetic_gift_burst": 150,
+    "concurrent_comment_burst": 60
+  },
+  "original_files_verified_unchanged": 127,
+  "original_theme_restored": true,
+  "phonk_runtime_attached": false,
+  "gift_priority_fifo": true,
+  "gift_receipts_persist_until_playback_ack": true,
+  "comment_waiting_limit": 3,
+  "comment_full_behavior": "reject_new",
+  "welcomes_grouped": true,
+  "gift_and_welcome_llm_calls": false,
+  "scenery": {
+    "static_additional_batches": 4,
+    "additional_instances": 59,
+    "additional_labels": 1,
+    "playable_map_modified": false
+  },
+  "providers_models_keys_music_preserved": true,
+  "one_time_migration_and_rollback_tested": true,
+  "credentials_included": false,
+  "game_pack_included": false,
+  "weights_included": false,
+  "android_gt3_physical_validation": false,
+  "gt3_freeze_declared_fixed": false,
+  "new_rtmp_apk_included": false,
+  "broadcast_started": false,
+  "native_scope": "Original Godot 4.7 on Linux/Xvfb/software GL, real Piper voice, isolated private PulseAudio; synthetic events, no TikTok LIVE or GT3 benchmark.",
+  "limitations": [
+    "Events not delivered by TikTok cannot be recovered.",
+    "An interrupted final playback acknowledgement may cause a repeated thanks.",
+    "A process interruption during the original gift effect leaves its delivery uncertain; automatic voice retry does not replay the effect."
+  ],
+  "artifacts": {
+    "SNAKE_REYERS_TERMUX_0_4_0.zip": {
+      "bytes": 27092237,
+      "sha256": "788b4da5d7479dfb63f36001fd639d2549262a461ce14fca527164b39b96fe6c"
+    },
+    "SNAKE_REYERS_ORIGINAL_FILAS_V040.sh": {
+      "bytes": 1253312,
+      "sha256": "d1e15730ef1cdfa614712df949ae7a861e1da463a19a9cfae93af05e751bf088"
+    }
+  }
+}
