@@ -1,0 +1,78 @@
+{
+  "version": "0.4.1",
+  "client_date": "2026-11-27",
+  "tests": {
+    "adapter_python": 317,
+    "original_python": 67,
+    "node": 3,
+    "browser_checks": 6,
+    "native_piper_speeches_finished": 6,
+    "synthetic_renderers": [
+      "gl_compatibility",
+      "mobile"
+    ],
+    "original_pack_vulkan_compatibility": true,
+    "complete_helper_migration_and_rollback": true
+  },
+  "original_files_verified_unchanged": 127,
+  "default_renderer_after_first_migration": "mobile",
+  "direct_vulkan_gpu_probe": "vulkaninfo summary, existing GL verification fallback if needed",
+  "gl_translation_overrides_removed_for_mobile": true,
+  "separate_render_thread_enabled_by_update": false,
+  "separate_render_thread_experiment_rejected": true,
+  "comparison": {
+    "scope": "Linux software OpenGL, fixed original scene; not GT3 FPS or Vulkan speed.",
+    "draw_calls_before": 3670.0,
+    "draw_calls_after": 2738.0,
+    "draw_call_reduction_percent": 25.4,
+    "instances_batched": 588,
+    "batches": 79,
+    "primitives_before": 696356,
+    "primitives_after": 705372,
+    "process_delta_is_not_wall_frame_duration": true,
+    "gt3_fps_gain_proven": false
+  },
+  "camera": {
+    "presentation_filter": true,
+    "original_logical_camera_preserved": true,
+    "original_gameplay_transforms_modified": false,
+    "physics_interpolation_modified": false,
+    "time_constant_ms": 55,
+    "static_target_overshoot_detected": false,
+    "monotonic_test_passed": true,
+    "synthetic_alternating_input_energy_ratio": 0.0210097531784232
+  },
+  "renderer_gpu_texture_readbacks_added": false,
+  "original_theme_preserved": true,
+  "phonk_runtime_attached": false,
+  "gifts_fifo_and_durable_receipts_preserved": true,
+  "comment_waiting_limit": 3,
+  "welcomes_grouped": true,
+  "providers_models_keys_music_preserved": true,
+  "credentials_included": false,
+  "game_pack_included": false,
+  "weights_included": false,
+  "android_gt3_physical_validation": false,
+  "reported_motion_bug_declared_fixed": false,
+  "gt3_freeze_declared_fixed": false,
+  "new_rtmp_apk_included": false,
+  "broadcast_started": false,
+  "native_scope": "Original Godot 4.7 on Linux/Xvfb/software GL, real Piper voice, isolated private PulseAudio; synthetic events, no TikTok LIVE or GT3 benchmark.",
+  "mobile_scope": "Compatibility smoke only, original pack and new extensions. Linux software Vulkan at reduced test resolution and test-only accelerated startup scanning; not GT3 performance, startup time or sound.",
+  "limitations": [
+    "Physical GT3 A/B is pending. The reported snake reversal was not reproduced by the limited aerial-camera logical-position probe.",
+    "Static grouping can increase primitive count when a partially visible spatial group is drawn.",
+    "The camera presentation filter adds a small visual delay and can be disabled independently.",
+    "Extended Android execution with speech and capture has not been validated by this update."
+  ],
+  "artifacts": {
+    "SNAKE_REYERS_TERMUX_0_4_1.zip": {
+      "bytes": 28406197,
+      "sha256": "c00afd70890f7212db985d272e11805a9ce462e5f0c0899445a609fe42355751"
+    },
+    "SNAKE_REYERS_RENDER_MOVIMENTO_V041.sh": {
+      "bytes": 1274532,
+      "sha256": "dfcb133292a74710dadb73f3f8feca3d90be746b954350b17bbc5c399e4bc3c2"
+    }
+  }
+}
