@@ -1,0 +1,182 @@
+[
+  {
+    "path": "LICENSE",
+    "bytes": 1166,
+    "sha256": "339a86663aba3b6a3fc724cba819f1bdb7d00a5b19580e0a82e9bf0bde9556e2"
+  },
+  {
+    "path": "README.md",
+    "bytes": 9786,
+    "sha256": "c11d5be49b2587d4ef7b2ca7578a1de912caff80fab814abc67d80d6e975e326"
+  },
+  {
+    "path": "app/AndroidManifest.xml",
+    "bytes": 1558,
+    "sha256": "d33b27f840c4e713291c2e6496377bcb362aa4de269ae1161ffab60458e1e9a1"
+  },
+  {
+    "path": "app/res/drawable/icon.xml",
+    "bytes": 513,
+    "sha256": "bd3117b76b4692db67c620b2f2405e53edd397fc6acf806288703cdfeb850760"
+  },
+  {
+    "path": "app/res/xml/network_security_config.xml",
+    "bytes": 216,
+    "sha256": "80548c0092d037962a7dc151157fa581c81edcccc7fd0077b3be6d9584e98742"
+  },
+  {
+    "path": "app/src/br/cofra/studio/CaptureService.java",
+    "bytes": 19337,
+    "sha256": "419f94b7d1586daa1e2407c5ada06771e8ac6bbc62f93624297665d6811da754"
+  },
+  {
+    "path": "app/src/br/cofra/studio/CaptureState.java",
+    "bytes": 1018,
+    "sha256": "425765fa78399971729fb70223065a2a246f73083bcb6584dfa8427e57d34df3"
+  },
+  {
+    "path": "app/src/br/cofra/studio/FrameMath.java",
+    "bytes": 878,
+    "sha256": "df8ad18123045c2115eefbc81a16afeccc565226799a46e0760b2e0019478dc8"
+  },
+  {
+    "path": "app/src/br/cofra/studio/GamePcm.java",
+    "bytes": 2207,
+    "sha256": "8ba1e760169dde514e35e62d178bbb44460148210a6fe1efea1e462ae8ad5b38"
+  },
+  {
+    "path": "app/src/br/cofra/studio/LocalRecorder.java",
+    "bytes": 3407,
+    "sha256": "dbdc3df63c35a8dbb4ebd09916ec76e3810f457bda2cb47ec465b664187e1ca0"
+  },
+  {
+    "path": "app/src/br/cofra/studio/MainActivity.java",
+    "bytes": 12938,
+    "sha256": "ccd93b631e093c6014c1c402616c6bb7ea9ab8ac1688b6127dcdd4c88e17ae8d"
+  },
+  {
+    "path": "app/src/br/cofra/studio/PcmPump.java",
+    "bytes": 4480,
+    "sha256": "7d80bca64b879590593627da4956272bad5920feba723234118d80a82ac48f73"
+  },
+  {
+    "path": "app/src/br/cofra/studio/PcmRing.java",
+    "bytes": 1594,
+    "sha256": "4f5d2403fa28df805271151dcebc5f75175abb5933206aa5bcf7d7e37fd064b7"
+  },
+  {
+    "path": "app/src/br/cofra/studio/ScreenRenderer.java",
+    "bytes": 9612,
+    "sha256": "e47727e816ac07c9d5bcd087747e359259e967b400fdb488299f73af4144d220"
+  },
+  {
+    "path": "app/src/br/cofra/studio/rtmp/Amf0.java",
+    "bytes": 2692,
+    "sha256": "6163f73dfe990ff6490561ac5e0f58d3d53fc44a1efc28074b3b45bb8e2cdd51"
+  },
+  {
+    "path": "app/src/br/cofra/studio/rtmp/Endpoint.java",
+    "bytes": 1178,
+    "sha256": "32f424a17c9431b183273045b3ed1e69a01a51319fe618210e783eba820c4b25"
+  },
+  {
+    "path": "app/src/br/cofra/studio/rtmp/FlvCodec.java",
+    "bytes": 2253,
+    "sha256": "92ba5607b76c3c72d8286662210386fd2c2804bd499371a1552f329c25f03ce8"
+  },
+  {
+    "path": "app/src/br/cofra/studio/rtmp/RtmpClient.java",
+    "bytes": 10198,
+    "sha256": "93d37c2b903ea775a2a0ce0b422fb4d4a8296c9da6ebb3062bcdff48fe7dc22a"
+  },
+  {
+    "path": "build.py",
+    "bytes": 3379,
+    "sha256": "853dbaef2e2c0f0909eefbcae003b567868cff5985180c094ced9d01551df842"
+  },
+  {
+    "path": "docs/evidence/APK_BUILD_0_1_1.json",
+    "bytes": 2671,
+    "sha256": "93c18fb6b4886e4287501c8572df6510f9eb9c224a290398d812204bc5bee996"
+  },
+  {
+    "path": "docs/evidence/AUDIO_VIDEO_0_1_1.json",
+    "bytes": 447,
+    "sha256": "085906d31c328c97305e424973129295432ab16966031a81a3ddaa35fd66a334"
+  },
+  {
+    "path": "docs/evidence/CHECKS_0_1_1.json",
+    "bytes": 407,
+    "sha256": "b6c774907477fbef88e84099868b17a8da59b645407b3f3c74c52c1c0981c42c"
+  },
+  {
+    "path": "docs/evidence/CONNECTIONS_0_1_1.json",
+    "bytes": 1893,
+    "sha256": "cc1febc1acaa4674b5496cda91932684cf618a9f521afd1ddf23becc3d9d8029"
+  },
+  {
+    "path": "docs/evidence/HANDSHAKE_BEFORE_0_1_1.json",
+    "bytes": 475,
+    "sha256": "823254ad4026687b3fefbb08049857cb34567f8f59ce3a17221dc6b107722ff2"
+  },
+  {
+    "path": "docs/evidence/ORIGINAL_RECEIVER_0_1_1.json",
+    "bytes": 492,
+    "sha256": "9f853f84ff654e74f52376c22c3b235814c0618e55cd620ce10e19faec1d8a4e"
+  },
+  {
+    "path": "docs/evidence/PCM_0_1_1.json",
+    "bytes": 260,
+    "sha256": "07c83f5f1db1a53d747ab7e15b08cde801c98b7016ebe74bf8976c3795d3e75e"
+  },
+  {
+    "path": "docs/evidence/PROTOCOL_0_1_1.json",
+    "bytes": 24,
+    "sha256": "09b58307fdc1ab44785b1b12f97fbe3d9fcc57a21fa851d6bec29e72d446aa3a"
+  },
+  {
+    "path": "docs/evidence/VALIDACAO_0_1_1.json",
+    "bytes": 4737,
+    "sha256": "bf88e734079a93fb9cf93f3cc0a726a6d8eb4f6a5a5a8fa6a2a237222b0ab8b8"
+  },
+  {
+    "path": "tests/ConnectionProbe.java",
+    "bytes": 1703,
+    "sha256": "a542ab65dfa558da50b5385951e2036a70e4a83ecf1d0a5e5db77cfbdd08a419"
+  },
+  {
+    "path": "tests/PcmPumpTest.java",
+    "bytes": 4713,
+    "sha256": "2cd1cab026e1b960363e1fbbd5bd7180d433a2a35e645894a821917182fe855f"
+  },
+  {
+    "path": "tests/ProtocolTest.java",
+    "bytes": 2898,
+    "sha256": "9c8d77543ff553c2d1abb731141ed8a3fee880fbf7faa655c4915ee93bade79e"
+  },
+  {
+    "path": "tests/PublishFlv.java",
+    "bytes": 1098,
+    "sha256": "62e85f7d6177823fe949e7bf03e065be1fc7be05f213e653a6a7a5114c7f0ec0"
+  },
+  {
+    "path": "tests/run_audio_outage_receiver.py",
+    "bytes": 3307,
+    "sha256": "e3725b99671ab1cdf288ad8b3295410c964a9a804e2a2e1e6e0de56161dc6175"
+  },
+  {
+    "path": "tests/run_checks.py",
+    "bytes": 1686,
+    "sha256": "e12673405c6228f1d246f674c1efffd09c0099ad86b11161cef824b45009055a"
+  },
+  {
+    "path": "tests/run_connections.py",
+    "bytes": 5264,
+    "sha256": "e9acdb36f750c1ad096db1f19b57af292b9880204ea9ded41fa9dbfc1ee057f7"
+  },
+  {
+    "path": "tests/run_receiver.py",
+    "bytes": 2104,
+    "sha256": "d569da1e702d76575a5f8816a3456d9b1f288aeb4de747060a7eec5aa8a8774e"
+  }
+]

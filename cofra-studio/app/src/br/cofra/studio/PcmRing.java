@@ -16,6 +16,7 @@ public final class PcmRing {
     for(int i=0;i<length;i++)target[i]=data[(start+i)%data.length];start=(start+length)%data.length;size-=length;return length;
   }
   public synchronized int size(){return size;}
+  public synchronized void clear(){start=0;size=0;}
   public static double rms(byte[] data,int length){double sum=0;int n=Math.min(length,data.length)/2;for(int i=0;i<n;i++){int p=(short)((data[2*i]&255)|(data[2*i+1]<<8));sum+=(double)p*p;}return n>0?Math.sqrt(sum/n)/32768:0;}
   public static void mix(byte[] game,byte[] music,int length,double musicGain) {
     for(int i=0;i+1<length;i+=2){int a=(short)((game[i]&255)|(game[i+1]<<8)),b=(short)((music[i]&255)|(music[i+1]<<8));int v=(int)(a*.92+b*musicGain);v=Math.max(-32760,Math.min(32760,v));game[i]=(byte)v;game[i+1]=(byte)(v>>8);}

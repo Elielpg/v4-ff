@@ -32,7 +32,7 @@ public final class MainActivity extends Activity {
  private long lastFrames,lastBytes,lastAt;
  private final Runnable poll=new Runnable(){public void run(){
    long now=System.currentTimeMillis(),dt=now-lastAt;double fps=dt>0?Math.max(0,CaptureService.frames-lastFrames)*1000.0/dt:0,mbps=dt>0?Math.max(0,CaptureService.bytes-lastBytes)*.008/dt:0;
-   status.setText(CaptureService.status+"\nEncoder: "+CaptureService.encoder+String.format(Locale.US,"\nSaída: %.1f FPS · %.2f Mbps · áudio %.1f dBFS",fps,mbps,20*Math.log10(Math.max(.000001,CaptureService.audioRms)))+"\n"+CaptureService.musicStatus);
+   status.setText(CaptureService.session.message()+"\nEncoder: "+CaptureService.encoder+String.format(Locale.US,"\nSaída: %.1f FPS · %.2f Mbps · áudio %.1f dBFS",fps,mbps,20*Math.log10(Math.max(.000001,CaptureService.audioRms)))+"\n"+CaptureService.audioStatus());
    lastFrames=CaptureService.frames;lastBytes=CaptureService.bytes;lastAt=now;
    live.setEnabled(!CaptureService.active);test.setEnabled(!CaptureService.active);
    if(CaptureService.preview!=null)preview.setImageBitmap(CaptureService.preview);
@@ -41,7 +41,7 @@ public final class MainActivity extends Activity {
  @Override public void onCreate(Bundle saved){
   super.onCreate(saved);getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);getWindow().setStatusBarColor(Color.rgb(10,20,28));getWindow().setNavigationBarColor(Color.rgb(10,20,28));
   ScrollView scroll=new ScrollView(this);LinearLayout layout=new LinearLayout(this);layout.setOrientation(LinearLayout.VERTICAL);layout.setPadding(24,20,24,28);layout.setBackgroundColor(Color.rgb(10,20,28));scroll.addView(layout);setContentView(scroll);
-  label(layout,"COFRA STUDIO · BETA",28,Color.rgb(178,255,99));
+  label(layout,"COFRA STUDIO · BETA 0.1.1",28,Color.rgb(178,255,99));
   label(layout,"Termux:X11 → teste local ou RTMP/RTMPS",15,Color.WHITE);
   label(layout,"Encerre o compartilhamento de tela do TikTok. Abra o jogo pelo Termux e use o teste local primeiro. No Android 14 ou superior, selecione apenas o aplicativo Termux:X11 na autorização. Em versões anteriores, a captura inclui a tela inteira; mantenha o jogo visível.",14,Color.LTGRAY);
   button(layout,"ABRIR TERMUX:X11",this::openGame);
@@ -53,14 +53,17 @@ public final class MainActivity extends Activity {
   label(layout,"Os cortes preservam a proporção e podem ser ajustados durante o teste. A prévia abaixo só aparece neste painel e atualiza uma vez por segundo enquanto ele estiver aberto.",12,Color.LTGRAY);
   test=button(layout,"1 · AUTORIZAR TESTE LOCAL DE 10 SEGUNDOS",()->begin("test"));
   button(layout,"ABRIR ÚLTIMO TESTE SALVO",()->{if(CaptureService.lastTest.isEmpty()){status.setText("Ainda não há um teste salvo nesta sessão.");return;}try{startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(Uri.parse(CaptureService.lastTest),"video/mp4").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));}catch(Exception e){status.setText("Abra Filmes/CofraStudio na galeria.");}});
-  url=field(layout,"URL do servidor TikTok","rtmps://servidor/live",false);
+  url=field(layout,"URL de entrada · Restream ou TikTok","rtmps://servidor/live",false);
   key=field(layout,"Chave de transmissão · somente neste aparelho","Cole aqui para transmitir",true);
+  label(layout,"Se usar Restream, copie dele a URL de entrada e a chave; configure o TikTok como destino no Restream. URL e chave precisam pertencer ao mesmo serviço. Não confunda o link da página de prévia com a URL RTMP/RTMPS.",12,Color.LTGRAY);
   live=button(layout,"2 · AUTORIZAR CAPTURA E TRANSMITIR",()->begin("live"));
   button(layout,"ENCERRAR CAPTURA / TRANSMISSÃO",()->{pendingKey=null;key.setText("");if(CaptureService.active)startService(new Intent(this,CaptureService.class).setAction("STOP"));});
-  status=label(layout,CaptureService.status,14,Color.rgb(178,255,99));
+  status=label(layout,CaptureService.session.message(),14,Color.rgb(178,255,99));
+  button(layout,"TENTAR ÁUDIO DO JOGO NOVAMENTE",CaptureService::retryGameAudio);
+  button(layout,"COPIAR DIAGNÓSTICO · SEM CHAVES",()->{android.content.ClipboardManager clipboard=(android.content.ClipboardManager)getSystemService(CLIPBOARD_SERVICE);clipboard.setPrimaryClip(ClipData.newPlainText("Diagnóstico Cofra Studio",CaptureService.diagnostic()));Toast.makeText(this,"Diagnóstico copiado; não inclui URL ou chave.",Toast.LENGTH_SHORT).show();});
   director=label(layout,"Espectadores e FPS do jogo: aguardando painel local…",14,Color.CYAN);
   preview=new ImageView(this);preview.setAdjustViewBounds(true);preview.setMaxHeight(640);layout.addView(preview,new LinearLayout.LayoutParams(-1,-2));
-  label(layout,"A chave fica apenas na memória e não é enviada ao painel Termux. Esta tela é protegida contra captura. Não há bolha flutuante deste app nem reconexão automática. Mantenha o jogo aberto e a tela acesa; o indicador de privacidade do Android permanece no aparelho. BETA: é necessário validar o MP4 e a transmissão no seu celular.",12,Color.LTGRAY);
+  label(layout,"A chave fica apenas na memória e não é enviada ao painel Termux. Esta tela é protegida contra captura. Não há bolha flutuante nem reconexão automática da LIVE. A ponte de áudio tenta recuperar com limite; se ficar indisponível, aparece aviso de silêncio e a imagem continua. Mantenha o jogo aberto e a tela acesa. BETA: valide o MP4 e a transmissão no celular.",12,Color.LTGRAY);
  }
  private void begin(String mode){
   if(CaptureService.active)return;pendingMode=mode;pendingProfile=profile.getSelectedItemPosition();
@@ -80,7 +83,7 @@ public final class MainActivity extends Activity {
   super.onActivityResult(request,result,permission);if(request!=43)return;
   if(result!=RESULT_OK||permission==null||pendingMode==null){pendingKey=null;status.setText("Captura não autorizada; nada foi transmitido.");return;}
   Intent i=new Intent(this,CaptureService.class).putExtra("permission",permission).putExtra("mode",pendingMode).putExtra("audio",pendingAudio).putExtra("url",pendingUrl).putExtra("key",pendingKey).putExtra("width",pendingProfile==0?720:1080).putExtra("height",pendingProfile==0?1280:1920).putExtra("bitrate",pendingProfile==0?4000000:6000000).putExtra("top",top.getProgress()/100f).putExtra("bottom",bottom.getProgress()/100f).putExtra("side",side.getProgress()/100f).putExtra("delay",delay.getProgress()-300);
-  pendingKey=null;pendingMode=null;key.setText("");startForegroundService(i);openGame();
+  pendingKey=null;pendingMode=null;key.setText("");try{startForegroundService(i);openGame();}catch(Exception e){CaptureService.session.begin("capture");CaptureService.session.fail("ANDROID_SERVICE_START","O Android não autorizou iniciar a captura. Abra o app, conceda as permissões e tente novamente.");status.setText(CaptureService.session.message());}
  }
  private void openGame(){try{startActivity(new Intent().setComponent(new ComponentName("com.termux.x11","com.termux.x11.MainActivity")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));}catch(Exception e){if(status!=null)status.setText("Abra manualmente o Termux:X11 depois de iniciar o jogo com bash start.sh.");}}
  private void fetchDirector(){fetching=true;new Thread(()->{

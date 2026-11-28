@@ -1,0 +1,21 @@
+{
+  "scope": "Synthetic loopback RTMP peer. No Restream/TikTok or Android validation.",
+  "results": [
+    {
+      "case": "accept",
+      "c2_before_s2": false,
+      "video_received": 0,
+      "publisher": {
+        "connected": false,
+        "connect_error": "EOFException",
+        "failure_callback": false,
+        "video_frames_sent": 0
+      },
+      "peer_errors": [
+        "TimeoutError"
+      ],
+      "elapsed_seconds": 2.123,
+      "passed": false
+    }
+  ]
+}

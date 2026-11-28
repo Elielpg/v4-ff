@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "scope": "Real loopback RTMP/FFmpeg H264/AAC reception, input PCM from forced socket EOF/timeout/recovery. No Android MediaCodec or Restream validation.",
+  "video_frames": 51,
+  "maximum_video_pts_gap_seconds": 0.067,
+  "audio_sample_rate": 48000,
+  "audio_channels": 2,
+  "quiet_20ms_windows": 14,
+  "audible_20ms_windows": 157,
+  "publisher": {
+    "ok": true,
+    "tags": 215,
+    "frames": 51,
+    "sentBytes": 493115
+  }
+}

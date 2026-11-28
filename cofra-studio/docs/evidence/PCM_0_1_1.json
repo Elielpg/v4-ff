@@ -1,0 +1,1 @@
+{"ok":true,"checks":172,"socket_eof_and_timeout_recovered":true,"silence_blocks":20,"audible_blocks":140,"five_failure_budget_then_manual_retry":true,"failure_survives_cleanup":true,"scope":"JVM real loopback socket PCM outages; no Android capture validation"}

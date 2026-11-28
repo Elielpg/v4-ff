@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "scope": "JVM and loopback only; not Android/Restream",
+  "commands": [
+    {
+      "check": 0,
+      "exit_code": 0
+    },
+    {
+      "check": 1,
+      "exit_code": 0
+    },
+    {
+      "check": 2,
+      "exit_code": 0
+    },
+    {
+      "check": 3,
+      "exit_code": 0
+    },
+    {
+      "check": 4,
+      "exit_code": 0
+    },
+    {
+      "check": 5,
+      "exit_code": 0
+    }
+  ]
+}

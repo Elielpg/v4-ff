@@ -20,7 +20,7 @@ password=passwordFile.read_text().strip();env=os.environ.copy();env['COFRA_APK_S
 if not key.exists():
  r=subprocess.run(['keytool','-genkeypair','-keystore',str(key),'-alias','cofra-studio','-storepass:env','COFRA_APK_STOREPASS','-keypass:env','COFRA_APK_STOREPASS','-keyalg','RSA','-keysize','2048','-validity','10000','-dname','CN=Cofra Studio, OU=Native Screen Streaming, O=Cofra Studio, C=BR'],env=env,capture_output=True,text=True)
  if r.returncode:raise RuntimeError(r.stderr)
-output=Path(sys.argv[sys.argv.index('--output')+1]).resolve() if '--output' in sys.argv else R/'output/COFRA_STUDIO_BETA_0_1.apk';output.parent.mkdir(parents=True,exist_ok=True)
+output=Path(sys.argv[sys.argv.index('--output')+1]).resolve() if '--output' in sys.argv else R/'output/COFRA_STUDIO_BETA_0_1_1.apk';output.parent.mkdir(parents=True,exist_ok=True)
 r=subprocess.run([str(tools/'apksigner'),'sign','--ks',str(key),'--ks-key-alias','cofra-studio','--ks-pass','env:COFRA_APK_STOREPASS','--key-pass','env:COFRA_APK_STOREPASS','--out',str(output),str(B/'aligned.apk')],env=env,capture_output=True,text=True)
 if r.returncode:raise RuntimeError(r.stderr)
 verified=run([tools/'apksigner','verify','--verbose','--print-certs',output]);badging=run([tools/'aapt2','dump','badging',output]);assert "minSdkVersion:'29'" in badging and "targetSdkVersion:'35'" in badging
